@@ -1,0 +1,584 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+  <meta charset="utf-8">
+  <title>BRIDGES Control Tower — Application Flow & Roles Manual</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    body {
+      font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+      font-size: 11pt;
+      color: #1e293b;
+      line-height: 1.5;
+      margin: 1in;
+    }
+    h1 {
+      color: #18217e;
+      font-size: 24pt;
+      font-weight: bold;
+      margin-bottom: 6pt;
+    }
+    .doc-subtitle {
+      color: #64748b;
+      font-size: 13pt;
+      margin-bottom: 18pt;
+    }
+    h2 {
+      color: #0f172a;
+      font-size: 15pt;
+      border-bottom: 2pt solid #18217e;
+      padding-bottom: 4pt;
+      margin-top: 24pt;
+      margin-bottom: 10pt;
+    }
+    h3 {
+      color: #334155;
+      font-size: 12.5pt;
+      margin-top: 14pt;
+      margin-bottom: 6pt;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12pt 0;
+      font-size: 10pt;
+    }
+    th {
+      background-color: #18217e;
+      color: #ffffff;
+      padding: 6pt 8pt;
+      text-align: left;
+      border: 1pt solid #cbd5e1;
+      font-weight: bold;
+    }
+    td {
+      padding: 6pt 8pt;
+      border: 1pt solid #cbd5e1;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2pt 6pt;
+      border-radius: 3pt;
+      font-size: 8.5pt;
+      font-weight: bold;
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+    .step-box {
+      border-left: 3.5pt solid #18217e;
+      background: #f8fafc;
+      padding: 10pt 14pt;
+      margin: 10pt 0;
+    }
+    .step-box.critical { border-left-color: #dc2626; background: #fef2f2; }
+    .step-box.warning { border-left-color: #d97706; background: #fffbeb; }
+    .step-box.success { border-left-color: #059669; background: #ecfdf5; }
+    .step-title {
+      font-weight: bold;
+      font-size: 11pt;
+      color: #0f172a;
+      margin-bottom: 4pt;
+    }
+    code {
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 9.5pt;
+      background: #f1f5f9;
+      padding: 1pt 4pt;
+      border-radius: 3pt;
+      color: #18217e;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>BRIDGES — Shipment Exception Control Tower</h1>
+  <div class="doc-subtitle">Complete Application Flow, Role Governance & Page Architecture Guide</div>
+
+  <table style="width: 100%; background: #f8fafc; margin-bottom: 24pt;">
+    <tr>
+      <td style="width: 25%;"><strong>System Version:</strong> BRIDGES v2.6.4</td>
+      <td style="width: 25%;"><strong>Total Roles:</strong> 7 Personas Gated</td>
+      <td style="width: 25%;"><strong>Total Views:</strong> 62 Functional Views</td>
+      <td style="width: 25%;"><strong>Local URL:</strong> http://localhost:8080</td>
+    </tr>
+  </table>
+
+  <h2>1. System Architecture & Operational Lifecycle</h2>
+  <p>
+    BRIDGES is an enterprise-grade multimodal logistics Control Tower and shipment exception mitigation platform. It links real-time IoT and GPS telemetry to operational decision-makers across the logistics chain.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Phase</th>
+        <th style="width: 40%;">Operational Function</th>
+        <th style="width: 35%;">Responsible Personas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Ingestion & Detection</strong></td>
+        <td>GPS positions and IoT sensor streams (temperature, humidity, shock) are ingested in real-time. Automated SLA rules flag deviations.</td>
+        <td>IoT Telematics &bull; System Store</td>
+      </tr>
+      <tr>
+        <td><strong>2. Diagnostic & Triage</strong></td>
+        <td>Incidents are prioritized by severity (Critical, High, Medium) with SLA countdown clocks. Root causes are analyzed in Investigation Workspaces.</td>
+        <td>Control Tower Analyst</td>
+      </tr>
+      <tr>
+        <td><strong>3. Planning & Intercept</strong></td>
+        <td>Dispatchers evaluate detour corridors, calculate transit overhead, and issue tenders (Expedite, Carrier Swap, Freight Splitting).</td>
+        <td>Dispatcher / Transport Planner</td>
+      </tr>
+      <tr>
+        <td><strong>4. Fleet Execution</strong></td>
+        <td>Carriers review and accept tenders, assign backup vehicles and drivers, perform pre-trip inspections, and confirm gate departure.</td>
+        <td>Carrier Operations User (`CAR-01`)</td>
+      </tr>
+      <tr>
+        <td><strong>5. Hub Cross-Docking</strong></td>
+        <td>Warehouse floor supervisors allocate dock doors, verify cold-chain stability with physical probes, and sign off security gate handovers.</td>
+        <td>Warehouse Supervisor (`WH-DAL-01`)</td>
+      </tr>
+      <tr>
+        <td><strong>6. Stakeholder Advisory</strong></td>
+        <td>Customer care specialists review approved arrival windows and use AI Copilots to draft clear, non-blaming proactive delay notifications.</td>
+        <td>Customer Service</td>
+      </tr>
+      <tr>
+        <td><strong>7. Shipper Delivery & ePOD</strong></td>
+        <td>Customers track cargo through arrival. Drivers capture digital signatures and photo evidence for electronic Proof of Delivery.</td>
+        <td>Customer / Shipper &bull; Carrier Driver</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. Role Governance & Credentials Matrix</h2>
+  <p>
+    All roles share default demo password <code>1</code>. Users can switch roles directly using the credentials below or via the user profile switcher at the bottom-left of the sidebar.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>Default User</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Scope & Data Boundaries</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Administrator</strong></td>
+        <td>Bima Ary</td>
+        <td><code>admin@gmail.com</code></td>
+        <td><code>1</code></td>
+        <td>Global Platform Governance & Configuration</td>
+      </tr>
+      <tr>
+        <td><strong>Control Tower Analyst</strong></td>
+        <td>Sarah Lin</td>
+        <td><code>cta@gmail.com</code></td>
+        <td><code>1</code></td>
+        <td>Global Telemetry, Exceptions & War Room</td>
+      </tr>
+      <tr>
+        <td><strong>Dispatcher / Transport Planner</strong></td>
+        <td>Elena Rostova</td>
+        <td><code>dispatcher@gmail.com</code></td>
+        <td><code>1</code></td>
+        <td>Continental Route Corridors & Carrier Tenders</td>
+      </tr>
+      <tr>
+        <td><strong>Carrier Operations User</strong></td>
+        <td>Marcus Vance</td>
+        <td><code>carrier@gmail.com</code></td>
+        <td><code>1</code></td>
+        <td>Bridges Global Logistics (`CAR-01` Tenant Scoped)</td>
+      </tr>
+      <tr>
+        <td><strong>Warehouse Supervisor</strong></td>
+        <td>Carlos Mendoza</td>
+        <td><code>warehouse@gmail.com</code></td>
+        <td><code>1</code></td>
+        <td>Dallas Central Hub (`WH-DAL-01` Facility Scoped)</td>
+      </tr>
+      <tr>
+        <td><strong>Customer Service</strong></td>
+        <td>Clara Hughes</td>
+        <td><code>cs@gmail.com</code></td>
+        <td><code>1</code></td>
+        <td>Customer Care, Accounts & Sanitized Communications</td>
+      </tr>
+      <tr>
+        <td><strong>Customer / Shipper</strong></td>
+        <td>Sarah Jenkins</td>
+        <td><code>customer@gmail.com</code></td>
+        <td><code>1</code></td>
+        <td>BioPharma Health Alliance (`CUST-BIO-01` Tenant Scoped)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3. Role Deep-Dives: What Each Role Does on Which Page</h2>
+
+  <h3>1. Administrator (Bima Ary &bull; <code>admin@gmail.com</code>)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Screen / Page</th>
+        <th style="width: 20%;">Route</th>
+        <th style="width: 55%;">Actions & Capabilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Dashboard</strong></td>
+        <td><code>#/dashboard</code></td>
+        <td>KPI metrics (Shipments, Deliveries, Utilization, OTD%), warehouse capacity progress bars, and the 500-Carrier Real-World Live Telemetry Map.</td>
+      </tr>
+      <tr>
+        <td><strong>User & Access</strong></td>
+        <td><code>#/users</code></td>
+        <td>User management: create users, assign role access levels, deactivate accounts, and monitor user logins.</td>
+      </tr>
+      <tr>
+        <td><strong>Carrier Management</strong></td>
+        <td><code>#/carriers</code></td>
+        <td>Carrier directory, fleet capacity tracking, on-time delivery scorecards, safety ratings, and insurance compliance.</td>
+      </tr>
+      <tr>
+        <td><strong>Resource Overview</strong></td>
+        <td><code>#/resources</code></td>
+        <td>Fleet equipment register (Trucks, Reefers, Air Charters, Vessels), assigned drivers, and live speed telemetry.</td>
+      </tr>
+      <tr>
+        <td><strong>Analytics & Reports</strong></td>
+        <td><code>#/analytics</code></td>
+        <td>Operational intelligence: route deviation frequencies, resolution time distributions, and carrier compliance metrics.</td>
+      </tr>
+      <tr>
+        <td><strong>Exception History</strong></td>
+        <td><code>#/exceptions</code></td>
+        <td>Audit trail of closed deviations, resolution methods (Detour, Swap, Expedite), and root-cause taxonomy.</td>
+      </tr>
+      <tr>
+        <td><strong>SLA & Rules</strong></td>
+        <td><code>#/sla_rules</code></td>
+        <td>Configure SLA resolution deadlines, breach countdown rules, grace periods, penalty schedules, and automated resolution rules.</td>
+      </tr>
+      <tr>
+        <td><strong>Notification Templates</strong></td>
+        <td><code>#/notifications_config</code></td>
+        <td>Manage multi-channel alert templates (In-App, SMS, Email) with dynamic variable interpolation.</td>
+      </tr>
+      <tr>
+        <td><strong>AI & Approvals</strong></td>
+        <td><code>#/ai_config</code></td>
+        <td>Configure predictive intelligence model architecture, prediction horizons, and mandatory human review gates.</td>
+      </tr>
+      <tr>
+        <td><strong>Audit Log</strong></td>
+        <td><code>#/audit</code></td>
+        <td>Immutable security audit trail recording user logins, password changes, data updates, and rule modifications.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2. Control Tower Analyst (Sarah Lin &bull; <code>cta@gmail.com</code>)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Screen / Page</th>
+        <th style="width: 20%;">Route</th>
+        <th style="width: 55%;">Actions & Capabilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Analyst Dashboard</strong></td>
+        <td><code>#/analyst_dashboard</code></td>
+        <td>Operations overview, active shipment counters, open exception breakdown, and live transit corridor topology.</td>
+      </tr>
+      <tr>
+        <td><strong>Active Shipments</strong></td>
+        <td><code>#/analyst_shipments</code></td>
+        <td>Track in-flight shipments with real-time GPS coordinates, vehicle battery, temperature, and ETA confidence.</td>
+      </tr>
+      <tr>
+        <td><strong>Exception Queue</strong></td>
+        <td><code>#/analyst_queue</code></td>
+        <td>Triage board sorted by severity (Critical, High, Medium) with SLA countdown timers. Example: Inspect thermal spike on <code>BRG-2843</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Investigation Workspace</strong></td>
+        <td><code>#/analyst_investigation</code></td>
+        <td>Sensor telemetry forensics, historical geofence breadcrumbs, radar overlays, and direct carrier calling.</td>
+      </tr>
+      <tr>
+        <td><strong>War Room</strong></td>
+        <td><code>#/analyst_war_room</code></td>
+        <td>Multi-party crisis conference: live incident chat, situation reports, recovery action proposals, and team consensus voting.</td>
+      </tr>
+      <tr>
+        <td><strong>Recovery Requests</strong></td>
+        <td><code>#/analyst_recoveries</code></td>
+        <td>Track field tenders: expedites, re-routes, carrier swaps, and splits submitted to transport planners.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>3. Dispatcher / Transport Planner (Elena Rostova &bull; <code>dispatcher@gmail.com</code>)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Screen / Page</th>
+        <th style="width: 20%;">Route</th>
+        <th style="width: 55%;">Actions & Capabilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Dispatcher Dashboard</strong></td>
+        <td><code>#/dispatcher_dashboard</code></td>
+        <td>Daily dispatch overview: pending tenders, carrier acceptance rates, corridor delays, and load factors.</td>
+      </tr>
+      <tr>
+        <td><strong>Triage Queue</strong></td>
+        <td><code>#/dispatcher_queue</code></td>
+        <td>Review routing deviations needing immediate action. Example: Reroute <code>BRG-2842</code> around Alpine flash floods.</td>
+      </tr>
+      <tr>
+        <td><strong>Planning & Routing</strong></td>
+        <td><code>#/dispatcher_planning</code></td>
+        <td>Model alternate highway paths, calculate detour miles, evaluate fuel/toll costs, and commit new routes.</td>
+      </tr>
+      <tr>
+        <td><strong>Carrier Recovery Ops</strong></td>
+        <td><code>#/dispatcher_recoveries</code></td>
+        <td>Issue recovery tenders to certified partners: Expedited truck tender, carrier swap, or freight decoupling.</td>
+      </tr>
+      <tr>
+        <td><strong>Live Fleet Tracking</strong></td>
+        <td><code>#/dispatcher_tracking</code></td>
+        <td>Geographical tracking with highway traffic, construction zones, and carrier speed telemetry overlays.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>4. Carrier Operations User (Marcus Vance &bull; <code>carrier@gmail.com</code>)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Screen / Page</th>
+        <th style="width: 20%;">Route</th>
+        <th style="width: 55%;">Actions & Capabilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Carrier Dashboard</strong></td>
+        <td><code>#/carrier_dashboard</code></td>
+        <td>Tenant workspace for Bridges Global Logistics (`CAR-01`): active dispatches, driver shifts, and pending tenders.</td>
+      </tr>
+      <tr>
+        <td><strong>Recovery Requests</strong></td>
+        <td><code>#/carrier_requests</code></td>
+        <td>Review tenders from Control Tower. Action buttons to <strong>Accept Tender</strong>, <strong>Reject</strong>, or submit counter-rates.</td>
+      </tr>
+      <tr>
+        <td><strong>Vehicles & Drivers</strong></td>
+        <td><code>#/carrier_vehicles</code>, <code>#/carrier_drivers</code></td>
+        <td>Manage fleet vehicles (Tractors, Reefers) and driver certifications, shift hours, and contact details.</td>
+      </tr>
+      <tr>
+        <td><strong>Dispatch Execution</strong></td>
+        <td><code>#/carrier_execution</code></td>
+        <td>Assign driver Norman Reedus to truck BG-12, complete digital pre-trip inspection, and confirm gate departure.</td>
+      </tr>
+      <tr>
+        <td><strong>Delivery Confirmation</strong></td>
+        <td><code>#/carrier_delivery</code></td>
+        <td>Capture recipient digital signature, upload delivery photos, log arrival timestamp, and generate ePOD.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5. Warehouse Supervisor (Carlos Mendoza &bull; <code>warehouse@gmail.com</code>)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Screen / Page</th>
+        <th style="width: 20%;">Route</th>
+        <th style="width: 55%;">Actions & Capabilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Warehouse Dashboard</strong></td>
+        <td><code>#/warehouse_dashboard</code></td>
+        <td>Dallas Central Hub (`WH-DAL-01`) overview: Dock door utilization, daily volume, floor blockers, and scheduled trucks.</td>
+      </tr>
+      <tr>
+        <td><strong>Shipment Readiness</strong></td>
+        <td><code>#/warehouse_readiness</code></td>
+        <td>Quality check: verify pre-cooling temperature for pharmaceuticals, inspect packaging seals, and confirm HAZMAT labeling.</td>
+      </tr>
+      <tr>
+        <td><strong>Dock Scheduling & Bays</strong></td>
+        <td><code>#/warehouse_docks</code></td>
+        <td>Real-time dock scheduler (Doors 1-8): allocate bays, monitor turn-around times, and clear finished bays.</td>
+      </tr>
+      <tr>
+        <td><strong>Carrier Handover</strong></td>
+        <td><code>#/warehouse_handover</code></td>
+        <td>Driver gate verification: scan bill of lading, verify driver ID, issue loading bay pass, and log departure sign-off.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>6. Customer Service (Clara Hughes &bull; <code>cs@gmail.com</code>)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Screen / Page</th>
+        <th style="width: 20%;">Route</th>
+        <th style="width: 55%;">Actions & Capabilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>CS Dashboard</strong></td>
+        <td><code>#/cs_dashboard</code></td>
+        <td>Account risk board, affected customer accounts, pending advisories, and customer satisfaction metrics.</td>
+      </tr>
+      <tr>
+        <td><strong>Customer Service Queue</strong></td>
+        <td><code>#/cs_queue</code></td>
+        <td>Prioritized queue of shipments needing customer contact due to approved ETA changes or delivery reschedules.</td>
+      </tr>
+      <tr>
+        <td><strong>Compose Communication</strong></td>
+        <td><code>#/cs_compose</code></td>
+        <td>Multi-channel drafting (Email, SMS, Portal Notice) with dynamic variable tags (`{orderRef}`, `{approvedETA}`).</td>
+      </tr>
+      <tr>
+        <td><strong>CS AI Copilot</strong></td>
+        <td><code>#/cs_ai_assistant</code></td>
+        <td>AI drafting assistant: converts raw operational fault logs into professional, reassuring, non-blaming customer updates.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>7. Customer / Shipper (Sarah Jenkins &bull; <code>customer@gmail.com</code>)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Screen / Page</th>
+        <th style="width: 20%;">Route</th>
+        <th style="width: 55%;">Actions & Capabilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Customer Home</strong></td>
+        <td><code>#/customer_home</code></td>
+        <td>Executive portal: Active order count, on-time delivery rate, in-transit progress bars, and recent shipments.</td>
+      </tr>
+      <tr>
+        <td><strong>Track Shipment</strong></td>
+        <td><code>#/customer_track</code></td>
+        <td>Interactive map tracker with geographic corridor, sanitized milestones, and approved arrival windows.</td>
+      </tr>
+      <tr>
+        <td><strong>Shipment Detail</strong></td>
+        <td><code>#/customer_shipment_detail</code></td>
+        <td>Complete manifest breakdown, thermal compliance badges, carrier identification, and downloadable documents.</td>
+      </tr>
+      <tr>
+        <td><strong>Notifications</strong></td>
+        <td><code>#/customer_notifications</code></td>
+        <td>Customer notification center: timely alerts regarding ETA changes, corridor detours, and delivery confirmations.</td>
+      </tr>
+      <tr>
+        <td><strong>Customer AI Assistant</strong></td>
+        <td><code>#/cust_ai_assistant</code></td>
+        <td>24/7 interactive chatbot answering inquiries on delivery status, warehouse receiving docks, and customs documents.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. End-to-End Walkthrough Example: Cold-Chain Incident Lifecycle</h2>
+
+  <div class="step-box critical">
+    <div class="step-title">Step 1: IoT Detection & Automated Alerting (IoT Telematics &bull; Store)</div>
+    <p>
+      Shipment <strong>BRG-2843</strong> (BioPharma Critical Vaccine Consignment) is in transit from Dallas to Mountain Knot via refrigerated unit <code>RT-04</code>. The IoT sensor detects a temperature spike to <strong>-14.2°C</strong>, breaching the mandatory contract limit of <strong>-20.0°C</strong>. An automated Critical Exception is raised.
+    </p>
+  </div>
+
+  <div class="step-box critical">
+    <div class="step-title">Step 2: Control Tower Triage & Forensics (Analyst Sarah Lin)</div>
+    <p>
+      Sarah Lin receives the Critical Alert on the <strong>Exception Queue</strong> (<code>#/analyst_queue</code>). In the <strong>Investigation Workspace</strong> (<code>#/analyst_investigation</code>), she inspects the telematics telemetry curve and detects a secondary refrigeration compressor stall. She launches a <strong>War Room</strong> session (<code>#/analyst_war_room</code>) and flags the incident for immediate cross-dock intercept.
+    </p>
+  </div>
+
+  <div class="step-box warning">
+    <div class="step-title">Step 3: Route Re-planning & Carrier Recovery Tender (Dispatcher Elena Rostova)</div>
+    <p>
+      Elena Rostova opens the <strong>Planning & Routing Workspace</strong> (<code>#/dispatcher_planning</code>). She identifies an emergency rendezvous point at the Dallas Central Hub (`WH-DAL-01`), minimizing the added transit deviation to 1 hour 45 minutes. In <strong>Carrier Recovery Operations</strong> (<code>#/dispatcher_recoveries</code>), she issues Expedite Tender <code>REC-2005</code> to partner <code>CAR-01</code> (Bridges Global Logistics).
+    </p>
+  </div>
+
+  <div class="step-box warning">
+    <div class="step-title">Step 4: Carrier Tender Acceptance & Driver Dispatch (Carrier Marcus Vance)</div>
+    <p>
+      Marcus Vance reviews the notification in <strong>Recovery Requests</strong> (<code>#/carrier_requests</code>) and accepts tender <code>REC-2005</code>. In <strong>Dispatch Execution</strong> (<code>#/carrier_execution</code>), he assigns relief refrigerated truck <code>BG-12</code> and driver <code>Norman Reedus</code>, completing the pre-trip checklist and dispatching the vehicle to the Dallas hub.
+    </p>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Step 5: Warehouse Hub Intake & Quality Inspection (Warehouse Carlos Mendoza)</div>
+    <p>
+      At Dallas Hub (`WH-DAL-01`), Carlos Mendoza sees the emergency arrival on his <strong>Warehouse Dashboard</strong> (<code>#/warehouse_dashboard</code>). In <strong>Dock Scheduling</strong> (<code>#/warehouse_docks</code>), he assigns Bay 2. In <strong>Shipment Readiness</strong> (<code>#/warehouse_readiness</code>), his team performs a manual temperature probe check, verifies thermal stability, transfers the vaccine pallets to truck <code>BG-12</code>, and logs driver departure in <strong>Carrier Handover</strong> (<code>#/warehouse_handover</code>).
+    </p>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Step 6: Customer Care Advisory via AI Copilot (Customer Service Clara Hughes)</div>
+    <p>
+      Clara Hughes spots the revised arrival window in her <strong>Customer Service Queue</strong> (<code>#/cs_queue</code>). In the <strong>CS AI Copilot</strong> (<code>#/cs_ai_assistant</code>), she generates a customer-safe message explaining a "routine equipment safety swap with cold-chain stability verified" confirming a revised delivery window of 2:30 PM. She sends the advisory via <strong>Compose Communication</strong> (<code>#/cs_compose</code>).
+    </p>
+  </div>
+
+  <div class="step-box success">
+    <div class="step-title">Step 7: Customer Self-Service Tracking & Final Delivery (Customer Sarah Jenkins &bull; Driver)</div>
+    <p>
+      Sarah Jenkins opens her <strong>Customer Home</strong> (<code>#/customer_home</code>), reviews the notification, and monitors the final leg on <strong>Track Shipment</strong> (<code>#/customer_track</code>). Upon truck arrival at Mountain Knot, driver Norman Reedus captures her digital signature and photo in <strong>Delivery Confirmation</strong> (<code>#/carrier_delivery</code>). The electronic Proof of Delivery (ePOD) is instantly archived in both portals.
+    </p>
+  </div>
+
+  <div class="step-box success">
+    <div class="step-title">Step 8: Governance & Permanent Audit Record (Administrator Bima Ary)</div>
+    <p>
+      Administrator Bima Ary reviews the completed incident in <strong>Exception History</strong> (<code>#/exceptions</code>). Carrier Bridges Global Logistics receives full SLA credit in <strong>Carrier Management</strong> (<code>#/carriers</code>) for meeting the expedited turnaround time. The complete sequence is permanently written to the immutable <strong>System Audit Log</strong> (<code>#/audit</code>).
+    </p>
+  </div>
+
+</body>
+</html>

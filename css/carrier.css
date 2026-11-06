@@ -1,0 +1,472 @@
+/* ==========================================================================
+   BRIDGES — Shipment Exception Control Tower
+   Phase 4: Carrier Operations User Stylesheet (US-58 to US-78)
+   Exact Color Palette:
+     Signal Red:       #EA341F (Critical alerts)
+     Deep Red:         #8C2527 (High-severity states)
+     Royal Navy:       #18217E (Primary actions)
+     Light Blue-Grey:  #E5EBEE (Borders and secondary surfaces)
+     Midnight:         #070724 (Strong text)
+     Slate Indigo:     #424989 (Secondary accents)
+     Charcoal:         #393A50 (Supporting text)
+     Deep Blue:        #09104D (Emphasis)
+     Muted Sage:       #8A9995 (Neutral states)
+   ========================================================================== */
+
+/* --- ROLE INDICATOR PILL --- */
+.carrier-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(24, 33, 126, 0.08);
+  color: var(--color-royal-navy, #18217E);
+  border: 1px solid rgba(24, 33, 126, 0.2);
+  border-radius: var(--radius-full, 9999px);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* --- 6 COMPACT KPI CARDS (US-60) --- */
+.carrier-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 1400px) {
+  .carrier-kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .carrier-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.carrier-kpi-card {
+  background: var(--color-white, #FFFFFF);
+  border: 1px solid var(--color-light-blue-grey, #E5EBEE);
+  border-radius: var(--radius-md, 8px);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+  box-shadow: 0 1px 3px rgba(7, 7, 36, 0.04);
+}
+
+.carrier-kpi-card:hover {
+  border-color: var(--color-royal-navy, #18217E);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 33, 126, 0.08);
+}
+
+.carrier-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.carrier-kpi-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-charcoal, #393A50);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.carrier-kpi-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #F4F6F8;
+  color: var(--color-royal-navy, #18217E);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carrier-kpi-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-midnight, #070724);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.carrier-kpi-sub {
+  font-size: 11px;
+  color: var(--color-muted-sage, #8A9995);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Specific Accent Highlights for KPIs */
+.carrier-kpi-pending {
+  border-left: 3px solid var(--color-deep-red, #8C2527);
+}
+.carrier-kpi-accepted {
+  border-left: 3px solid var(--color-royal-navy, #18217E);
+}
+.carrier-kpi-active {
+  border-left: 3px solid var(--color-slate-indigo, #424989);
+}
+.carrier-kpi-vehicles {
+  border-left: 3px solid #10B981;
+}
+.carrier-kpi-drivers {
+  border-left: 3px solid #3B82F6;
+}
+.carrier-kpi-completed {
+  border-left: 3px solid #059669;
+}
+
+/* --- DASHBOARD TWO COLUMN SECTION --- */
+.carrier-dash-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1200px) {
+  .carrier-dash-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- OPERATIONAL ALERTS CARD --- */
+.carrier-alert-card {
+  padding: 11px 13px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-light-blue-grey, #E5EBEE);
+  background: var(--color-white, #FFFFFF);
+  margin-bottom: 9px;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.carrier-alert-card:hover {
+  border-color: var(--color-royal-navy, #18217E);
+  box-shadow: 0 2px 6px rgba(24, 33, 126, 0.06);
+}
+
+.carrier-alert-card.alert-critical {
+  border-left: 3px solid var(--color-signal-red, #EA341F);
+  background: #FFFBFB;
+}
+
+.carrier-alert-card.alert-warning {
+  border-left: 3px solid #F59E0B;
+  background: #FFFDF8;
+}
+
+.carrier-alert-card.alert-info {
+  border-left: 3px solid var(--color-royal-navy, #18217E);
+  background: #F8FAFD;
+}
+
+.carrier-alert-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-midnight, #070724);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.carrier-alert-desc {
+  font-size: 11.5px;
+  color: var(--color-charcoal, #393A50);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* --- RECOVERY BADGES & STATUS PILLS --- */
+.carrier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.carrier-badge-pending {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FCD34D;
+}
+
+.carrier-badge-accepted {
+  background: rgba(24, 33, 126, 0.08);
+  color: var(--color-royal-navy, #18217E);
+  border: 1px solid rgba(24, 33, 126, 0.2);
+}
+
+.carrier-badge-rejected {
+  background: #FEE2E2;
+  color: var(--color-signal-red, #EA341F);
+  border: 1px solid #FCA5A5;
+}
+
+.carrier-badge-in-progress {
+  background: #E0E7FF;
+  color: #3730A3;
+  border: 1px solid #C7D2FE;
+}
+
+.carrier-badge-completed {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+
+.carrier-badge-available {
+  background: #ECFDF5;
+  color: #047857;
+  border: 1px solid #A7F3D0;
+}
+
+.carrier-badge-assigned {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.carrier-badge-transit {
+  background: #EEF2FF;
+  color: var(--color-royal-navy, #18217E);
+  border: 1px solid #C7D2FE;
+}
+
+.carrier-badge-maintenance {
+  background: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.carrier-badge-inactive {
+  background: #F3F4F6;
+  color: #6B7280;
+  border: 1px solid #E5E7EB;
+}
+
+/* --- TIMELINE / MILESTONE STEPPER --- */
+.carrier-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 18px 0;
+  padding: 0 10px;
+}
+
+.carrier-stepper::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 30px;
+  right: 30px;
+  height: 2px;
+  background: var(--color-light-blue-grey, #E5EBEE);
+  z-index: 1;
+}
+
+.carrier-step-item {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+.carrier-step-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-white, #FFFFFF);
+  border: 2px solid var(--color-light-blue-grey, #E5EBEE);
+  color: var(--color-muted-sage, #8A9995);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.carrier-step-item.completed .carrier-step-circle {
+  background: var(--color-royal-navy, #18217E);
+  border-color: var(--color-royal-navy, #18217E);
+  color: var(--color-white, #FFFFFF);
+}
+
+.carrier-step-item.active .carrier-step-circle {
+  background: var(--color-white, #FFFFFF);
+  border-color: var(--color-signal-red, #EA341F);
+  color: var(--color-signal-red, #EA341F);
+  box-shadow: 0 0 0 3px rgba(234, 52, 31, 0.15);
+}
+
+.carrier-step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-charcoal, #393A50);
+  margin-top: 6px;
+  max-width: 90px;
+  line-height: 1.2;
+}
+
+.carrier-step-item.completed .carrier-step-label {
+  color: var(--color-royal-navy, #18217E);
+  font-weight: 700;
+}
+
+/* --- RECOVERY WORKSPACE DETAIL CARDS --- */
+.carrier-detail-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 16px;
+}
+
+@media (max-width: 1100px) {
+  .carrier-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.carrier-card-section {
+  background: var(--color-white, #FFFFFF);
+  border: 1px solid var(--color-light-blue-grey, #E5EBEE);
+  border-radius: var(--radius-md, 8px);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.carrier-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-midnight, #070724);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-light-blue-grey, #E5EBEE);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.carrier-field-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  font-size: 12px;
+  margin-bottom: 8px;
+  align-items: baseline;
+}
+
+.carrier-field-label {
+  color: var(--color-muted-sage, #8A9995);
+  font-weight: 600;
+}
+
+.carrier-field-value {
+  color: var(--color-midnight, #070724);
+  font-weight: 500;
+}
+
+/* --- DISRUPTION FORM CONTAINER --- */
+.carrier-form-group {
+  margin-bottom: 14px;
+}
+
+.carrier-form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-charcoal, #393A50);
+  margin-bottom: 5px;
+}
+
+.carrier-form-input,
+.carrier-form-select,
+.carrier-form-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  border: 1px solid var(--color-light-blue-grey, #E5EBEE);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--color-midnight, #070724);
+  background: var(--color-white, #FFFFFF);
+  transition: border-color var(--transition-fast, 0.15s ease);
+}
+
+.carrier-form-input:focus,
+.carrier-form-select:focus,
+.carrier-form-textarea:focus {
+  outline: none;
+  border-color: var(--color-royal-navy, #18217E);
+  box-shadow: 0 0 0 2px rgba(24, 33, 126, 0.1);
+}
+
+/* --- PROOF OF DELIVERY CARD --- */
+.carrier-pod-card {
+  border: 2px dashed var(--color-light-blue-grey, #E5EBEE);
+  border-radius: var(--radius-md, 8px);
+  padding: 18px;
+  text-align: center;
+  background: #FAFCFD;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.carrier-pod-card:hover {
+  border-color: var(--color-royal-navy, #18217E);
+  background: #F4F7FC;
+}
+
+/* --- EMPTY STATE STYLING --- */
+.carrier-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-muted-sage, #8A9995);
+}
+
+.carrier-empty-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #F4F6F8;
+  color: var(--color-slate-indigo, #424989);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px auto;
+}
+
+.carrier-empty-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-midnight, #070724);
+  margin-bottom: 4px;
+}
+
+.carrier-empty-desc {
+  font-size: 12px;
+  color: var(--color-charcoal, #393A50);
+  max-width: 380px;
+  margin: 0 auto;
+}

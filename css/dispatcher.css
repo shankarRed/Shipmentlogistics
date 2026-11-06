@@ -1,0 +1,742 @@
+/* ==========================================================================
+   BRIDGES — Shipment Exception Control Tower
+   Phase 3: Dispatcher / Transport Planner Role Stylesheet (US-44 to US-57)
+   Exact Color Palette:
+     Signal Red:       #EA341F
+     Deep Red:         #8C2527
+     Royal Navy:       #18217E
+     Light Blue-Grey:  #E5EBEE
+     Midnight:         #070724
+     Slate Indigo:     #424989
+     Charcoal:         #393A50
+     Deep Blue:        #09104D
+     Muted Sage:       #8A9995
+   ========================================================================== */
+
+/* --- ROLE INDICATOR PILL --- */
+.dispatcher-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(66, 73, 137, 0.08);
+  color: var(--color-slate-indigo);
+  border: 1px solid rgba(66, 73, 137, 0.2);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* --- 6 COMPACT KPI CARDS (US-44 to US-57) --- */
+.dispatcher-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 1400px) {
+  .dispatcher-kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dispatcher-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dispatcher-kpi-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-light-blue-grey);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 1px 3px rgba(7, 7, 36, 0.04);
+}
+
+.dispatcher-kpi-card:hover {
+  border-color: var(--color-royal-navy);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 33, 126, 0.08);
+}
+
+.dispatcher-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.dispatcher-kpi-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.dispatcher-kpi-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #F4F6F8;
+  color: var(--color-slate-indigo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dispatcher-kpi-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-midnight);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.dispatcher-kpi-card.kpi-critical .dispatcher-kpi-val {
+  color: var(--color-signal-red);
+}
+
+.dispatcher-kpi-card.kpi-critical .dispatcher-kpi-icon {
+  background: #FDE8E6;
+  color: var(--color-signal-red);
+}
+
+.dispatcher-kpi-card.kpi-warning .dispatcher-kpi-val {
+  color: var(--color-deep-red);
+}
+
+.dispatcher-kpi-card.kpi-warning .dispatcher-kpi-icon {
+  background: #FBF0EF;
+  color: var(--color-deep-red);
+}
+
+.dispatcher-kpi-meta {
+  font-size: 11px;
+  color: var(--color-muted-sage);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- RECOVERY STATUS OVERVIEW BARS (DASHBOARD) --- */
+.recovery-overview-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.recovery-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.recovery-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+}
+
+.recovery-bar-name {
+  font-weight: 600;
+  color: var(--color-charcoal);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.recovery-bar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.recovery-bar-count {
+  font-weight: 700;
+  color: var(--color-midnight);
+}
+
+.recovery-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #EDF2F6;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.recovery-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* --- OPERATIONAL ALERTS STREAM --- */
+.dispatcher-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dispatcher-alert-card {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid transparent;
+  background: #F8FAFB;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dispatcher-alert-card:hover {
+  background: #EEF2F6;
+}
+
+.dispatcher-alert-card.alert-rejection {
+  border-left-color: var(--color-signal-red);
+  background: #FFF5F5;
+}
+
+.dispatcher-alert-card.alert-sla {
+  border-left-color: var(--color-deep-red);
+  background: #FDF4F4;
+}
+
+.dispatcher-alert-card.alert-resource {
+  border-left-color: #D97706;
+  background: #FFFDF5;
+}
+
+.alert-icon-box {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.alert-text-wrap {
+  flex: 1;
+}
+
+.alert-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-midnight);
+  margin-bottom: 2px;
+}
+
+.alert-desc {
+  font-size: 11px;
+  color: var(--color-charcoal);
+  line-height: 1.35;
+}
+
+.alert-meta {
+  font-size: 10px;
+  color: var(--color-muted-sage);
+  margin-top: 3px;
+}
+
+/* --- TWO-COLUMN RECOVERY PLANNING WORKSPACE (US-45 & US-46) --- */
+.planning-workspace-layout {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 1180px) {
+  .planning-workspace-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.planning-context-panel {
+  background: var(--color-white);
+  border: 1px solid var(--color-light-blue-grey);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(7, 7, 36, 0.04);
+}
+
+.planning-options-panel {
+  background: var(--color-white);
+  border: 1px solid var(--color-light-blue-grey);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(7, 7, 36, 0.04);
+}
+
+/* Strategy Grid */
+.strategy-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .strategy-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.strategy-select-card {
+  border: 1.5px solid var(--color-light-blue-grey);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  background: #FAFCFD;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.strategy-select-card:hover {
+  border-color: var(--color-slate-indigo);
+  background: #F4F6FB;
+}
+
+.strategy-select-card.active-selected {
+  border-color: var(--color-royal-navy);
+  background: rgba(24, 33, 126, 0.04);
+  box-shadow: 0 2px 8px rgba(24, 33, 126, 0.1);
+}
+
+.strategy-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.strategy-card-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-midnight);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.strategy-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.strategy-pill.recommended {
+  background: #EAF7EE;
+  color: #1E8E3E;
+  border: 1px solid rgba(30, 142, 62, 0.2);
+}
+
+.strategy-pill.feasible {
+  background: #EBF3FC;
+  color: var(--color-royal-navy);
+  border: 1px solid rgba(24, 33, 126, 0.2);
+}
+
+.strategy-pill.high-cost {
+  background: #FEF3D6;
+  color: #B45309;
+  border: 1px solid rgba(180, 83, 9, 0.2);
+}
+
+.strategy-pill.complex {
+  background: #F4F0FD;
+  color: #6D28D9;
+  border: 1px solid rgba(109, 40, 217, 0.2);
+}
+
+.strategy-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 11px;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: #FFFFFF;
+  border: 1px solid #EDF2F6;
+  border-radius: 6px;
+}
+
+.strategy-meta-label {
+  color: var(--color-muted-sage);
+}
+
+.strategy-meta-val {
+  font-weight: 600;
+  color: var(--color-midnight);
+}
+
+.strategy-rationale-text {
+  font-size: 11.5px;
+  color: var(--color-charcoal);
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.btn-select-strategy {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid var(--color-royal-navy);
+  background: var(--color-white);
+  color: var(--color-royal-navy);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.strategy-select-card.active-selected .btn-select-strategy {
+  background: var(--color-royal-navy);
+  color: var(--color-white);
+}
+
+/* --- DEDICATED STRATEGY PLANNING FORMS --- */
+.strategy-form-container {
+  background: #FAFCFD;
+  border: 1px solid var(--color-light-blue-grey);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.strategy-form-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-midnight);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.planning-form-group {
+  margin-bottom: 12px;
+}
+
+.planning-form-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  margin-bottom: 4px;
+}
+
+.planning-input, .planning-select, .planning-textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--color-midnight);
+  background: var(--color-white);
+  outline: none;
+}
+
+.planning-input:focus, .planning-select:focus, .planning-textarea:focus {
+  border-color: var(--color-royal-navy);
+  box-shadow: 0 0 0 2px rgba(24, 33, 126, 0.1);
+}
+
+.planning-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Split Shipment Allocation Boxes */
+.split-alloc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.split-portion-box {
+  background: var(--color-white);
+  border: 1px solid var(--color-light-blue-grey);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.split-portion-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-midnight);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #EDF2F6;
+}
+
+.split-recon-meter {
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border: 1px solid var(--color-light-blue-grey);
+  border-radius: 6px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.split-recon-status {
+  font-weight: 700;
+}
+
+.split-recon-status.matched { color: #1E8E3E; }
+.split-recon-status.mismatch { color: var(--color-signal-red); }
+
+/* --- MULTI-TIER ETA VARIANCE STRIP (US-55) --- */
+.multi-eta-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: #F8FAFB;
+  border: 1px solid var(--color-light-blue-grey);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.eta-strip-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.eta-strip-label {
+  font-size: 10.5px;
+  color: var(--color-muted-sage);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+}
+
+.eta-strip-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-midnight);
+  margin-top: 2px;
+}
+
+.eta-strip-source {
+  font-size: 10px;
+  color: var(--color-charcoal);
+  margin-top: 1px;
+}
+
+.eta-variance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.eta-variance-badge.on-time { background: #EAF7EE; color: #1E8E3E; }
+.eta-variance-badge.threatened { background: #FDE8E6; color: var(--color-signal-red); }
+
+/* --- MILESTONE TRACKING STEPPER (US-57) --- */
+.recovery-stepper-container {
+  padding: 12px 0 6px 0;
+}
+
+.recovery-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.recovery-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.recovery-step-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #EEF2F6;
+  border: 2px solid #CBD5E1;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.recovery-step.step-completed .recovery-step-circle {
+  background: var(--color-royal-navy);
+  border-color: var(--color-royal-navy);
+  color: var(--color-white);
+}
+
+.recovery-step.step-active .recovery-step-circle {
+  background: var(--color-white);
+  border-color: var(--color-royal-navy);
+  color: var(--color-royal-navy);
+  box-shadow: 0 0 0 3px rgba(24, 33, 126, 0.15);
+}
+
+.recovery-step-name {
+  font-size: 10px;
+  color: var(--color-charcoal);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.recovery-step.step-completed .recovery-step-name {
+  font-weight: 600;
+  color: var(--color-midnight);
+}
+
+/* --- CARRIER ASSIGNMENT DIRECTORY CARDS (US-48) --- */
+.carrier-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 1200px) {
+  .carrier-directory-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .carrier-directory-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.carrier-dir-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-light-blue-grey);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(7, 7, 36, 0.04);
+}
+
+.carrier-dir-card.carrier-inactive {
+  opacity: 0.65;
+  background: #F8FAFB;
+  border-style: dashed;
+}
+
+.carrier-dir-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.carrier-dir-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-midnight);
+}
+
+.carrier-dir-code {
+  font-size: 11px;
+  color: var(--color-muted-sage);
+}
+
+.carrier-dir-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 8px;
+  background: #FAFCFD;
+  border-radius: 6px;
+  border: 1px solid #EDF2F6;
+  margin: 8px 0 12px 0;
+  font-size: 11px;
+}
+
+/* --- ESCALATION CONSOLE STYLES (US-56) --- */
+.escalation-top-banner {
+  background: linear-gradient(135deg, rgba(234, 52, 31, 0.08) 0%, rgba(140, 37, 39, 0.08) 100%);
+  border: 1px solid rgba(234, 52, 31, 0.25);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.escalation-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.escalation-banner-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--color-signal-red);
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.escalation-banner-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-midnight);
+}
+
+.escalation-banner-desc {
+  font-size: 12px;
+  color: var(--color-charcoal);
+  margin-top: 2px;
+}
+
+/* Priority tags */
+.priority-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.priority-tag.priority-critical { background: #FDE8E6; color: var(--color-signal-red); border: 1px solid rgba(234, 52, 31, 0.2); }
+.priority-tag.priority-high { background: #FBF0EF; color: var(--color-deep-red); border: 1px solid rgba(140, 37, 39, 0.2); }
+.priority-tag.priority-medium { background: #FEF3D6; color: #B45309; border: 1px solid rgba(180, 83, 9, 0.2); }
