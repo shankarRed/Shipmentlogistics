@@ -67,7 +67,7 @@ const AnalystInvestigationView = {
             <select class="filter-select" style="min-width: 240px; font-weight: 600;" onchange="AnalystInvestigationView.selectException(this.value)">
               ${exceptions.map(e => `
                 <option value="${e.id}" ${e.id === exc.id ? 'selected' : ''}>
-                  ${e.id} — ${e.type} (${e.severity}) [${e.status}]
+                  ${e.id} — ${e.type} [${e.status}]
                 </option>
               `).join('')}
             </select>
@@ -103,13 +103,12 @@ const AnalystInvestigationView = {
           </div>
         </div>
 
-        <!-- Multi-panel Grid Top (Panel A: Summary, Panel B: Business Impact) -->
-        <div class="investigation-grid-top">
-          <!-- Panel A: Exception Summary -->
+        <!-- Top Grid: Exception Summary & Schedule Impact -->
+        <div class="investigation-grid-top" style="margin-bottom: 14px;">
+          <!-- Exception Summary -->
           <div class="investigation-panel">
             <div class="investigation-panel-title">
-              <span>Panel A — Exception Summary</span>
-              <span class="panel-title-badge">Triage Scope</span>
+              <span style="font-size: 13.5px; font-weight: 700; color: #0F172A;">Exception Summary</span>
             </div>
 
             <div class="meta-kv-grid">
@@ -118,19 +117,13 @@ const AnalystInvestigationView = {
                 <span class="meta-kv-value highlight-navy">${exc.id}</span>
               </div>
               <div class="meta-kv-item">
-                <span class="meta-kv-label">Exception Classification</span>
+                <span class="meta-kv-label">Deviation Type</span>
                 <span class="meta-kv-value">${exc.type}</span>
-              </div>
-              <div class="meta-kv-item">
-                <span class="meta-kv-label">Severity Level</span>
-                <span class="meta-kv-value">
-                  <span class="badge ${AnalystDashboardView.getSeverityBadgeClass(exc.severity)}">${exc.severity}</span>
-                </span>
               </div>
               <div class="meta-kv-item">
                 <span class="meta-kv-label">Operational Status</span>
                 <span class="meta-kv-value">
-                  <span class="badge" style="background: #EEF2F6; color: var(--color-midnight);">${exc.status}</span>
+                  <span class="badge" style="background: #EEF2F6; color: var(--color-midnight); font-weight: 600;">${exc.status}</span>
                 </span>
               </div>
               <div class="meta-kv-item">
@@ -140,25 +133,20 @@ const AnalystInvestigationView = {
                 </span>
               </div>
               <div class="meta-kv-item">
-                <span class="meta-kv-label">Detected</span>
+                <span class="meta-kv-label">Detected Time</span>
                 <span class="meta-kv-value">${this.formatDisplayTime(exc.detectionTime)}</span>
               </div>
               <div class="meta-kv-item">
                 <span class="meta-kv-label">Location</span>
                 <span class="meta-kv-value">${exc.location || (shipment ? shipment.currentLocation : 'Not available')}</span>
               </div>
-              <div class="meta-kv-item">
-                <span class="meta-kv-label">Root Cause</span>
-                <span class="meta-kv-value" style="color: var(--color-charcoal); font-weight: 600;">${exc.rootCause}</span>
-              </div>
             </div>
           </div>
 
-          <!-- Panel B: Business Impact & SLA Breach Assessment -->
+          <!-- Schedule & SLA Impact -->
           <div class="investigation-panel">
             <div class="investigation-panel-title">
-              <span>Panel B — Business & SLA Impact</span>
-              <span class="panel-title-badge">Contractual</span>
+              <span style="font-size: 13.5px; font-weight: 700; color: #0F172A;">Schedule &amp; SLA Impact</span>
             </div>
 
             <div class="meta-kv-grid">
@@ -171,7 +159,7 @@ const AnalystInvestigationView = {
                 <span class="meta-kv-value highlight-red">${this.formatDisplayTime(exc.predictedETA || (shipment ? shipment.predictedETA : null))}</span>
               </div>
               <div class="meta-kv-item">
-                <span class="meta-kv-label">Commitment</span>
+                <span class="meta-kv-label">Delivery Commitment</span>
                 <span class="meta-kv-value">${shipment && shipment.deliveryCommitment ? this.formatDisplayTime(shipment.deliveryCommitment) : 'Standard Window'}</span>
               </div>
               <div class="meta-kv-item">
@@ -187,137 +175,38 @@ const AnalystInvestigationView = {
                 <span class="meta-kv-value">${shipment && shipment.customerTier ? shipment.customerTier : 'Standard'}</span>
               </div>
               <div class="meta-kv-item">
-                <span class="meta-kv-label">Cargo Value</span>
-                <span class="meta-kv-value" style="font-weight: 700; color: #1E8E3E;">${shipment && shipment.cargoValue ? shipment.cargoValue : 'Not available'}</span>
-              </div>
-              <div class="meta-kv-item" style="grid-column: span 2;">
-                <span class="meta-kv-label">Penalty Risk</span>
-                <span class="meta-kv-value highlight-red" style="font-size: 14px; font-weight: 800;">
-                  ${exc.estimatedBusinessImpact || (shipment && shipment.estimatedPenalty ? shipment.estimatedPenalty : 'Not available')}
-                </span>
+                <span class="meta-kv-label">Carrier</span>
+                <span class="meta-kv-value">${carrier ? carrier.name : (shipment ? shipment.carrierId : 'In-fleet')}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Multi-panel Grid Mid (Panel C: History & Milestones, Panel D: Route Corridor) -->
-        <div class="investigation-grid-mid">
-          <!-- Panel C: Shipment History & Operational Milestones -->
-          <div class="investigation-panel">
-            <div class="investigation-panel-title">
-              <span>Panel C — Shipment Events & Audit Timeline</span>
-              <span class="panel-title-badge">Chronological</span>
-            </div>
-
-            <div style="max-height: 280px; overflow-y: auto; padding-right: 6px;">
-              <div class="timeline-stream">
-                ${(exc.timeline || []).map(item => `
-                  <div class="timeline-stream-item">
-                    <div class="timeline-node-dot ${item.action.includes('Detected') ? 'alert' : item.action.includes('Accepted') ? 'success' : ''}"></div>
-                    <div class="timeline-content-box">
-                      <div class="timeline-content-header">
-                        <span class="timeline-action-text">${item.action}</span>
-                        <span class="timeline-timestamp">${AnalystDashboardView.formatTime(item.timestamp)}</span>
-                      </div>
-                      <div class="timeline-note-text">${item.note}</div>
-                      <div style="font-size: 10px; color: var(--color-muted-sage); margin-top: 2px;">Actor: <strong>${item.actor}</strong></div>
-                    </div>
-                  </div>
-                `).join('')}
-
-                ${(!exc.timeline || exc.timeline.length === 0) ? `
-                  <div style="font-size: 11px; color: var(--color-muted-sage); padding: 12px 0;">
-                    No recorded timeline transitions yet.
-                  </div>
-                ` : ''}
-              </div>
-            </div>
-
-            <!-- In-Panel Case Collaboration & Communication Thread -->
-            <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #E2E8F0;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 11px; font-weight: 700; color: #18217E;">Case Communications &amp; Collaboration (${(exc.coordinationNotes || []).length})</span>
-                <span style="font-size: 10px; color: #8A9995;">Analyst • Dispatcher • Carrier Thread</span>
-              </div>
-              <div style="max-height: 120px; overflow-y: auto; margin-bottom: 8px;">
-                ${(exc.coordinationNotes || []).map(cn => `
-                  <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px; padding: 5px 8px; margin-bottom: 4px; font-size: 10.5px;">
-                    <div style="display: flex; justify-content: space-between; color: #18217E; font-weight: 700;">
-                      <span>${cn.author}</span>
-                      <span style="font-size: 9.5px; color: #8A9995;">${cn.timestamp ? cn.timestamp.slice(11, 16) : ''}</span>
-                    </div>
-                    <div style="color: #393A50; margin-top: 2px;">${cn.text}</div>
-                  </div>
-                `).join('')}
-                ${(!exc.coordinationNotes || exc.coordinationNotes.length === 0) ? `
-                  <div style="font-size: 10.5px; color: #8A9995; font-style: italic;">No communication notes posted yet.</div>
-                ` : ''}
-              </div>
-              <div style="display: flex; gap: 6px;">
-                <input type="text" id="panel-coord-note-input" class="form-control" style="font-size: 11px; padding: 4px 8px;" placeholder="Add internal communication or carrier instructions...">
-                <button class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 4px 10px; font-weight: 700;" onclick="AnalystInvestigationView.postCoordinationNote('${exc.id}')">
-                  Post Note
-                </button>
-              </div>
-            </div>
+        <!-- Shipment Events & Audit Timeline -->
+        <div class="investigation-panel" style="margin-bottom: 14px;">
+          <div class="investigation-panel-title" style="margin-bottom: 10px;">
+            <span style="font-size: 13.5px; font-weight: 700; color: #0F172A;">Event &amp; Audit Timeline</span>
           </div>
 
-          <!-- Panel D: Route Corridor & Alternate Visualization -->
-          <div class="investigation-panel">
-            <div class="investigation-panel-title">
-              <span>Panel D — Route Corridor & Detour Topology</span>
-              <span class="panel-title-badge">Corridor</span>
-            </div>
+          <div class="timeline-stream" style="display: flex; flex-direction: column; gap: 8px;">
+            ${(exc.timeline || []).map(item => `
+              <div class="timeline-stream-item">
+                <div class="timeline-node-dot ${item.action.includes('Detected') ? 'alert' : item.action.includes('Accepted') ? 'success' : ''}"></div>
+                <div class="timeline-content-box" style="padding: 6px 12px;">
+                  <div class="timeline-content-header" style="margin-bottom: 2px;">
+                    <span class="timeline-action-text" style="font-weight: 700; color: #18217E; font-size: 12px;">${item.action}</span>
+                    <span class="timeline-timestamp" style="font-size: 11px; color: #64748B;">${AnalystDashboardView.formatTime(item.timestamp)}</span>
+                  </div>
+                  <div class="timeline-note-text" style="font-size: 11.5px; color: #334155;">${item.note}</div>
+                </div>
+              </div>
+            `).join('')}
 
-            <div class="schematic-svg-wrap" style="height: 180px;">
-              <svg class="schematic-svg-canvas" viewBox="0 0 500 160" preserveAspectRatio="xMidYMid meet">
-                <!-- Planned Route Line -->
-                <line x1="60" y1="80" x2="440" y2="80" stroke="#CBD5E1" stroke-width="4" stroke-linecap="round"/>
-                <line x1="60" y1="80" x2="250" y2="80" stroke="#18217E" stroke-width="3"/>
-
-                <!-- Alternate Detour Route Curve -->
-                <path d="M 210,80 Q 300,20 390,80" fill="none" stroke="#D97706" stroke-width="2.5" stroke-dasharray="5 3"/>
-
-                <!-- Origin Node -->
-                <g transform="translate(60, 80)">
-                  <circle cx="0" cy="0" r="10" fill="#18217E"/>
-                  <text x="0" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#070724">
-                    ${shipment ? shipment.origin.split(' ')[0] : 'Origin'}
-                  </text>
-                </g>
-
-                <!-- Incident Deviation Node -->
-                <g transform="translate(250, 80)">
-                  <circle cx="0" cy="0" r="12" class="pulse-beacon-circle" fill="none" stroke="#EA341F"/>
-                  <circle cx="0" cy="0" r="9" fill="#EA341F"/>
-                  <text x="0" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#EA341F">
-                    Incident (Hold)
-                  </text>
-                </g>
-
-                <!-- Detour Waypoint Marker -->
-                <g transform="translate(300, 48)">
-                  <rect x="-35" y="-14" width="70" height="16" rx="3" fill="#D97706"/>
-                  <text x="0" y="-3" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">
-                    Detour Corridor
-                  </text>
-                </g>
-
-                <!-- Destination Node -->
-                <g transform="translate(440, 80)">
-                  <circle cx="0" cy="0" r="10" fill="#64748B"/>
-                  <text x="0" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#070724">
-                    ${shipment ? shipment.destination.split(' ')[0] : 'Dest'}
-                  </text>
-                </g>
-              </svg>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px;">
-              <div>Origin: <strong>${shipment ? shipment.origin : '--'}</strong></div>
-              <div>Current Location: <strong style="color: var(--color-signal-red);">${exc.location || (shipment ? shipment.currentLocation : '--')}</strong></div>
-              <div>Dest: <strong>${shipment ? shipment.destination : '--'}</strong></div>
-            </div>
+            ${(!exc.timeline || exc.timeline.length === 0) ? `
+              <div style="font-size: 11px; color: #64748B; padding: 8px 0;">
+                No recorded timeline transitions yet.
+              </div>
+            ` : ''}
           </div>
         </div>
 
@@ -402,71 +291,41 @@ const AnalystInvestigationView = {
           </div>
         ` : ''}
 
-        <!-- Panel E: Ranked Recovery Strategies & AI Decision Support -->
+        <!-- Ranked Recovery Strategies -->
         <div class="investigation-panel">
-          <div class="investigation-panel-title">
-            <span>Panel E — AI Decision Intelligence &amp; Ranked Strategies</span>
-            <span class="panel-title-badge" style="background: #EBF3FC; color: #1967D2;">AI Recommendation Engine</span>
+          <div class="investigation-panel-title" style="margin-bottom: 12px;">
+            <span style="font-size: 13.5px; font-weight: 700; color: #0F172A;">Recommended Recovery Strategies</span>
           </div>
 
-          <!-- AI Decision Support Card (US Requirement: AI-Assisted Decision Support) -->
-          <div style="background: linear-gradient(135deg, #F8FAFE 0%, #EFF6FF 100%); border: 1px solid #BFDBFE; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
-              <div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="font-size: 13px; font-weight: 800; color: #18217E;">AI Recommendation Intelligence</span>
-                  <span class="badge" style="background: #18217E; color: #FFFFFF; font-size: 10px; font-weight: 700;">
-                    ${exc.aiConfidence || '96.4% Predictive Confidence'}
-                  </span>
-                  ${exc.aiRecommendationStatus === 'Accepted' ? `
-                    <span class="badge" style="background: #EAF7EE; color: #1E8E3E; font-size: 10px; font-weight: 700;">✓ Accepted by Analyst</span>
-                  ` : exc.aiRecommendationStatus === 'Overridden' ? `
-                    <span class="badge badge-danger" style="font-size: 10px; font-weight: 700;">⚠ Overridden (Reason: ${exc.aiOverride?.reason || 'Analyst Discretion'})</span>
-                  ` : ''}
-                </div>
-                <div style="font-size: 11.5px; color: #393A50; margin-top: 4px; max-width: 620px; line-height: 1.4;">
-                  <strong>AI Rationale:</strong> Corridor telemetry, 89.2% recovery velocity, and active partner carrier fleet availability evaluated.
-                </div>
-              </div>
-
-              <!-- Accept / Override AI Decision Controls -->
-              <div style="display: flex; gap: 6px;">
-                <button 
-                  class="btn btn-primary btn-sm" 
-                  style="background: #1E8E3E; border-color: #1E8E3E; font-size: 11px; font-weight: 700;"
-                  onclick="AnalystInvestigationView.acceptAI('${exc.id}', '${recoveryOptions[0]?.strategy || 'Re-route'}')"
-                  ${exc.aiRecommendationStatus === 'Accepted' ? 'disabled' : ''}
-                >
-                  ✓ Accept AI Recommendation
-                </button>
-                <button 
-                  class="btn btn-secondary btn-sm" 
-                  style="font-size: 11px; font-weight: 700; color: #DC2626;"
-                  onclick="AnalystInvestigationView.openOverrideAIModal('${exc.id}', '${recoveryOptions[0]?.strategy || 'Re-route'}')"
-                >
-                  Override AI Recommendation
-                </button>
-              </div>
+          <!-- Compact AI Recommendation Header -->
+          <div style="background: #F8FAFE; border: 1px solid #BFDBFE; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 12.5px; font-weight: 800; color: #18217E;">AI Recommendation: #1 ${recoveryOptions[0]?.strategy || 'Re-route'}</span>
+              <span class="badge" style="background: #EEF2FF; color: #18217E; border: 1px solid #C7D2FE; font-size: 10.5px; font-weight: 700;">
+                ${exc.aiConfidence || '96.4% Confidence'}
+              </span>
+              ${exc.aiRecommendationStatus === 'Accepted' ? `
+                <span class="badge" style="background: #EAF7EE; color: #1E8E3E; font-size: 10.5px; font-weight: 700;">✓ Accepted</span>
+              ` : exc.aiRecommendationStatus === 'Overridden' ? `
+                <span class="badge badge-danger" style="font-size: 10.5px; font-weight: 700;">⚠ Overridden</span>
+              ` : ''}
             </div>
-
-            <!-- 4 Metric Indicators for AI Model -->
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #BFDBFE;">
-              <div>
-                <span style="font-size: 10px; color: #64748B;">Predicted Arrival:</span>
-                <div style="font-size: 12px; font-weight: 700; color: #18217E;">${exc.predictedETA ? exc.predictedETA.slice(11, 16) : '--'}</div>
-              </div>
-              <div>
-                <span style="font-size: 10px; color: #64748B;">Predicted SLA Breach Risk:</span>
-                <div style="font-size: 12px; font-weight: 700; color: #DC2626;">${exc.slaRisk} Risk</div>
-              </div>
-              <div>
-                <span style="font-size: 10px; color: #64748B;">Calculated Penalty Avoidance:</span>
-                <div style="font-size: 12px; font-weight: 700; color: #1E8E3E;">${exc.estimatedBusinessImpact ? exc.estimatedBusinessImpact.split(' ')[0] : '$15,000'} Preserved</div>
-              </div>
-              <div>
-                <span style="font-size: 10px; color: #64748B;">Recommended Strategy:</span>
-                <div style="font-size: 12px; font-weight: 800; color: #18217E;">#1 ${recoveryOptions[0]?.strategy || 'Re-route'}</div>
-              </div>
+            <div style="display: flex; gap: 6px;">
+              <button 
+                class="btn btn-primary btn-sm" 
+                style="background: #1E8E3E; border-color: #1E8E3E; font-size: 11px; font-weight: 700; padding: 4px 10px;"
+                onclick="AnalystInvestigationView.acceptAI('${exc.id}', '${recoveryOptions[0]?.strategy || 'Re-route'}')"
+                ${exc.aiRecommendationStatus === 'Accepted' ? 'disabled' : ''}
+              >
+                ✓ Accept Recommendation
+              </button>
+              <button 
+                class="btn btn-secondary btn-sm" 
+                style="font-size: 11px; font-weight: 700; color: #DC2626; padding: 4px 10px;"
+                onclick="AnalystInvestigationView.openOverrideAIModal('${exc.id}', '${recoveryOptions[0]?.strategy || 'Re-route'}')"
+              >
+                Override
+              </button>
             </div>
           </div>
 
@@ -497,17 +356,15 @@ const AnalystInvestigationView = {
                   <div class="strategy-rank-badge">#${idx + 1}</div>
                   <div class="strategy-info">
                     <div class="strategy-name-row">
-                      <span class="strategy-name">${opt.strategy}</span>
+                      <span class="strategy-name" style="font-weight: 700; color: #0F172A; font-size: 13px;">${opt.strategy}</span>
                       ${opt.isRecommended ? `<span class="strategy-pill recommended">Recommended</span>` : ''}
-                      <span class="badge" style="background: #EEF2F6; font-size: 10px;">Feasibility: ${opt.feasibility}</span>
+                      <span class="badge" style="background: #EEF2F6; font-size: 10px; color: #475569;">Feasibility: ${opt.feasibility}</span>
                     </div>
-                    <div class="strategy-desc">${opt.rationale}</div>
-                    <div class="strategy-metrics-row">
-                      <span class="strategy-metric">ETA Impact: <strong>${opt.etaImpact}</strong></span>
+                    <div class="strategy-desc" style="font-size: 12px; color: #475569; margin: 2px 0 4px 0;">${opt.rationale}</div>
+                    <div class="strategy-metrics-row" style="font-size: 11px; color: #64748B; display: flex; gap: 8px; align-items: center;">
+                      <span class="strategy-metric">ETA Impact: <strong style="color: #0F172A;">${opt.etaImpact}</strong></span>
                       <span>•</span>
-                      <span class="strategy-metric">SLA Breach Risk: <strong>${opt.slaRiskMitigation}</strong></span>
-                      <span>•</span>
-                      <span class="strategy-metric">Estimated Cost: <strong>${opt.estimatedCost}</strong></span>
+                      <span class="strategy-metric">SLA Breach Risk: <strong style="color: #0F172A;">${opt.slaRiskMitigation}</strong></span>
                     </div>
                   </div>
                 </div>
@@ -515,6 +372,7 @@ const AnalystInvestigationView = {
                 <div style="flex-shrink: 0; align-self: center;">
                   <button 
                     class="btn ${opt.isRecommended ? 'btn-primary' : 'btn-secondary'} btn-sm" 
+                    style="padding: 5px 14px; font-size: 11.5px; font-weight: 600;"
                     onclick="AnalystInvestigationView.openRecoveryForm('${opt.strategy}')"
                   >
                     ${linkedRecovery ? (linkedRecovery.recoveryStrategy === opt.strategy ? 'Revise Plan' : 'Switch Strategy') : 'Initiate Recovery'}
@@ -546,7 +404,7 @@ const AnalystInvestigationView = {
     }
   },
 
-  // Rule-based logic ranking the 5 Use Case 4.1 strategies
+  // Rule-based logic ranking the viable recovery strategies
   getRankedRecoveryOptions(exc, shipment) {
     if (exc.type === 'Temperature Breach') {
       return [
@@ -554,46 +412,25 @@ const AnalystInvestigationView = {
           strategy: 'Alternate Carrier',
           isRecommended: true,
           feasibility: 'High',
-          rationale: 'Reefer stator failed. SkyLink Aviation has temp-controlled aircraft ready at nearest airstrip.',
+          rationale: 'SkyLink Aviation cold-chain aircraft ready at nearest airstrip.',
           etaImpact: '-3h 20m faster',
-          slaRiskMitigation: 'Full Spoilage Prevention',
-          estimatedCost: '$3,800 air charter'
+          slaRiskMitigation: 'Spoilage Prevented'
         },
         {
           strategy: 'Expedite',
           isRecommended: false,
           feasibility: 'Medium',
-          rationale: 'Nonstop express transit to closest regional cryo depot for dry ice replenishment.',
+          rationale: 'Express transit to regional cryo depot for dry ice replenishment.',
           etaImpact: '-1h 45m',
-          slaRiskMitigation: 'Partial (Risk if ambient heat rises)',
-          estimatedCost: '$1,200 express surcharge'
+          slaRiskMitigation: 'Partial Risk Buffer'
         },
         {
           strategy: 'Re-route',
           isRecommended: false,
           feasibility: 'Low',
-          rationale: 'Detour to Lake Knot cold depot. Distance too far for current battery degradation.',
+          rationale: 'Detour to Lake Knot cold depot bypass.',
           etaImpact: '+45m',
-          slaRiskMitigation: 'High risk of spoilage',
-          estimatedCost: '$450 fuel'
-        },
-        {
-          strategy: 'Split Shipment',
-          isRecommended: false,
-          feasibility: 'Low',
-          rationale: 'Requires biopharma cold packaging dock; field split impossible on mountain corridor.',
-          etaImpact: 'N/A',
-          slaRiskMitigation: 'Not feasible in field',
-          estimatedCost: 'N/A'
-        },
-        {
-          strategy: 'Wait & Monitor',
-          isRecommended: false,
-          feasibility: 'Low',
-          rationale: 'Passive monitoring without intervention. Unacceptable risk for temp-sensitive biologics.',
-          etaImpact: '0m variance (holds current slip)',
-          slaRiskMitigation: 'High Risk (Cryo Spoilage)',
-          estimatedCost: '$0'
+          slaRiskMitigation: 'Elevated Risk'
         }
       ];
     }
@@ -604,46 +441,25 @@ const AnalystInvestigationView = {
           strategy: 'Re-route',
           isRecommended: true,
           feasibility: 'High',
-          rationale: 'Highway 4 blocked by rockslide. Valley 3 arterial bypass is paved and clear.',
-          etaImpact: '-45m recovery versus waiting',
-          slaRiskMitigation: 'Eliminates 4-hr static queue',
-          estimatedCost: '$180 additional mileage'
+          rationale: 'Valley 3 arterial bypass is paved, clear, and open.',
+          etaImpact: '-45m recovery',
+          slaRiskMitigation: 'Eliminates static queue'
         },
         {
           strategy: 'Alternate Carrier',
           isRecommended: false,
           feasibility: 'Medium',
-          rationale: 'Transload trailer onto Apex Freight tractor already stationed past bottleneck.',
+          rationale: 'Transload trailer onto standby partner carrier tractor past bottleneck.',
           etaImpact: '-1h 10m',
-          slaRiskMitigation: 'Moderate',
-          estimatedCost: '$1,400 tractor switch'
+          slaRiskMitigation: 'Moderate'
         },
         {
           strategy: 'Expedite',
           isRecommended: false,
           feasibility: 'Medium',
-          rationale: 'Assign dual-driver team upon clearing detour sector to make up schedule.',
+          rationale: 'Assign dual-driver team upon clearing detour sector.',
           etaImpact: '-30m',
-          slaRiskMitigation: 'Low',
-          estimatedCost: '$600 driver bonus'
-        },
-        {
-          strategy: 'Split Shipment',
-          isRecommended: false,
-          feasibility: 'Low',
-          rationale: 'Single full truckload of heavy electronics; splitting creates double handling delay.',
-          etaImpact: '+1h 30m',
-          slaRiskMitigation: 'Poor',
-          estimatedCost: '$1,900 split haul'
-        },
-        {
-          strategy: 'Wait & Monitor',
-          isRecommended: false,
-          feasibility: 'Medium',
-          rationale: 'Hold current position. Monitor DOT rockslide clearance crews on 30-min intervals.',
-          etaImpact: '0m variance (holds current slip)',
-          slaRiskMitigation: 'Low (Passive buffer)',
-          estimatedCost: '$0'
+          slaRiskMitigation: 'Low'
         }
       ];
     }
@@ -654,10 +470,9 @@ const AnalystInvestigationView = {
         strategy: 'Re-route',
         isRecommended: true,
         feasibility: 'High',
-        rationale: 'Reposition freight to automated Berth 4 to bypass broken mechanical crane.',
+        rationale: 'Reposition freight to automated Berth 4 to bypass mechanical crane.',
         etaImpact: '-2h 15m',
-        slaRiskMitigation: 'Preserves vessel departure window',
-        estimatedCost: '$250 terminal shift'
+        slaRiskMitigation: 'Preserves vessel window'
       },
       {
         strategy: 'Expedite',
@@ -665,8 +480,7 @@ const AnalystInvestigationView = {
         feasibility: 'High',
         rationale: 'Priority customs green-line inspection team dispatched.',
         etaImpact: '-1h 00m',
-        slaRiskMitigation: 'Moderate',
-        estimatedCost: '$500 inspection fee'
+        slaRiskMitigation: 'Moderate'
       },
       {
         strategy: 'Alternate Carrier',
@@ -674,26 +488,7 @@ const AnalystInvestigationView = {
         feasibility: 'Medium',
         rationale: 'Transfer container to secondary maritime drayage provider.',
         etaImpact: '-40m',
-        slaRiskMitigation: 'Moderate',
-        estimatedCost: '$1,100 drayage'
-      },
-      {
-        strategy: 'Split Shipment',
-        isRecommended: false,
-        feasibility: 'Low',
-        rationale: 'Maritime container customs seal cannot be split until port discharge.',
-        etaImpact: 'N/A',
-        slaRiskMitigation: 'Regulatory barrier',
-        estimatedCost: 'N/A'
-      },
-      {
-        strategy: 'Wait & Monitor',
-        isRecommended: false,
-        feasibility: 'Medium',
-        rationale: 'Allow 45-min buffer for berth queue release before committing drayage resources.',
-        etaImpact: '0m variance (holds current slip)',
-        slaRiskMitigation: 'Low (Passive buffer)',
-        estimatedCost: '$0'
+        slaRiskMitigation: 'Moderate'
       }
     ];
   },
