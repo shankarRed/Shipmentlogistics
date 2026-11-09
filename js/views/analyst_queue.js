@@ -125,7 +125,7 @@ const AnalystQueueView = {
             <span class="search-icon">${Icons.search(13)}</span>
             <input 
               type="text" 
-              placeholder="Search by Exception ID, Shipment, Root Cause, Location..." 
+              placeholder="Search by Exception ID, Shipment, Deviation Type, Location..." 
               value="${this.searchQuery}" 
               oninput="AnalystQueueView.handleSearch(this.value)"
             >
@@ -181,70 +181,81 @@ const AnalystQueueView = {
               <button class="btn btn-secondary btn-sm mt-3" onclick="AnalystQueueView.resetFilters()">Clear Filters</button>
             </div>
           ` : this.activeTab === 'intervention' ? `
-            <!-- Intervention Queue Table (Clean 8-column layout, fits 100% width) -->
+            <!-- Intervention Queue Table (Clean 7-column layout, fits 100% width) -->
             <div class="table-responsive" style="overflow-x: hidden; width: 100%;">
-              <table class="data-table" style="width: 100%; font-size: 12px; border-collapse: collapse;">
+              <table class="data-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+                <colgroup>
+                  <col style="width: 14%;">
+                  <col style="width: 13%;">
+                  <col style="width: 16%;">
+                  <col style="width: 11%;">
+                  <col style="width: 18%;">
+                  <col style="width: 14%;">
+                  <col style="width: 14%;">
+                </colgroup>
                 <thead>
                   <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
-                    <th style="padding: 10px 12px; width: 12%;">Exception &amp; Time</th>
-                    <th style="padding: 10px 12px; width: 15%;">Shipment</th>
-                    <th style="padding: 10px 12px; width: 22%;">Type &amp; Root Cause</th>
-                    <th style="padding: 10px 12px; width: 10%;">Severity</th>
-                    <th style="padding: 10px 12px; width: 14%;">Location</th>
-                    <th style="padding: 10px 12px; width: 12%;">SLA Risk</th>
-                    <th style="padding: 10px 12px; width: 15%; text-align: right;">Action</th>
+                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Exception &amp; Time</th>
+                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Shipment</th>
+                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Deviation Type</th>
+                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Severity</th>
+                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Location</th>
+                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">SLA Risk</th>
+                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: right;">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${filtered.map(exc => {
                     const impactParts = (exc.estimatedBusinessImpact || '$4,500').split(' ');
                     const impactAmount = impactParts[0];
-                    const impactNote = impactParts.slice(1).join(' ');
 
                     return `
                       <tr style="cursor: pointer; border-bottom: 1px solid #F1F5F9; transition: background 0.15s;" onclick="AnalystQueueView.openInvestigation('${exc.id}')" onmouseover="this.style.background='#F8FAFE'" onmouseout="this.style.background='transparent'">
-                        <td style="padding: 10px 12px;">
-                          <div style="font-weight: 800; color: #18217E; font-size: 12.5px;">${exc.id}</div>
-                          <div style="font-size: 11px; color: #64748B; margin-top: 2px;">${AnalystDashboardView.formatTime(exc.detectionTime)}</div>
-                        </td>
-                        <td style="padding: 10px 12px;">
-                          <div style="font-weight: 800; color: #070724; font-size: 12px;">${exc.shipmentId}</div>
-                          <div style="font-size: 10.5px; color: #64748B;">${exc.status}</div>
-                        </td>
-                        <td style="padding: 10px 12px;">
-                          <div style="font-weight: 700; color: #070724;">${exc.type}</div>
-                          <div style="font-size: 10.5px; color: #475569; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${exc.rootCause}">
-                            ${exc.rootCause}
+                        <td style="padding: 12px 14px; vertical-align: middle;">
+                          <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <div>
+                              <span style="font-weight: 700; color: #18217E; font-size: 12px; font-family: 'JetBrains Mono', Consolas, monospace; background: #EEF2FF; border: 1px solid #C7D2FE; padding: 2px 7px; border-radius: 4px; display: inline-block;">${exc.id}</span>
+                            </div>
+                            <span style="font-size: 11px; color: #64748B;">${AnalystDashboardView.formatTime(exc.detectionTime)}</span>
                           </div>
                         </td>
-                        <td style="padding: 10px 12px;">
-                          <span class="badge ${AnalystDashboardView.getSeverityBadgeClass(exc.severity)}" style="font-size: 10px; padding: 2px 7px;">
-                            ${exc.severity}
+                        <td style="padding: 12px 14px; vertical-align: middle;">
+                          <div style="display: flex; flex-direction: column; gap: 3px;">
+                            <span style="font-weight: 700; color: #0F172A; font-size: 12.5px;">${exc.shipmentId}</span>
+                            <div>
+                              <span style="font-size: 10.5px; padding: 1.5px 6px; border-radius: 4px; font-weight: 600; display: inline-block; ${exc.status === 'Open' ? 'background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;' : exc.status === 'Investigating' ? 'background: #EBF3FC; color: #1967D2; border: 1px solid #BFDBFE;' : exc.status === 'Recovery in Progress' ? 'background: #F3E8FF; color: #6D28D9; border: 1px solid #DDD6FE;' : 'background: #EAF7EE; color: #1E8E3E; border: 1px solid #BBF7D0;'}">
+                                ${exc.status}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td style="padding: 12px 14px; vertical-align: middle;">
+                          <span style="font-weight: 700; color: #0F172A; font-size: 12.5px;">${exc.type}</span>
+                        </td>
+                        <td style="padding: 12px 14px; vertical-align: middle;">
+                          <span class="badge ${AnalystDashboardView.getSeverityBadgeClass(exc.severity)}" style="font-size: 11px; padding: 3px 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                            ${exc.severity === 'Critical' ? '⛔' : exc.severity === 'High' ? '⚠️' : 'ℹ️'} ${exc.severity}
                           </span>
                         </td>
-                        <td style="padding: 10px 12px;">
-                          <span style="font-size: 11px; color: #334155;">${exc.location || 'Route Hub'}</span>
+                        <td style="padding: 12px 14px; vertical-align: middle;">
+                          <span style="font-size: 12px; color: #334155; font-weight: 500;">📍 ${exc.location || 'Route Hub'}</span>
                         </td>
-                        <td style="padding: 10px 12px;">
-                          <div style="display: flex; align-items: center; gap: 5px;">
-                            <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}" style="font-size: 9.5px; padding: 1px 6px;">
+                        <td style="padding: 12px 14px; vertical-align: middle;">
+                          <div style="display: flex; align-items: center; gap: 6px;">
+                            <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}" style="font-size: 10px; padding: 2px 7px; font-weight: 700;">
                               ${exc.slaRisk || 'Nominal'}
                             </span>
-                            <span style="font-weight: 700; color: #DC2626; font-size: 11px;">${impactAmount}</span>
+                            <span style="font-weight: 700; color: #DC2626; font-size: 12px; font-family: 'JetBrains Mono', Consolas, monospace;">${impactAmount}</span>
                           </div>
                         </td>
-                        <td style="padding: 10px 12px; text-align: right;">
+                        <td style="padding: 12px 14px; text-align: right; vertical-align: middle;">
                           <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
                             ${!exc.assignedAnalyst ? `
-                              <button class="btn btn-secondary btn-sm" style="padding: 3px 8px; font-size: 10.5px; font-weight: 700; background: #FFF3CD; color: #856404; border-color: #FFEEBA;" onclick="event.stopPropagation(); AnalystQueueView.claimOwnership('${exc.id}')">
+                              <button class="btn btn-secondary btn-sm" style="padding: 4px 9px; font-size: 11px; font-weight: 700; background: #FEF3CD; color: #92400E; border: 1px solid #FCD34D;" onclick="event.stopPropagation(); AnalystQueueView.claimOwnership('${exc.id}')">
                                 Claim
                               </button>
-                            ` : `
-                              <span style="font-size: 10.5px; color: #18217E; font-weight: 600;">
-                                ${exc.assignedAnalyst.split(' ')[0]}
-                              </span>
-                            `}
-                            <button class="btn btn-primary btn-sm" style="padding: 3px 10px; font-size: 11px; font-weight: 700; white-space: nowrap;" onclick="event.stopPropagation(); AnalystQueueView.openInvestigation('${exc.id}')">
+                            ` : ''}
+                            <button class="btn btn-primary btn-sm" style="padding: 4px 12px; font-size: 11.5px; font-weight: 600; white-space: nowrap;" onclick="event.stopPropagation(); AnalystQueueView.openInvestigation('${exc.id}')">
                               Investigate &rarr;
                             </button>
                           </div>
