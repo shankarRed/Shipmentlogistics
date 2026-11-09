@@ -1144,17 +1144,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 4. War Room -->
-        <li>
-          <div class="nav-link ${this.currentView === 'analyst_war_room' ? 'active' : ''}" data-view="analyst_war_room" onclick="App.navigateTo('analyst_war_room')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.warRoom(17)}</span>
-              <span class="nav-label">War Room</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 6. Recovery Requests -->
+        <!-- 4. Recovery Requests -->
         <li>
           <div class="nav-link ${this.currentView === 'analyst_recoveries' ? 'active' : ''}" data-view="analyst_recoveries" onclick="App.navigateTo('analyst_recoveries')">
             <div class="nav-link-left">
@@ -1425,7 +1415,7 @@ const App = {
       { num: 1, name: 'Ingest', actor: 'System', views: ['analyst_inbound', 'analyst_events', 'analyst_onboarding', 'analyst_shipments'] },
       { num: 2, name: 'Detect', actor: 'Rules', views: ['analyst_dashboard', 'exceptions'] },
       { num: 3, name: 'Predict', actor: 'AI Skill', views: ['analyst_investigation'] },
-      { num: 4, name: 'Triage', actor: 'Decisions', views: ['analyst_queue', 'analyst_war_room'] },
+      { num: 4, name: 'Triage', actor: 'Decisions', views: ['analyst_queue'] },
       { num: 5, name: 'Resolve', actor: 'Analyst/Disp', views: ['dispatcher_planning', 'dispatcher_queue', 'dispatcher_dashboard', 'dispatcher_approvals', 'analyst_recoveries', 'dispatcher_recoveries'] },
       { num: 6, name: 'Collaborate', actor: 'Carrier/WH', views: ['carrier_requests', 'carrier_dashboard', 'carrier_execution', 'carrier_delivery', 'warehouse_docks', 'warehouse_dashboard', 'warehouse_diverted', 'warehouse_shipments', 'warehouse_loading'] },
       { num: 7, name: 'Notify', actor: 'System/CS', views: ['cs_queue', 'cs_dashboard', 'cs_shipments', 'cs_shipment_detail', 'cs_compose', 'cs_escalations', 'customer_home', 'customer_track', 'customer_shipment_detail', 'customer_notifications', 'customer_ai_assistant', 'cs_ai_assistant'] },
@@ -1635,8 +1625,8 @@ const App = {
         title: 'Interstate Corridor Collision: BRG-2847',
         message: 'I-40 Eastbound accident blocking transit corridor. Dispatcher recovery routing initiated.',
         severity: 'High',
-        targetPage: isAnalyst ? 'analyst_war_room' : isDispatcher ? 'dispatcher_planning' : 'exceptions',
-        targetLabel: isAnalyst ? 'Enter War Room' : 'Re-plan Route',
+        targetPage: isAnalyst ? 'analyst_queue' : isDispatcher ? 'dispatcher_planning' : 'exceptions',
+        targetLabel: isAnalyst ? 'Queue Review' : 'Re-plan Route',
         timestamp: '2026-03-24T11:15:00Z',
         read: readIds.includes('OP-NOTIF-103')
       },
@@ -2077,8 +2067,8 @@ const App = {
           this.navigateTo('analyst_queue');
           return;
         case 'analyst_war_room':
-          html = window.AnalystWarRoomView ? window.AnalystWarRoomView.render() : '';
-          break;
+          this.navigateTo('analyst_queue');
+          return;
         case 'analyst_recoveries':
           html = window.AnalystRecoveriesView ? window.AnalystRecoveriesView.render() : '';
           break;

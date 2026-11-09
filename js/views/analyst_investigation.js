@@ -85,13 +85,6 @@ const AnalystInvestigationView = {
               </span>
             `}
 
-            ${(exc.severity === 'Critical' || exc.slaRisk === 'Critical' || exc.slaRisk === 'High') ? `
-              <button class="btn btn-danger btn-sm" onclick="App.navigateTo('analyst_war_room')">
-                ${Icons.warRoom ? Icons.warRoom(13) : ''}
-                <span>Escalate to War Room</span>
-              </button>
-            ` : ''}
-
             <button class="btn btn-secondary btn-sm" onclick="AnalystInvestigationView.openAttachEvidenceModal('${exc.id}')" style="background: #F8FAFC; border-color: #CBD5E1; font-weight: 700;">
               ${Icons.clipboard ? Icons.clipboard(13) : '📎'}
               <span>Attach Evidence (${(exc.evidence || []).length})</span>
@@ -424,13 +417,6 @@ const AnalystInvestigationView = {
                 Assigned: ${exc.assignedAnalyst.split(' ')[0]} ${exc.assignedAnalyst.split(' ')[1] || ''}
               </span>
             `}
-
-            ${(exc.severity === 'Critical' || exc.slaRisk === 'Critical' || exc.slaRisk === 'High') ? `
-              <button class="btn btn-danger btn-sm" onclick="UI.closeModal('generic-app-modal'); App.navigateTo('analyst_war_room');">
-                ${Icons.warRoom ? Icons.warRoom(13) : ''}
-                <span>Escalate to War Room</span>
-              </button>
-            ` : ''}
 
             <button class="btn btn-secondary btn-sm" onclick="AnalystInvestigationView.openAttachEvidenceModal('${exc.id}')" style="background: #F8FAFC; border-color: #CBD5E1; font-weight: 700;">
               ${Icons.clipboard ? Icons.clipboard(13) : '📎'}

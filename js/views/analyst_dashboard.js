@@ -79,7 +79,7 @@ const AnalystDashboardView = {
           </div>
 
           <!-- KPI 3: SLA at Risk (Pastel Warm Amber) -->
-          <div class="analyst-proto-card" onclick="App.navigateTo('analyst_war_room')" title="Open Incident War Room">
+          <div class="analyst-proto-card" onclick="App.navigateTo('analyst_queue')" title="View Exception Queue">
             <div class="analyst-proto-banner banner-sla">
               <div class="analyst-proto-icon">${Icons.gauge ? Icons.gauge(16) : Icons.clock(16)}</div>
               <span class="analyst-proto-title">SLA at Risk</span>
