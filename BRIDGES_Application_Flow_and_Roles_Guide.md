@@ -60,7 +60,6 @@ All demo accounts share the password **`1`**. Users can switch roles directly us
   * **War Room (`#/analyst_war_room`):** Multi-party crisis conference: live incident chat, situation reports, recovery action proposals, and team consensus voting.
   * **Recovery Requests (`#/analyst_recoveries`):** Track field tenders: expedites, re-routes, carrier swaps, and splits submitted to transport planners.
   * **Shipment Onboarding (`#/analyst_onboarding`):** EDI/API order ingestion tool. Validate manifests, correct missing consignee addresses, and resolve mapping exceptions.
-  * **Inbound Messages (`#/analyst_inbound`):** Monitor raw EDI / JSON integration payloads, failed carrier webhooks, and retry timed-out transmissions.
   * **Data Quality Mgmt (`#/analyst_data_quality`):** Audit and repair orphaned shipments, missing sensor IDs, invalid addresses, and corrupt telematics.
 
 ---

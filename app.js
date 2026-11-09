@@ -147,7 +147,7 @@ const App = {
       'dashboard', 'users', 'carriers', 'resources', 'analytics', 'exceptions', 'audit', 'settings', 'login', 'sla_rules', 'notifications_config', 'ai_config',
       
       // Control Tower Analyst routes (Phase 2, US-17 to US-43)
-      'analyst_dashboard', 'analyst_shipments', 'analyst_onboarding', 'analyst_inbound', 'analyst_data_quality',
+      'analyst_dashboard', 'analyst_shipments', 'analyst_onboarding', 'analyst_data_quality',
       'analyst_queue', 'analyst_investigation', 
       'analyst_war_room', 'analyst_recoveries', 'analyst_events', 'analyst_history',
 
@@ -1187,17 +1187,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 10. Inbound Message Monitoring & Error Handling -->
-        <li>
-          <div class="nav-link ${this.currentView === 'analyst_inbound' ? 'active' : ''}" data-view="analyst_inbound" onclick="App.navigateTo('analyst_inbound')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.message(17)}</span>
-              <span class="nav-label">Inbound Messages</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 11. Data Quality Management -->
+        <!-- 10. Data Quality Management -->
         <li>
           <div class="nav-link ${this.currentView === 'analyst_data_quality' ? 'active' : ''}" data-view="analyst_data_quality" onclick="App.navigateTo('analyst_data_quality')">
             <div class="nav-link-left">
@@ -1412,7 +1402,7 @@ const App = {
     const currentView = this.currentView || '';
 
     const steps = [
-      { num: 1, name: 'Ingest', actor: 'System', views: ['analyst_inbound', 'analyst_events', 'analyst_onboarding', 'analyst_shipments'] },
+      { num: 1, name: 'Ingest', actor: 'System', views: ['analyst_events', 'analyst_onboarding', 'analyst_shipments'] },
       { num: 2, name: 'Detect', actor: 'Rules', views: ['analyst_dashboard', 'exceptions'] },
       { num: 3, name: 'Predict', actor: 'AI Skill', views: ['analyst_investigation'] },
       { num: 4, name: 'Triage', actor: 'Decisions', views: ['analyst_queue'] },
@@ -2055,8 +2045,8 @@ const App = {
           html = window.AnalystOnboardingView ? window.AnalystOnboardingView.render() : '';
           break;
         case 'analyst_inbound':
-          html = window.AnalystInboundView ? window.AnalystInboundView.render() : '';
-          break;
+          this.navigateTo('analyst_dashboard');
+          return;
         case 'analyst_data_quality':
           html = window.AnalystDataQualityView ? window.AnalystDataQualityView.render() : '';
           break;
