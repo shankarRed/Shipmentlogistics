@@ -33,7 +33,7 @@ const LiveTrackingMap = {
 
   // API Key & Map Provider persistence
   mapApiKey: (typeof localStorage !== 'undefined' ? localStorage.getItem('bridges_map_api_key') : '') || '',
-  currentTileTheme: (function() {
+  currentTileTheme: (function () {
     if (typeof localStorage === 'undefined') return 'esri_streets';
     const saved = localStorage.getItem('bridges_map_provider');
     const key = localStorage.getItem('bridges_map_api_key');
@@ -109,18 +109,6 @@ const LiveTrackingMap = {
         maxZoom: 19
       };
     }
-    if (theme === 'mapbox') {
-      const token = key || 'REDACTED';
-      return {
-        key: 'mapbox',
-        name: 'Mapbox Streets (Token Required)',
-        url: `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=${encodeURIComponent(token)}`,
-        attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
-        tileSize: 512,
-        zoomOffset: -1,
-        maxZoom: 19
-      };
-    }
     return {
       key: 'esri_streets',
       name: 'Esri World Streets (Real World, No Watermark)',
@@ -173,8 +161,8 @@ const LiveTrackingMap = {
     const dLat = (p2[0] - p1[0]) * Math.PI / 180;
     const dLng = (p2[1] - p1[1]) * Math.PI / 180;
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(p1[0] * Math.PI / 180) * Math.cos(p2[0] * Math.PI / 180) *
-              Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      Math.cos(p1[0] * Math.PI / 180) * Math.cos(p2[0] * Math.PI / 180) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   },
@@ -596,8 +584,8 @@ const LiveTrackingMap = {
         c.statusDesc = 'Available & Ready';
 
         // Destination terminus point & staging bay around the hub (keeping hub distinct!)
-        const destPt = c.direction === 1 
-          ? c.route.points[c.route.points.length - 1] 
+        const destPt = c.direction === 1
+          ? c.route.points[c.route.points.length - 1]
           : c.route.points[0];
         const hub = this.getNearestHub(destPt[0], destPt[1]);
         const dockOffset = this.getDockOffset(hub, c.carrierIndex || 0);
@@ -785,7 +773,7 @@ const LiveTrackingMap = {
           this.smallMap.invalidateSize();
           return;
         } else {
-          try { this.smallMap.remove(); } catch(err) {}
+          try { this.smallMap.remove(); } catch (err) { }
           this.smallMap = null;
           this.smallCanvasLayer = null;
           this.smallCtx = null;
@@ -1052,7 +1040,7 @@ const LiveTrackingMap = {
     if (!container || !window.L) return;
 
     if (this.fullscreenMap) {
-      try { this.fullscreenMap.remove(); } catch (e) {}
+      try { this.fullscreenMap.remove(); } catch (e) { }
       this.fullscreenMap = null;
     }
 
@@ -1191,11 +1179,11 @@ const LiveTrackingMap = {
     if (theme.zoomOffset) layerOptions.zoomOffset = theme.zoomOffset;
 
     if (this.fullscreenTileLayer && this.fullscreenMap) {
-      try { this.fullscreenMap.removeLayer(this.fullscreenTileLayer); } catch (e) {}
+      try { this.fullscreenMap.removeLayer(this.fullscreenTileLayer); } catch (e) { }
       this.fullscreenTileLayer = L.tileLayer(theme.url, layerOptions).addTo(this.fullscreenMap);
     }
     if (this.smallTileLayer && this.smallMap) {
-      try { this.smallMap.removeLayer(this.smallTileLayer); } catch (e) {}
+      try { this.smallMap.removeLayer(this.smallTileLayer); } catch (e) { }
       this.smallTileLayer = L.tileLayer(theme.url, layerOptions).addTo(this.smallMap);
     }
 
@@ -1300,10 +1288,10 @@ const LiveTrackingMap = {
           <!-- API Key Input Field -->
           <div style="margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label for="input-map-api-key" style="font-size: 12px; font-weight: 600; color: #E2E8F0;">Carto / Mapbox API Key (Optional):</label>
+              <label for="input-map-api-key" style="font-size: 12px; font-weight: 600; color: #E2E8F0;">Carto API Key (Optional):</label>
               <span style="font-size: 11px; color: #94A3B8;">Auto-saved locally</span>
             </div>
-            <input type="text" id="input-map-api-key" value="${currentKey}" placeholder="e.g. your_carto_api_key or REDACTED (Leave empty for Esri / OSM)"
+            <input type="text" id="input-map-api-key" value="${currentKey}" placeholder="e.g. your_carto_api_key (Leave empty for Esri / OSM)"
               style="width: 100%; box-sizing: border-box; background: #0B1120; border: 1px solid #334155; border-radius: 6px; padding: 9px 12px; color: #00E5FF; font-family: monospace; font-size: 12px;">
             <div style="font-size: 11px; color: #94A3B8; margin-top: 6px; line-height: 1.4;">
               💡 <strong>Pro Tip:</strong> <em>Esri World Streets</em> and <em>OpenStreetMap</em> are 100% free with NO API key needed and NO watermark. If you prefer CartoDB, paste your registered API key above to eliminate the Carto watermark.
@@ -1406,9 +1394,9 @@ const LiveTrackingMap = {
       let matches = true;
       if (search) {
         matches = c.id.toLowerCase().includes(search) ||
-                  c.name.toLowerCase().includes(search) ||
-                  c.vehicleId.toLowerCase().includes(search) ||
-                  c.driverName.toLowerCase().includes(search);
+          c.name.toLowerCase().includes(search) ||
+          c.vehicleId.toLowerCase().includes(search) ||
+          c.driverName.toLowerCase().includes(search);
       }
       if (matches && type !== 'ALL') {
         matches = c.vehicleType === type;
@@ -1506,10 +1494,10 @@ const LiveTrackingMap = {
       if (zoom >= 8 || isHovered || isSelected) {
         ctx.font = 'bold 9.5px "Plus Jakarta Sans", sans-serif';
         const isDelayed = c.statusDesc === 'Delayed' || c.status === 'Delayed';
-        const label = isAvail 
-          ? `${c.id} · ${c.vehicleId} (Available & Ready)` 
-          : isDelayed 
-            ? `${c.id} · ${c.vehicleId} (Delayed)` 
+        const label = isAvail
+          ? `${c.id} · ${c.vehicleId} (Available & Ready)`
+          : isDelayed
+            ? `${c.id} · ${c.vehicleId} (Delayed)`
             : `${c.id} · ${c.vehicleId}`;
         const m = ctx.measureText(label);
         ctx.fillStyle = isAvail ? 'rgba(6, 78, 59, 0.94)' : isDelayed ? 'rgba(153, 27, 27, 0.94)' : 'rgba(7, 7, 36, 0.88)';
@@ -1835,7 +1823,7 @@ const LiveTrackingMap = {
     this.searchFilter = query.trim();
     if (this.searchFilter) {
       const q = this.searchFilter.toLowerCase();
-      const match = this.carriers.find(c => 
+      const match = this.carriers.find(c =>
         c.id.toLowerCase().includes(q) ||
         c.name.toLowerCase().includes(q) ||
         c.vehicleId.toLowerCase().includes(q) ||
