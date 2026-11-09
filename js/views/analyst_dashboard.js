@@ -455,13 +455,8 @@ const AnalystDashboardView = {
   },
 
   openInvestigation(exceptionId) {
-    if (window.App) {
-      App.navigateTo('analyst_investigation');
-      setTimeout(() => {
-        if (window.AnalystInvestigationView) {
-          AnalystInvestigationView.selectException(exceptionId);
-        }
-      }, 50);
+    if (window.AnalystInvestigationView) {
+      AnalystInvestigationView.openModal(exceptionId);
     }
   },
 

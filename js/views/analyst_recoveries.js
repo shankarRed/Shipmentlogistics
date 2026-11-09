@@ -52,9 +52,9 @@ const AnalystRecoveriesView = {
               ${Icons.refresh(13)}
               <span>Reset</span>
             </button>
-            <button class="btn btn-primary btn-sm" onclick="App.navigateTo('analyst_investigation')">
-              ${Icons.investigate ? Icons.investigate(14) : ''}
-              <span>Initiate New Recovery</span>
+            <button class="btn btn-primary btn-sm" onclick="App.navigateTo('analyst_queue')">
+              ${Icons.exceptionQueue ? Icons.exceptionQueue(14) : ''}
+              <span>Exception Queue &rarr;</span>
             </button>
           </div>
         </div>

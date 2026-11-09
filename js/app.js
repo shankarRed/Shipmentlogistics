@@ -1144,17 +1144,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 4. Investigation Workspace -->
-        <li>
-          <div class="nav-link ${this.currentView === 'analyst_investigation' ? 'active' : ''}" data-view="analyst_investigation" onclick="App.navigateTo('analyst_investigation')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.investigate(17)}</span>
-              <span class="nav-label">Investigation Workspace</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 5. War Room -->
+        <!-- 4. War Room -->
         <li>
           <div class="nav-link ${this.currentView === 'analyst_war_room' ? 'active' : ''}" data-view="analyst_war_room" onclick="App.navigateTo('analyst_war_room')">
             <div class="nav-link-left">
@@ -1625,8 +1615,8 @@ const App = {
         title: 'Critical Temperature Excursion: BRG-2843',
         message: 'Reefer RT-04 sensor reporting -14.2°C (exceeds -20°C bio-limit). Immediate thermal containment required.',
         severity: 'Critical',
-        targetPage: isAnalyst ? 'analyst_investigation' : 'exceptions',
-        targetLabel: isAnalyst ? 'Investigate' : 'View Exception',
+        targetPage: isAnalyst ? 'analyst_queue' : 'exceptions',
+        targetLabel: isAnalyst ? 'View Exception' : 'View Exception',
         timestamp: '2026-03-24T11:42:00Z',
         read: readIds.includes('OP-NOTIF-101')
       },
@@ -2084,8 +2074,8 @@ const App = {
           html = window.AnalystQueueView ? window.AnalystQueueView.render() : '';
           break;
         case 'analyst_investigation':
-          html = window.AnalystInvestigationView ? window.AnalystInvestigationView.render() : '';
-          break;
+          this.navigateTo('analyst_queue');
+          return;
         case 'analyst_war_room':
           html = window.AnalystWarRoomView ? window.AnalystWarRoomView.render() : '';
           break;

@@ -574,8 +574,8 @@ const AnalystShipmentsView = {
               <div style="font-size: 12px; font-weight: 700; color: var(--color-signal-red);">
                 Related Exception Deviations (${exceptions.length})
               </div>
-              <button class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 2px 8px;" onclick="UI.closeModal('generic-app-modal'); App.navigateTo('analyst_investigation'); setTimeout(() => AnalystInvestigationView.selectException('${exceptions[0].id}'), 50);">
-                Investigate in Workspace →
+              <button class="btn btn-secondary btn-sm" style="font-size: 11px; padding: 2px 8px;" onclick="AnalystInvestigationView.openModal('${exceptions[0].id}');">
+                View Exception Details &rarr;
               </button>
             </div>
             ${exceptions.map(exc => `

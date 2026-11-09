@@ -90,9 +90,6 @@ const AnalystQueueView = {
               ${Icons.plus ? Icons.plus(13) : '+'}
               <span>+ Log Exception</span>
             </button>
-            <button class="btn btn-primary btn-sm" onclick="App.navigateTo('analyst_investigation')">
-              <span>Investigation Workspace &rarr;</span>
-            </button>
           </div>
         </div>
 
@@ -210,7 +207,7 @@ const AnalystQueueView = {
                     const impactAmount = impactParts[0];
 
                     return `
-                      <tr style="cursor: pointer; border-bottom: 1px solid #F1F5F9; transition: background 0.15s;" onclick="AnalystQueueView.openInvestigation('${exc.id}')" onmouseover="this.style.background='#F8FAFE'" onmouseout="this.style.background='transparent'">
+                      <tr style="cursor: pointer; border-bottom: 1px solid #F1F5F9; transition: background 0.15s;" onclick="AnalystQueueView.openDetailModal('${exc.id}')" onmouseover="this.style.background='#F8FAFE'" onmouseout="this.style.background='transparent'">
                         <td style="padding: 12px 14px; vertical-align: middle;">
                           <div style="display: flex; align-items: center; gap: 8px;">
                             <span style="font-weight: 700; color: #18217E; font-size: 12px; font-family: 'JetBrains Mono', Consolas, monospace; background: #EEF2FF; border: 1px solid #C7D2FE; padding: 2.5px 7px; border-radius: 4px; display: inline-block;">${exc.id}</span>
@@ -243,8 +240,8 @@ const AnalystQueueView = {
                                 Claim
                               </button>
                             ` : ''}
-                            <button class="btn btn-primary btn-sm" style="padding: 4px 12px; font-size: 11.5px; font-weight: 600; white-space: nowrap;" onclick="event.stopPropagation(); AnalystQueueView.openInvestigation('${exc.id}')">
-                              Investigate &rarr;
+                            <button class="btn btn-secondary btn-sm" style="padding: 4px 12px; font-size: 11.5px; font-weight: 600; white-space: nowrap;" onclick="event.stopPropagation(); AnalystQueueView.openDetailModal('${exc.id}')">
+                              View
                             </button>
                           </div>
                         </td>
@@ -383,15 +380,14 @@ const AnalystQueueView = {
     }
   },
 
-  openInvestigation(exceptionId) {
-    if (window.App) {
-      App.navigateTo('analyst_investigation');
-      setTimeout(() => {
-        if (window.AnalystInvestigationView) {
-          AnalystInvestigationView.selectException(exceptionId);
-        }
-      }, 50);
+  openDetailModal(exceptionId) {
+    if (window.AnalystInvestigationView) {
+      AnalystInvestigationView.openModal(exceptionId);
     }
+  },
+
+  openInvestigation(exceptionId) {
+    this.openDetailModal(exceptionId);
   },
 
   // Inspect Auto-Resolved History Modal

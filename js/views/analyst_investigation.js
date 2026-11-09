@@ -393,12 +393,265 @@ const AnalystInvestigationView = {
     }
   },
 
+  openModal(exceptionId) {
+    let exc = window.BRIDGES_STORE.getException(exceptionId);
+    if (!exc) return;
+    this.currentExceptionId = exc.id;
+
+    const shipment = window.BRIDGES_STORE.getShipment(exc.shipmentId);
+    const carrier = shipment ? window.BRIDGES_STORE.getCarrier(shipment.carrierId) : null;
+    const linkedRecovery = exc.recoveryRequestId ? window.BRIDGES_STORE.getRecoveryRequest(exc.recoveryRequestId) : null;
+    const recoveryOptions = this.getRankedRecoveryOptions(exc, shipment);
+
+    const contentHtml = `
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Quick Action Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #E2E8F0; flex-wrap: wrap; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 15px; font-weight: 800; color: #0F172A;">${exc.id} &bull; ${exc.type}</span>
+            <span class="badge" style="background: #EEF2F6; color: #0F172A; font-weight: 600;">${exc.status}</span>
+            <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}">${exc.slaRisk || 'Nominal'} Risk</span>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            ${!exc.assignedAnalyst ? `
+              <button class="btn btn-secondary btn-sm" style="background: #FFF3CD; color: #856404; font-weight: 700;" onclick="AnalystInvestigationView.claimOwnership('${exc.id}')">
+                ${Icons.userCheck ? Icons.userCheck(13) : ''}
+                <span>Take Ownership</span>
+              </button>
+            ` : `
+              <span class="role-indicator-pill" style="font-size: 11px;">
+                Assigned: ${exc.assignedAnalyst.split(' ')[0]} ${exc.assignedAnalyst.split(' ')[1] || ''}
+              </span>
+            `}
+
+            ${(exc.severity === 'Critical' || exc.slaRisk === 'Critical' || exc.slaRisk === 'High') ? `
+              <button class="btn btn-danger btn-sm" onclick="UI.closeModal('generic-app-modal'); App.navigateTo('analyst_war_room');">
+                ${Icons.warRoom ? Icons.warRoom(13) : ''}
+                <span>Escalate to War Room</span>
+              </button>
+            ` : ''}
+
+            <button class="btn btn-secondary btn-sm" onclick="AnalystInvestigationView.openAttachEvidenceModal('${exc.id}')" style="background: #F8FAFC; border-color: #CBD5E1; font-weight: 700;">
+              ${Icons.clipboard ? Icons.clipboard(13) : '📎'}
+              <span>Attach Evidence (${(exc.evidence || []).length})</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Top Grid: Exception Summary & Schedule Impact -->
+        <div class="investigation-grid-top" style="margin-bottom: 0;">
+          <!-- Exception Summary -->
+          <div class="investigation-panel">
+            <div class="investigation-panel-title">
+              <span style="font-size: 13.5px; font-weight: 700; color: #0F172A;">Exception Summary</span>
+            </div>
+
+            <div class="meta-kv-grid">
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Exception ID</span>
+                <span class="meta-kv-value highlight-navy">${exc.id}</span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Deviation Type</span>
+                <span class="meta-kv-value">${exc.type}</span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Operational Status</span>
+                <span class="meta-kv-value">
+                  <span class="badge" style="background: #EEF2F6; color: var(--color-midnight); font-weight: 600;">${exc.status}</span>
+                </span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Affected Shipment</span>
+                <span class="meta-kv-value" style="color: var(--color-royal-navy); cursor: pointer;" onclick="UI.closeModal('generic-app-modal'); AnalystShipmentsView.openDetailModal('${exc.shipmentId}');">
+                  ${exc.shipmentId} (View Details ↗)
+                </span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Detected Time</span>
+                <span class="meta-kv-value">${this.formatDisplayTime(exc.detectionTime)}</span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Location</span>
+                <span class="meta-kv-value">${exc.location || (shipment ? shipment.currentLocation : 'Not available')}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Schedule & SLA Impact -->
+          <div class="investigation-panel">
+            <div class="investigation-panel-title">
+              <span style="font-size: 13.5px; font-weight: 700; color: #0F172A;">Schedule &amp; SLA Impact</span>
+            </div>
+
+            <div class="meta-kv-grid">
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Original ETA</span>
+                <span class="meta-kv-value">${this.formatDisplayTime(shipment ? (shipment.originalETA || shipment.estArrival) : null)}</span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Predicted ETA</span>
+                <span class="meta-kv-value highlight-red">${this.formatDisplayTime(exc.predictedETA || (shipment ? shipment.predictedETA : null))}</span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Delivery Commitment</span>
+                <span class="meta-kv-value">${shipment && shipment.deliveryCommitment ? this.formatDisplayTime(shipment.deliveryCommitment) : 'Standard Window'}</span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">SLA Breach Risk</span>
+                <span class="meta-kv-value">
+                  <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}">
+                    ${exc.slaRisk ? exc.slaRisk + ' Risk' : 'Within Tolerance'}
+                  </span>
+                </span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Customer Tier</span>
+                <span class="meta-kv-value">${shipment && shipment.customerTier ? shipment.customerTier : 'Standard'}</span>
+              </div>
+              <div class="meta-kv-item">
+                <span class="meta-kv-label">Carrier</span>
+                <span class="meta-kv-value">${carrier ? carrier.name : (shipment ? shipment.carrierId : 'In-fleet')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipment Events & Audit Timeline -->
+        <div class="investigation-panel">
+          <div class="investigation-panel-title" style="margin-bottom: 10px;">
+            <span style="font-size: 13.5px; font-weight: 700; color: #0F172A;">Event &amp; Audit Timeline</span>
+          </div>
+
+          <div class="timeline-stream" style="display: flex; flex-direction: column; gap: 8px;">
+            ${(exc.timeline || []).map(item => `
+              <div class="timeline-stream-item">
+                <div class="timeline-node-dot ${item.action.includes('Detected') ? 'alert' : item.action.includes('Accepted') ? 'success' : ''}"></div>
+                <div class="timeline-content-box" style="padding: 6px 12px;">
+                  <div class="timeline-content-header" style="margin-bottom: 2px;">
+                    <span class="timeline-action-text" style="font-weight: 700; color: #18217E; font-size: 12px;">${item.action}</span>
+                    <span class="timeline-timestamp" style="font-size: 11px; color: #64748B;">${AnalystDashboardView.formatTime(item.timestamp)}</span>
+                  </div>
+                  <div class="timeline-note-text" style="font-size: 11.5px; color: #334155;">${item.note}</div>
+                </div>
+              </div>
+            `).join('')}
+
+            ${(!exc.timeline || exc.timeline.length === 0) ? `
+              <div style="font-size: 11px; color: #64748B; padding: 8px 0;">
+                No recorded timeline transitions yet.
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Recommended Recovery Strategies -->
+        <div class="investigation-panel">
+          <div class="investigation-panel-title" style="margin-bottom: 12px;">
+            <span style="font-size: 13.5px; font-weight: 700; color: #0F172A;">Recommended Recovery Strategies</span>
+          </div>
+
+          <!-- Compact AI Recommendation Header -->
+          <div style="background: #F8FAFE; border: 1px solid #BFDBFE; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 12.5px; font-weight: 800; color: #18217E;">AI Recommendation: #1 ${recoveryOptions[0]?.strategy || 'Re-route'}</span>
+              <span class="badge" style="background: #EEF2FF; color: #18217E; border: 1px solid #C7D2FE; font-size: 10.5px; font-weight: 700;">
+                ${exc.aiConfidence || '96.4% Confidence'}
+              </span>
+              ${exc.aiRecommendationStatus === 'Accepted' ? `
+                <span class="badge" style="background: #EAF7EE; color: #1E8E3E; font-size: 10.5px; font-weight: 700;">✓ Accepted</span>
+              ` : exc.aiRecommendationStatus === 'Overridden' ? `
+                <span class="badge badge-danger" style="font-size: 10.5px; font-weight: 700;">⚠ Overridden</span>
+              ` : ''}
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button 
+                class="btn btn-primary btn-sm" 
+                style="background: #1E8E3E; border-color: #1E8E3E; font-size: 11px; font-weight: 700; padding: 4px 10px;"
+                onclick="AnalystInvestigationView.acceptAI('${exc.id}', '${recoveryOptions[0]?.strategy || 'Re-route'}');"
+                ${exc.aiRecommendationStatus === 'Accepted' ? 'disabled' : ''}
+              >
+                ✓ Accept Recommendation
+              </button>
+              <button 
+                class="btn btn-secondary btn-sm" 
+                style="font-size: 11px; font-weight: 700; color: #DC2626; padding: 4px 10px;"
+                onclick="AnalystInvestigationView.openOverrideAIModal('${exc.id}', '${recoveryOptions[0]?.strategy || 'Re-route'}')"
+              >
+                Override
+              </button>
+            </div>
+          </div>
+
+          ${linkedRecovery ? `
+            <div style="background: #F8FAFE; border: 1px solid #C7DCFA; border-radius: 8px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <span class="badge" style="background: #EBF3FC; color: #1967D2; font-weight: 700;">Recovery Active</span>
+                <span style="font-size: 12px; font-weight: 700; color: var(--color-royal-navy); margin-left: 6px;">${linkedRecovery.id} — ${linkedRecovery.recoveryStrategy}</span>
+                <div style="font-size: 11px; color: var(--color-charcoal); margin-top: 2px;">
+                  Status: <strong>${linkedRecovery.responseStatus}</strong> • Target Carrier: <strong>${linkedRecovery.requestedCarrierName || 'In-fleet'}</strong> • ETA Impact: <strong>${linkedRecovery.expectedEtaImpact}</strong>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-secondary btn-sm" onclick="AnalystInvestigationView.cancelActiveRecovery('${linkedRecovery.id}');" style="color: #EA341F; border-color: #FCA5A5; font-size: 11px;">
+                  Cancel Active Tender
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="UI.closeModal('generic-app-modal'); App.navigateTo('analyst_recoveries');" style="font-size: 11px;">
+                  View Recovery Execution →
+                </button>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="recovery-strategies-list">
+            ${recoveryOptions.map((opt, idx) => `
+              <div class="recovery-strategy-card ${opt.isRecommended ? 'recommended' : ''}">
+                <div class="strategy-left">
+                  <div class="strategy-rank-badge">#${idx + 1}</div>
+                  <div class="strategy-info">
+                    <div class="strategy-name-row">
+                      <span class="strategy-name" style="font-weight: 700; color: #0F172A; font-size: 13px;">${opt.strategy}</span>
+                      ${opt.isRecommended ? `<span class="strategy-pill recommended">Recommended</span>` : ''}
+                      <span class="badge" style="background: #EEF2F6; font-size: 10px; color: #475569;">Feasibility: ${opt.feasibility}</span>
+                    </div>
+                    <div class="strategy-desc" style="font-size: 12px; color: #475569; margin: 2px 0 4px 0;">${opt.rationale}</div>
+                    <div class="strategy-metrics-row" style="font-size: 11px; color: #64748B; display: flex; gap: 8px; align-items: center;">
+                      <span class="strategy-metric">ETA Impact: <strong style="color: #0F172A;">${opt.etaImpact}</strong></span>
+                      <span>•</span>
+                      <span class="strategy-metric">SLA Breach Risk: <strong style="color: #0F172A;">${opt.slaRiskMitigation}</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="flex-shrink: 0; align-self: center;">
+                  <button 
+                    class="btn ${opt.isRecommended ? 'btn-primary' : 'btn-secondary'} btn-sm" 
+                    style="padding: 5px 14px; font-size: 11.5px; font-weight: 600;"
+                    onclick="AnalystInvestigationView.openRecoveryForm('${opt.strategy}')"
+                  >
+                    ${linkedRecovery ? (linkedRecovery.recoveryStrategy === opt.strategy ? 'Revise Plan' : 'Switch Strategy') : 'Initiate Recovery'}
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+
+    UI.openModal('generic-app-modal', `Exception Details — ${exc.id}`, contentHtml, '920px');
+  },
+
   claimOwnership(exceptionId) {
     try {
       const currentUser = window.BRIDGES_AUTH.getCurrentUser();
       window.BRIDGES_STORE.takeOwnership(exceptionId, currentUser);
       UI.showToast(`Ownership taken for ${exceptionId}.`, 'success');
-      App.renderCurrentView();
+      if (window.App) App.renderCurrentView();
+      if (document.getElementById('generic-app-modal')?.classList.contains('active')) {
+        this.openModal(exceptionId);
+      }
     } catch (err) {
       UI.showToast(err.message, 'error');
     }
