@@ -187,11 +187,11 @@ const AnalystQueueView = {
                 <colgroup>
                   <col style="width: 14%;">
                   <col style="width: 13%;">
-                  <col style="width: 16%;">
-                  <col style="width: 11%;">
                   <col style="width: 18%;">
-                  <col style="width: 14%;">
-                  <col style="width: 14%;">
+                  <col style="width: 11%;">
+                  <col style="width: 20%;">
+                  <col style="width: 11%;">
+                  <col style="width: 13%;">
                 </colgroup>
                 <thead>
                   <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
@@ -241,12 +241,9 @@ const AnalystQueueView = {
                           <span style="font-size: 12px; color: #334155; font-weight: 500;">📍 ${exc.location || 'Route Hub'}</span>
                         </td>
                         <td style="padding: 12px 14px; vertical-align: middle;">
-                          <div style="display: flex; align-items: center; gap: 6px;">
-                            <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}" style="font-size: 10px; padding: 2px 7px; font-weight: 700;">
-                              ${exc.slaRisk || 'Nominal'}
-                            </span>
-                            <span style="font-weight: 700; color: #DC2626; font-size: 12px; font-family: 'JetBrains Mono', Consolas, monospace;">${impactAmount}</span>
-                          </div>
+                          <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}" style="font-size: 10.5px; padding: 2.5px 8px; font-weight: 700; display: inline-block;">
+                            ${exc.slaRisk || 'Nominal'}
+                          </span>
                         </td>
                         <td style="padding: 12px 14px; text-align: right; vertical-align: middle;">
                           <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
