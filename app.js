@@ -147,7 +147,7 @@ const App = {
       'dashboard', 'users', 'carriers', 'resources', 'analytics', 'exceptions', 'audit', 'settings', 'login', 'sla_rules', 'notifications_config', 'ai_config',
       
       // Control Tower Analyst routes (Phase 2, US-17 to US-43)
-      'analyst_dashboard', 'analyst_shipments', 'analyst_onboarding', 'analyst_data_quality',
+      'analyst_dashboard', 'analyst_shipments', 'analyst_onboarding',
       'analyst_queue', 'analyst_investigation', 
       'analyst_war_room', 'analyst_recoveries', 'analyst_events', 'analyst_history',
 
@@ -1186,16 +1186,6 @@ const App = {
             </div>
           </div>
         </li>
-
-        <!-- 10. Data Quality Management -->
-        <li>
-          <div class="nav-link ${this.currentView === 'analyst_data_quality' ? 'active' : ''}" data-view="analyst_data_quality" onclick="App.navigateTo('analyst_data_quality')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.audit(17)}</span>
-              <span class="nav-label">Data Quality Mgmt</span>
-            </div>
-          </div>
-        </li>
       </ul>
     `;
   },
@@ -2048,8 +2038,8 @@ const App = {
           this.navigateTo('analyst_dashboard');
           return;
         case 'analyst_data_quality':
-          html = window.AnalystDataQualityView ? window.AnalystDataQualityView.render() : '';
-          break;
+          this.navigateTo('analyst_dashboard');
+          return;
         case 'analyst_queue':
           html = window.AnalystQueueView ? window.AnalystQueueView.render() : '';
           break;
