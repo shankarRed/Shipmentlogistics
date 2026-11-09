@@ -185,20 +185,20 @@ const AnalystQueueView = {
             <div class="table-responsive" style="overflow-x: hidden; width: 100%;">
               <table class="data-table" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                 <colgroup>
-                  <col style="width: 14%;">
-                  <col style="width: 13%;">
+                  <col style="width: 15%;">
+                  <col style="width: 11%;">
                   <col style="width: 18%;">
-                  <col style="width: 11%;">
-                  <col style="width: 20%;">
-                  <col style="width: 11%;">
-                  <col style="width: 13%;">
+                  <col style="width: 14%;">
+                  <col style="width: 18%;">
+                  <col style="width: 10%;">
+                  <col style="width: 14%;">
                 </colgroup>
                 <thead>
                   <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
                     <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Exception &amp; Time</th>
                     <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Shipment</th>
                     <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Deviation Type</th>
-                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Severity</th>
+                    <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Status</th>
                     <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">Location</th>
                     <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: left;">SLA Risk</th>
                     <th style="padding: 12px 14px; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; text-align: right;">Action</th>
@@ -212,29 +212,20 @@ const AnalystQueueView = {
                     return `
                       <tr style="cursor: pointer; border-bottom: 1px solid #F1F5F9; transition: background 0.15s;" onclick="AnalystQueueView.openInvestigation('${exc.id}')" onmouseover="this.style.background='#F8FAFE'" onmouseout="this.style.background='transparent'">
                         <td style="padding: 12px 14px; vertical-align: middle;">
-                          <div style="display: flex; flex-direction: column; gap: 2px;">
-                            <div>
-                              <span style="font-weight: 700; color: #18217E; font-size: 12px; font-family: 'JetBrains Mono', Consolas, monospace; background: #EEF2FF; border: 1px solid #C7D2FE; padding: 2px 7px; border-radius: 4px; display: inline-block;">${exc.id}</span>
-                            </div>
-                            <span style="font-size: 11px; color: #64748B;">${AnalystDashboardView.formatTime(exc.detectionTime)}</span>
+                          <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: 700; color: #18217E; font-size: 12px; font-family: 'JetBrains Mono', Consolas, monospace; background: #EEF2FF; border: 1px solid #C7D2FE; padding: 2.5px 7px; border-radius: 4px; display: inline-block;">${exc.id}</span>
+                            <span style="font-size: 11px; color: #64748B; font-weight: 500;">${AnalystDashboardView.formatTime(exc.detectionTime)}</span>
                           </div>
                         </td>
                         <td style="padding: 12px 14px; vertical-align: middle;">
-                          <div style="display: flex; flex-direction: column; gap: 3px;">
-                            <span style="font-weight: 700; color: #0F172A; font-size: 12.5px;">${exc.shipmentId}</span>
-                            <div>
-                              <span style="font-size: 10.5px; padding: 1.5px 6px; border-radius: 4px; font-weight: 600; display: inline-block; ${exc.status === 'Open' ? 'background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;' : exc.status === 'Investigating' ? 'background: #EBF3FC; color: #1967D2; border: 1px solid #BFDBFE;' : exc.status === 'Recovery in Progress' ? 'background: #F3E8FF; color: #6D28D9; border: 1px solid #DDD6FE;' : 'background: #EAF7EE; color: #1E8E3E; border: 1px solid #BBF7D0;'}">
-                                ${exc.status}
-                              </span>
-                            </div>
-                          </div>
+                          <span style="font-weight: 700; color: #0F172A; font-size: 12.5px;">${exc.shipmentId}</span>
                         </td>
                         <td style="padding: 12px 14px; vertical-align: middle;">
                           <span style="font-weight: 700; color: #0F172A; font-size: 12.5px;">${exc.type}</span>
                         </td>
                         <td style="padding: 12px 14px; vertical-align: middle;">
-                          <span class="badge ${AnalystDashboardView.getSeverityBadgeClass(exc.severity)}" style="font-size: 11px; padding: 3px 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-                            ${exc.severity === 'Critical' ? '⛔' : exc.severity === 'High' ? '⚠️' : 'ℹ️'} ${exc.severity}
+                          <span style="font-size: 11px; padding: 2.5px 8px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; ${exc.status === 'Open' ? 'background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;' : exc.status === 'Investigating' ? 'background: #EBF3FC; color: #1967D2; border: 1px solid #BFDBFE;' : exc.status === 'Recovery in Progress' ? 'background: #F3E8FF; color: #6D28D9; border: 1px solid #DDD6FE;' : 'background: #EAF7EE; color: #1E8E3E; border: 1px solid #BBF7D0;'}">
+                            <span style="width: 5px; height: 5px; border-radius: 50%; background: currentColor;"></span> ${exc.status}
                           </span>
                         </td>
                         <td style="padding: 12px 14px; vertical-align: middle;">
