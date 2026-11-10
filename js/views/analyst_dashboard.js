@@ -52,11 +52,11 @@ const AnalystDashboardView = {
 
         <!-- 4 Compact Prototype KPI Cards (US-17 to US-30) -->
         <div class="analyst-kpi-grid">
-          <!-- KPI 1: Active Shipments (Pastel Mint Green) -->
-          <div class="analyst-proto-card" onclick="App.navigateTo('analyst_shipments')" title="View Active Shipments">
+          <!-- KPI 1: Shipments (Pastel Mint Green) -->
+          <div class="analyst-proto-card" onclick="App.navigateTo('analyst_shipments')" title="View Shipments">
             <div class="analyst-proto-banner banner-active">
               <div class="analyst-proto-icon">${Icons.truck ? Icons.truck(16) : ''}</div>
-              <span class="analyst-proto-title">Active Shipments</span>
+              <span class="analyst-proto-title">Shipments</span>
             </div>
             <div class="analyst-proto-value">${metrics.activeShipments}</div>
             <div class="analyst-proto-bottom">

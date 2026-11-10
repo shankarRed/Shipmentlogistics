@@ -86,7 +86,7 @@ const AnalystShipmentsView = {
         <div class="page-header mb-3" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <h2 style="font-size: 18px; font-weight: 800; color: var(--color-midnight); margin: 0;">Active Shipments Registry</h2>
+              <h2 style="font-size: 18px; font-weight: 800; color: var(--color-midnight); margin: 0;">Shipments Registry</h2>
               <span class="role-indicator-pill">Live Operations</span>
             </div>
             <p style="font-size: 12px; color: var(--color-charcoal); margin: 3px 0 0 0;">

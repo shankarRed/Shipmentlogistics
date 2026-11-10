@@ -54,7 +54,7 @@ All demo accounts share the password **`1`**. Users can switch roles directly us
 * **Mission:** Real-time operations oversight, continuous telemetry monitoring, exception triage, root cause diagnostics, and collaborative War Room incident mitigation.
 * **Pages & Screens:**
   * **Control Tower Dashboard (`#/analyst_dashboard`):** Operations overview, active shipment counters, open exception breakdown, and live transit corridor topology.
-  * **Active Shipments (`#/analyst_shipments`):** Filter in-flight freight by priority, mode, or hub. View real-time GPS coordinates, vehicle battery, temperature, and ETA confidence.
+  * **Shipments (`#/analyst_shipments`):** Filter in-flight freight by priority, mode, or hub. View real-time GPS coordinates, vehicle battery, temperature, and ETA confidence.
   * **Exception Queue (`#/analyst_queue`):** Triage board sorted by severity (Critical, High, Medium) with SLA countdown timers. Example: Inspect thermal spike on `BRG-2843`.
   * **Investigation Workspace (`#/analyst_investigation`):** Deep-dive forensic tool: interactive sensor telemetry graphs, historical geofence breadcrumbs, radar overlays, and direct carrier calling.
   * **War Room (`#/analyst_war_room`):** Multi-party crisis conference: live incident chat, situation reports, recovery action proposals, and team consensus voting.

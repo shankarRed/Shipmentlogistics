@@ -1124,12 +1124,12 @@ const App = {
           </div>
         </li>
 
-        <!-- 2. Active Shipments -->
+        <!-- 2. Shipments -->
         <li>
           <div class="nav-link ${this.currentView === 'analyst_shipments' ? 'active' : ''}" data-view="analyst_shipments" onclick="App.navigateTo('analyst_shipments')">
             <div class="nav-link-left">
               <span class="nav-icon">${Icons.package(17)}</span>
-              <span class="nav-label">Active Shipments</span>
+              <span class="nav-label">Shipments</span>
             </div>
           </div>
         </li>
@@ -1796,7 +1796,7 @@ const App = {
 
       // Analyst views (Phase 2)
       analyst_dashboard: 'Control Tower Dashboard',
-      analyst_shipments: 'Active Shipments',
+      analyst_shipments: 'Shipments',
       analyst_onboarding: 'Shipment & Order Onboarding',
       analyst_inbound: 'Inbound Message Monitoring & Integration Errors',
       analyst_data_quality: 'Data Quality Management & Governance',
