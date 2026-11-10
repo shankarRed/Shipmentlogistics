@@ -229,7 +229,7 @@ const AnalystQueueView = {
                           <span style="font-size: 12px; color: #334155; font-weight: 500;">📍 ${exc.location || 'Route Hub'}</span>
                         </td>
                         <td style="padding: 12px 14px; vertical-align: middle;">
-                          <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}" style="font-size: 10.5px; padding: 2.5px 8px; font-weight: 700; display: inline-block;">
+                          <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRisk.toLowerCase() : 'none'}" style="font-size: 10.5px; padding: 2.5px 8px; font-weight: 700; display: inline-block;">
                             ${exc.slaRisk || 'Nominal'}
                           </span>
                         </td>

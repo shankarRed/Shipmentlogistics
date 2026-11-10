@@ -340,7 +340,7 @@ const AnalystDashboardView = {
                           </span>
                         </td>
                         <td>
-                          <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}">
+                          <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRisk.toLowerCase() : 'none'}">
                             ${exc.slaRisk || 'Nominal'}
                           </span>
                         </td>

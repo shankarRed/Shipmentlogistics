@@ -8819,7 +8819,7 @@ class Store {
 
   updatePickingProgress(shipmentId, sku, pickedQty, notes) {
     const task = this.getPickingPacking(shipmentId);
-    const item = (taREDACTED || []).find(i => i.sku === sku);
+    const item = (task.items || []).find(i => i.sku === sku);
     if (!item) throw new Error(`Item ${sku} not found for shipment.`);
 
     const qty = parseInt(pickedQty, 10);
@@ -8827,25 +8827,25 @@ class Store {
     if (qty > item.requiredQty) throw new Error(`Picked quantity (${qty}) cannot exceed required quantity (${item.requiredQty}).`);
 
     item.pickedQty = qty;
-    taREDACTED = taREDACTED((sum, i) => sum + (i.pickedQty || 0), 0);
+    task.totalPicked = (task.items || []).reduce((sum, i) => sum + (i.pickedQty || 0), 0);
 
-    const prevStatus = taREDACTED;
-    if (taREDACTED === taREDACTED) {
-      taREDACTED = "Completed";
-    } else if (taREDACTED > 0) {
-      taREDACTED = "In Progress";
+    const prevStatus = task.pickingStatus;
+    if (task.totalPicked === task.totalRequired) {
+      task.pickingStatus = "Completed";
+    } else if (task.totalPicked > 0) {
+      task.pickingStatus = "In Progress";
     } else {
-      taREDACTED = "Not Started";
+      task.pickingStatus = "Not Started";
     }
 
-    if (notes) taREDACTED = notes;
-    taREDACTED = new Date().toISOString();
+    if (notes) task.operationalNotes = notes;
+    task.updatedAt = new Date().toISOString();
 
     // Sync to readiness
     const readiness = this.getWarehouseReadiness(shipmentId);
     if (readiness && readiness.checklist && readiness.checklist.pickingCompleted) {
-      readiness.checklist.pickingCompleted.status = taREDACTED === 'Completed' ? 'Ready' : (taREDACTED === 'In Progress' ? 'In Progress' : 'Not Started');
-      readiness.checklist.pickingCompleted.notes = `Picked ${taREDACTED}/${taREDACTED} units`;
+      readiness.checklist.pickingCompleted.status = task.pickingStatus === 'Completed' ? 'Ready' : (task.pickingStatus === 'In Progress' ? 'In Progress' : 'Not Started');
+      readiness.checklist.pickingCompleted.notes = `Picked ${task.totalPicked}/${task.totalRequired} units`;
       this.recalculateReadinessStatus(readiness);
     }
 
@@ -8853,8 +8853,8 @@ class Store {
       "Picking Progress Recorded",
       shipmentId,
       prevStatus,
-      taREDACTED,
-      `Picked ${qty}/${item.requiredQty} of ${item.name} (${sku}). Total picked: ${taREDACTED}/${taREDACTED}.`
+      task.pickingStatus,
+      `Picked ${qty}/${item.requiredQty} of ${item.name} (${sku}). Total picked: ${task.totalPicked}/${task.totalRequired}.`
     );
 
     this.save();
@@ -8863,7 +8863,7 @@ class Store {
 
   updatePackingProgress(shipmentId, sku, packedQty, notes) {
     const task = this.getPickingPacking(shipmentId);
-    const item = (taREDACTED || []).find(i => i.sku === sku);
+    const item = (task.items || []).find(i => i.sku === sku);
     if (!item) throw new Error(`Item ${sku} not found for shipment.`);
 
     const qty = parseInt(packedQty, 10);
@@ -8871,25 +8871,25 @@ class Store {
     if (qty > item.pickedQty) throw new Error(`Packed quantity (${qty}) cannot exceed already picked quantity (${item.pickedQty}). Complete picking first.`);
 
     item.packedQty = qty;
-    taREDACTED = taREDACTED((sum, i) => sum + (i.packedQty || 0), 0);
+    task.totalPacked = (task.items || []).reduce((sum, i) => sum + (i.packedQty || 0), 0);
 
-    const prevStatus = taREDACTED;
-    if (taREDACTED === taREDACTED && taREDACTED === taREDACTED) {
-      taREDACTED = "Completed";
-    } else if (taREDACTED > 0) {
-      taREDACTED = "In Progress";
+    const prevStatus = task.packingStatus;
+    if (task.totalPacked === task.totalRequired && task.totalPicked === task.totalRequired) {
+      task.packingStatus = "Completed";
+    } else if (task.totalPacked > 0) {
+      task.packingStatus = "In Progress";
     } else {
-      taREDACTED = "Not Started";
+      task.packingStatus = "Not Started";
     }
 
-    if (notes) taREDACTED = notes;
-    taREDACTED = new Date().toISOString();
+    if (notes) task.operationalNotes = notes;
+    task.updatedAt = new Date().toISOString();
 
     // Sync to readiness
     const readiness = this.getWarehouseReadiness(shipmentId);
     if (readiness && readiness.checklist && readiness.checklist.packingCompleted) {
-      readiness.checklist.packingCompleted.status = taREDACTED === 'Completed' ? 'Ready' : (taREDACTED === 'In Progress' ? 'In Progress' : 'Not Started');
-      readiness.checklist.packingCompleted.notes = `Packed ${taREDACTED}/${taREDACTED} units`;
+      readiness.checklist.packingCompleted.status = task.packingStatus === 'Completed' ? 'Ready' : (task.packingStatus === 'In Progress' ? 'In Progress' : 'Not Started');
+      readiness.checklist.packingCompleted.notes = `Packed ${task.totalPacked}/${task.totalRequired} units`;
       this.recalculateReadinessStatus(readiness);
     }
 
@@ -8897,8 +8897,8 @@ class Store {
       "Packing Progress Recorded",
       shipmentId,
       prevStatus,
-      taREDACTED,
-      `Packed ${qty}/${item.pickedQty} of ${item.name} (${sku}). Total packed: ${taREDACTED}/${taREDACTED}.`
+      task.packingStatus,
+      `Packed ${qty}/${item.pickedQty} of ${item.name} (${sku}). Total packed: ${task.totalPacked}/${task.totalRequired}.`
     );
 
     this.save();
@@ -8908,14 +8908,14 @@ class Store {
   reportCargoIssue(shipmentId, sku, issueType, quantity, description) {
     if (!description || !description.trim()) throw new Error("A description of the cargo discrepancy or damage is mandatory.");
     const task = this.getPickingPacking(shipmentId);
-    const item = (taREDACTED || []).find(i => i.sku === sku);
+    const item = (task.items || []).find(i => i.sku === sku);
 
     if (item) {
       item.condition = issueType;
     }
 
-    taREDACTED(`${issueType}: ${quantity} units of ${item ? item.name : sku}. ${description.trim()}`);
-    taREDACTED = "Blocked";
+    task.blockers.push(`${issueType}: ${quantity} units of ${item ? item.name : sku}. ${description.trim()}`);
+    task.packingStatus = "Blocked";
 
     // Create warehouse blocker
     this.createWarehouseBlocker({
@@ -11307,7 +11307,7 @@ class Store {
       timestamp: now,
       actor: author,
       action: "Inspection Task Dispatched",
-      note: `Triggered physical inspection task ${taskId} assigned to ${exc.inspectionTaREDACTED}.`
+      note: `Triggered physical inspection task ${taskId} assigned to ${exc.inspectionTask.inspectorAssigned}.`
     });
 
     this.logAudit("Inspection Task Dispatched", "Exceptions", exceptionId, `Dispatched inspection ${taskId} for ${exceptionId}.`);
@@ -11339,7 +11339,7 @@ class Store {
       timestamp: now,
       actor: author,
       action: "Customs Broker Task Triggered",
-      note: `Customs task ${taskId} issued to ${exc.customsTaREDACTED}.`
+      note: `Customs task ${taskId} issued to ${exc.customsTask.brokerName}.`
     });
 
     this.logAudit("Customs Task Triggered", "Exceptions", exceptionId, `Issued customs task ${taskId} for ${exceptionId}.`);

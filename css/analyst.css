@@ -439,9 +439,9 @@
   border-radius: var(--radius-full);
 }
 
-.badge-sla-riREDACTED { background: #FDE8E6; color: var(--color-signal-red); }
-.badge-sla-riREDACTED { background: #FEF3D6; color: #B45309; }
-.badge-sla-riREDACTED { background: #EAF7EE; color: #1E8E3E; }
+.badge-sla-risk.critical, .badge-sla-risk-critical { background: #FDE8E6; color: var(--color-signal-red); }
+.badge-sla-risk.high, .badge-sla-risk-high { background: #FEF3D6; color: #B45309; }
+.badge-sla-risk.medium, .badge-sla-risk-medium, .badge-sla-risk.low, .badge-sla-risk-low { background: #EAF7EE; color: #1E8E3E; }
 
 /* --- INVESTIGATION WORKSPACE (US-22 to US-32) --- */
 .investigation-workspace {

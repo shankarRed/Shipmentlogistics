@@ -158,7 +158,7 @@ const AnalystInvestigationView = {
               <div class="meta-kv-item">
                 <span class="meta-kv-label">SLA Breach Risk</span>
                 <span class="meta-kv-value">
-                  <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}">
+                  <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRisk.toLowerCase() : 'none'}">
                     ${exc.slaRisk ? exc.slaRisk + ' Risk' : 'Within Tolerance'}
                   </span>
                 </span>
@@ -251,13 +251,13 @@ const AnalystInvestigationView = {
                 <!-- Operational Tasks Active Banner -->
                 ${exc.inspectionTask ? `
                   <div style="background: #EAF7EE; border: 1px solid #B7EB8F; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; font-size: 11px; color: #1E8E3E;">
-                    <strong>✓ Inspection Task Dispatched (${exc.inspectionTaREDACTED}):</strong> Assigned to ${exc.inspectionTaREDACTED} • Status: ${exc.inspectionTaREDACTED}.
+                    <strong>✓ Inspection Task Dispatched (${exc.inspectionTask.id || 'TSK'}):</strong> Assigned to ${exc.inspectionTask.inspectorAssigned || 'Staff'} • Status: ${exc.inspectionTask.status || 'Dispatched'}.
                   </div>
                 ` : ''}
 
                 ${exc.customsTask ? `
                   <div style="background: #EBF3FC; border: 1px solid #C7DCFA; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; font-size: 11px; color: #18217E;">
-                    <strong>✓ Customs Document Task (${exc.customsTaREDACTED}):</strong> Broker: ${exc.customsTaREDACTED} • Status: ${exc.customsTaREDACTED}.
+                    <strong>✓ Customs Document Task (${exc.customsTask.id || 'TSK'}):</strong> Broker: ${exc.customsTask.brokerName || 'Customs Broker'} • Status: ${exc.customsTask.status || 'Contacted'}.
                   </div>
                 ` : ''}
               </div>
@@ -403,7 +403,7 @@ const AnalystInvestigationView = {
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 15px; font-weight: 800; color: #0F172A;">${exc.id} &bull; ${exc.type}</span>
             <span class="badge" style="background: #EEF2F6; color: #0F172A; font-weight: 600;">${exc.status}</span>
-            <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}">${exc.slaRisk || 'Nominal'} Risk</span>
+            <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRisk.toLowerCase() : 'none'}">${exc.slaRisk || 'Nominal'} Risk</span>
           </div>
 
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -487,7 +487,7 @@ const AnalystInvestigationView = {
               <div class="meta-kv-item">
                 <span class="meta-kv-label">SLA Breach Risk</span>
                 <span class="meta-kv-value">
-                  <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRiREDACTED() : 'none'}">
+                  <span class="badge-sla-risk ${exc.slaRisk ? exc.slaRisk.toLowerCase() : 'none'}">
                     ${exc.slaRisk ? exc.slaRisk + ' Risk' : 'Within Tolerance'}
                   </span>
                 </span>

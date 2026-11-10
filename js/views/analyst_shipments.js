@@ -405,7 +405,7 @@ const AnalystShipmentsView = {
             </button>
             <div style="text-align: right;">
               <div style="font-size: 11px; color: var(--color-muted-sage);">SLA Breach Threshold</div>
-              <div class="badge-sla-risk ${shipment.slaRisk ? shipment.slaRiREDACTED() : 'none'}">
+              <div class="badge-sla-risk ${shipment.slaRisk ? shipment.slaRisk.toLowerCase() : 'none'}">
                 Risk: ${shipment.slaRisk || 'Nominal'}
               </div>
             </div>
