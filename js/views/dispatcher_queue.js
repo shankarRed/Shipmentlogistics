@@ -161,12 +161,12 @@ const DispatcherQueueView = {
               <table class="data-table" style="width: 100%; font-size: 12px; border-collapse: collapse;">
                 <thead>
                   <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
-                    <th style="padding: 10px 12px; width: 13%;">Exception &amp; Time</th>
+                    <th style="padding: 10px 12px; width: 14%;">Exception</th>
                     <th style="padding: 10px 12px; width: 22%;">Shipment &amp; Customer</th>
                     <th style="padding: 10px 12px; width: 20%;">Deviation &amp; Severity</th>
-                    <th style="padding: 10px 12px; width: 17%;">Carrier &amp; Predicted ETA</th>
-                    <th style="padding: 10px 12px; width: 13%;">AI Strategy</th>
-                    <th style="padding: 10px 12px; width: 15%; text-align: right;">Action</th>
+                    <th style="padding: 10px 12px; width: 16%;">Carrier</th>
+                    <th style="padding: 10px 12px; width: 14%;">AI Strategy</th>
+                    <th style="padding: 10px 12px; width: 14%; text-align: right;">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -176,48 +176,30 @@ const DispatcherQueueView = {
                     const isHigh = exc.severity === 'High';
                     const aiRec = this.getAiRecommendation(exc, shipment);
                     const customerName = shipment.customerName || (exc.shipmentId === 'BRG-2848' ? 'BioPharma Health Alliance' : exc.shipmentId === 'BRG-2847' ? 'Apex Dynamics Corp' : 'Global Maritime Energy');
-                    const cargoDesc = shipment.cargoDescription || (exc.type === 'Temperature Breach' ? 'Biologics & Vaccines' : 'Industrial Assemblies');
-                    const cargoVal = shipment.cargoValue || (exc.type === 'Temperature Breach' ? '$185,000' : '$92,000');
-                    const owner = exc.assignedAnalyst || 'Unclaimed';
-                    const isUnclaimed = !exc.assignedAnalyst || exc.assignedAnalyst === 'Unassigned';
                     const carrierName = shipment.carrier || shipment.carrierName || 'Bridges Global';
 
                     return `
                       <tr style="border-bottom: 1px solid #F1F5F9; transition: background 0.15s;" onmouseover="this.style.background='#F8FAFE'" onmouseout="this.style.background='transparent'">
                         <td style="padding: 10px 12px;">
                           <div style="font-weight: 800; color: #18217E; font-size: 12.5px;">${exc.id}</div>
-                          <div style="font-size: 11px; color: #64748B; margin-top: 2px;">${this.formatTime(exc.detectionTime)}</div>
+                        </td>
+
+                        <td style="padding: 10px 12px;">
+                          <div style="font-weight: 800; color: #070724; font-size: 12px;">${exc.shipmentId}</div>
+                          <div style="font-size: 11px; font-weight: 600; color: #18217E; margin-top: 1px;">${customerName}</div>
                         </td>
 
                         <td style="padding: 10px 12px;">
                           <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-weight: 800; color: #070724; font-size: 12px;">${exc.shipmentId}</span>
-                            <span style="font-size: 10.5px; font-weight: 700; color: #1E8E3E;">${cargoVal}</span>
-                          </div>
-                          <div style="font-size: 11px; font-weight: 600; color: #18217E; margin-top: 1px;">${customerName}</div>
-                          <div style="font-size: 10px; color: #64748B;">${cargoDesc}</div>
-                        </td>
-
-                        <td style="padding: 10px 12px;">
-                          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
                             <span style="font-weight: 700; color: #070724;">${exc.type}</span>
                             <span class="severity-badge ${isCritical ? 'badge-danger' : isHigh ? 'badge-warning' : 'badge-secondary'}" style="font-size: 9.5px; padding: 1px 6px;">
                               ${exc.severity}
                             </span>
                           </div>
-                          <div style="font-size: 10.5px; color: #475569; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${exc.reason}">
-                            ${exc.reason}
-                          </div>
                         </td>
 
                         <td style="padding: 10px 12px;">
                           <div style="font-weight: 600; color: #070724; font-size: 11.5px;">${carrierName}</div>
-                          <div style="font-size: 11px; font-weight: 700; color: ${exc.slaRisk === 'Critical' ? 'var(--color-signal-red)' : '#18217E'}; margin-top: 2px;">
-                            ETA: ${this.formatTime(exc.predictedETA || shipment.predictedETA)}
-                            <span class="badge ${exc.slaRisk === 'Critical' ? 'badge-danger' : exc.slaRisk === 'High' ? 'badge-warning' : 'badge-success'}" style="font-size: 9px; padding: 1px 5px; margin-left: 3px;">
-                              SLA: ${exc.slaRisk || 'Moderate'}
-                            </span>
-                          </div>
                         </td>
 
                         <td style="padding: 10px 12px;">
@@ -228,13 +210,7 @@ const DispatcherQueueView = {
                         </td>
 
                         <td style="padding: 10px 12px; text-align: right;">
-                          <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
-                            <button class="btn btn-secondary btn-sm" 
-                                    title="View Route & Map"
-                                    onclick="DispatcherQueueView.openMapModal('${shipment.id}', '${exc.id}')"
-                                    style="padding: 4px 7px; font-size: 11px;">
-                              Map
-                            </button>
+                          <div style="display: flex; justify-content: flex-end; align-items: center;">
                             <button class="btn btn-primary btn-sm" 
                                     title="Plan Recovery Strategy"
                                     onclick="App.navigateTo('dispatcher_planning'); setTimeout(() => DispatcherPlanningView.selectException('${exc.id}', '${aiRec.strategy}'), 50);"
