@@ -16,8 +16,6 @@ const DispatcherDashboardView = {
     const metrics = window.BRIDGES_STORE.getDispatcherMetrics();
     const exceptions = window.BRIDGES_STORE.getExceptions();
     const recoveryRequests = window.BRIDGES_STORE.getRecoveryRequests();
-    const shipments = window.BRIDGES_STORE.getShipments();
-    const escalations = window.BRIDGES_STORE.getEscalations();
 
     // Actionable exceptions for priority recovery queue
     const actionable = exceptions.filter(e => 
@@ -28,41 +26,6 @@ const DispatcherDashboardView = {
     // Calculate recovery status totals for progress bars
     const recCounts = metrics.recoveryStatusCounts;
     const totalRecs = Math.max(1, (recCounts.awaitingCarrier + recCounts.accepted + recCounts.rejected + recCounts.inProgress + recCounts.completed + recCounts.failed));
-
-    // Operational alerts
-    const alerts = [];
-    const rejections = recoveryRequests.filter(r => r.responseStatus === 'Rejected');
-    rejections.forEach(r => {
-      alerts.push({
-        type: 'alert-rejection',
-        title: `Carrier Rejection — Request ${r.id}`,
-        desc: `${r.requestedCarrierName || 'Carrier'} rejected ${r.recoveryStrategy} for ${r.shipmentId}: "${r.rejectionReason || 'No capacity available'}"`,
-        meta: `Shipment ${r.shipmentId} · Choose Alternate Carrier`,
-        actionView: 'dispatcher_recoveries'
-      });
-    });
-
-    const criticalExceptions = exceptions.filter(e => e.severity === 'Critical' && e.status !== 'Closed' && e.status !== 'Resolved');
-    criticalExceptions.forEach(e => {
-      alerts.push({
-        type: 'alert-sla',
-        title: `Critical SLA Risk — Exception ${e.id}`,
-        desc: `${e.reason} on ${e.shipmentId}. Delivery commitment threatened.`,
-        meta: `Predicted ETA: ${e.predictedETA || 'Delayed'} · SLA Risk: Critical`,
-        actionView: 'dispatcher_queue'
-      });
-    });
-
-    const activeEscalations = escalations.filter(esc => esc.status !== 'Resolved');
-    activeEscalations.forEach(esc => {
-      alerts.push({
-        type: 'alert-resource',
-        title: `Operational Escalation — ${esc.id}`,
-        desc: `${esc.escalationReason} [${esc.priority} Priority]`,
-        meta: `Deadline: ${esc.decisionDeadline || 'Within 2 Hours'} · Status: ${esc.status}`,
-        actionView: 'dispatcher_escalations'
-      });
-    });
 
     return `
       <div class="analyst-page-container animate-fade-in">
@@ -288,100 +251,6 @@ const DispatcherDashboardView = {
 
             <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--color-light-blue-grey); font-size: 11px; color: var(--color-muted-sage); text-align: center;">
               Derived from ${recoveryRequests.length} recorded recovery requests in shared store.
-            </div>
-          </div>
-        </div>
-
-        <!-- BOTTOM SPLIT: SCHEMATIC CORRIDOR ROUTE MAP & OPERATIONAL ALERTS -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-          <!-- Left: Shipment Operations Corridor Map -->
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-title-wrap">
-                <span class="panel-title">Shipment Operations Corridor</span>
-                <span class="badge badge-secondary" style="font-size: 10px;">Schematic Route View</span>
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="App.navigateTo('dispatcher_tracking')">
-                Open Tracking
-              </button>
-            </div>
-
-            <div class="schematic-svg-wrap" style="height: 240px;">
-              <svg width="100%" height="100%" viewBox="0 0 680 240" preserveAspectRatio="xMidYMid meet">
-                <defs>
-                  <linearGradient id="corridorGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#18217E" stop-opacity="0.9"/>
-                    <stop offset="100%" stop-color="#424989" stop-opacity="0.9"/>
-                  </linearGradient>
-                  <filter id="corridorGlow">
-                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#18217E" flood-opacity="0.25"/>
-                  </filter>
-                </defs>
-
-                <!-- Gridlines -->
-                <line x1="40" y1="60" x2="640" y2="60" stroke="#E5EBEE" stroke-width="1" stroke-dasharray="4 4"/>
-                <line x1="40" y1="120" x2="640" y2="120" stroke="#E5EBEE" stroke-width="1" stroke-dasharray="4 4"/>
-                <line x1="40" y1="180" x2="640" y2="180" stroke="#E5EBEE" stroke-width="1" stroke-dasharray="4 4"/>
-
-                <!-- Main Arterial Corridor Path -->
-                <path d="M 60 120 Q 200 40 340 120 T 620 120" fill="none" stroke="url(#corridorGrad)" stroke-width="4" stroke-linecap="round"/>
-
-                <!-- Detour Bypass Corridor Path (Dashed) -->
-                <path d="M 340 120 C 400 190, 520 190, 620 120" fill="none" stroke="#EA341F" stroke-width="2.5" stroke-dasharray="6 4" opacity="0.85"/>
-                <text x="460" y="195" fill="#8C2527" font-size="10" font-weight="700">Proposed Detour Bypass</text>
-
-                <!-- Corridor Nodes -->
-                <circle cx="60" cy="120" r="8" fill="#18217E"/>
-                <circle cx="60" cy="120" r="4" fill="#FFFFFF"/>
-                <text x="60" y="145" fill="#070724" font-size="11" font-weight="700" text-anchor="middle">Capital Knot Hub</text>
-
-                <circle cx="340" cy="120" r="9" fill="#EA341F" filter="url(#corridorGlow)"/>
-                <circle cx="340" cy="120" r="4" fill="#FFFFFF"/>
-                <text x="340" y="105" fill="#EA341F" font-size="11" font-weight="800" text-anchor="middle">⚠️ Highway 4 Rockfall</text>
-
-                <circle cx="620" cy="120" r="8" fill="#18217E"/>
-                <circle cx="620" cy="120" r="4" fill="#FFFFFF"/>
-                <text x="620" y="145" fill="#070724" font-size="11" font-weight="700" text-anchor="middle">Lake Knot Hub</text>
-              </svg>
-            </div>
-            <div style="font-size: 11px; color: var(--color-muted-sage); text-align: center; margin-top: 6px;">
-              Live corridor visualization reflecting real-time routing deviations.
-            </div>
-          </div>
-
-          <!-- Right: Operational Alerts -->
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-title-wrap">
-                <span class="panel-title">Operational Alerts Stream</span>
-                <span class="badge ${alerts.length > 0 ? 'badge-danger' : 'badge-success'}" style="font-size: 10px;">
-                  ${alerts.length} Flagged
-                </span>
-              </div>
-              <button class="btn-icon-subtle" onclick="App.navigateTo('dispatcher_escalations')" title="View Escalations">
-                ${Icons.escalation(15)}
-              </button>
-            </div>
-
-            <div class="dispatcher-alerts-list">
-              ${alerts.length === 0 ? `
-                <div class="analyst-empty-state" style="padding: 24px 16px;">
-                  <div class="empty-state-icon-wrap">${Icons.check(20)}</div>
-                  <div class="empty-state-title">No Active Alerts</div>
-                  <div class="empty-state-sub">Zero carrier rejections or critical SLA escalations pending.</div>
-                </div>
-              ` : alerts.map(alert => `
-                <div class="dispatcher-alert-card ${alert.type}" onclick="App.navigateTo('${alert.actionView}')">
-                  <div class="alert-icon-box">
-                    ${alert.type === 'alert-rejection' ? Icons.x(16) : alert.type === 'alert-sla' ? Icons.alertTriangle(16) : Icons.escalation(16)}
-                  </div>
-                  <div class="alert-text-wrap">
-                    <div class="alert-title">${alert.title}</div>
-                    <div class="alert-desc">${alert.desc}</div>
-                    <div class="alert-meta">${alert.meta}</div>
-                  </div>
-                </div>
-              `).join('')}
             </div>
           </div>
         </div>
