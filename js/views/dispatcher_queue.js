@@ -237,7 +237,7 @@ const DispatcherQueueView = {
                             </button>
                             <button class="btn btn-primary btn-sm" 
                                     title="Plan Recovery Strategy"
-                                    onclick="App.navigateTo('dispatcher_planning'); setTimeout(() => DispatcherPlanningView.selectException('${exc.id}'), 50);"
+                                    onclick="App.navigateTo('dispatcher_planning'); setTimeout(() => DispatcherPlanningView.selectException('${exc.id}', '${aiRec.strategy}'), 50);"
                                     style="padding: 4px 10px; font-weight: 700; font-size: 11px; white-space: nowrap;">
                               Plan Recovery &rarr;
                             </button>
@@ -257,13 +257,24 @@ const DispatcherQueueView = {
   },
 
   getAiRecommendation(exc, shipment) {
+    // Check existing active recovery request first
+    const recs = window.BRIDGES_STORE.getRecoveryRequests();
+    const existingRec = recs.find(r => r.exceptionId === exc.id && r.responseStatus !== 'Superseded' && r.responseStatus !== 'Rejected');
+    if (existingRec && existingRec.recoveryStrategy) {
+      return {
+        strategy: existingRec.recoveryStrategy,
+        confidence: '96%',
+        summary: `Active ${existingRec.recoveryStrategy} operational directive`
+      };
+    }
+
     if (exc.type === 'Temperature Breach') {
       return {
         strategy: 'Alternate Carrier',
         confidence: '96%',
         summary: 'Engage reefer swap to save pharma cargo'
       };
-    } else if ((exc.reason || '').toLowerCase().includes('rockfall') || (exc.reason || '').toLowerCase().includes('road')) {
+    } else if ((exc.reason || '').toLowerCase().includes('rock') || (exc.reason || '').toLowerCase().includes('road') || (exc.type === 'Route Delay' && !(exc.reason || '').toLowerCase().includes('blizzard'))) {
       return {
         strategy: 'Re-route',
         confidence: '93%',

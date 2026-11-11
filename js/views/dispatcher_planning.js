@@ -12,8 +12,38 @@
 
 const DispatcherPlanningView = {
   selectedExceptionId: null,
-  selectedStrategy: 'Re-route',
+  selectedStrategy: null,
+  lastSelectedExceptionId: null,
   isSubmitting: false,
+
+  getExceptionDefaultStrategy(exception, shipment) {
+    if (!exception) return 'Alternate Carrier';
+
+    // 1. Check existing active/pending recovery request in store
+    const recs = window.BRIDGES_STORE.getRecoveryRequests();
+    const existingRec = recs.find(r => r.exceptionId === exception.id && r.responseStatus !== 'Superseded' && r.responseStatus !== 'Rejected');
+    if (existingRec && existingRec.recoveryStrategy) {
+      return existingRec.recoveryStrategy;
+    }
+
+    // 2. Rule-based recommendation matching queue & dispatch logic
+    const type = exception.type || '';
+    const reason = (exception.reason || exception.rootCause || '').toLowerCase();
+
+    if (type === 'Temperature Breach' || reason.includes('temp') || reason.includes('reefer') || reason.includes('compressor')) {
+      return 'Alternate Carrier';
+    }
+    if (reason.includes('rock') || reason.includes('road') || reason.includes('traffic') || reason.includes('detour') || (type === 'Route Delay' && !reason.includes('blizzard'))) {
+      return 'Re-route';
+    }
+    if (exception.severity === 'Critical') {
+      return 'Expedite';
+    }
+    if (type === 'Partial Cargo Offload' || reason.includes('split')) {
+      return 'Split Shipment';
+    }
+    return 'Wait-and-Monitor';
+  },
 
   render() {
     const exceptions = window.BRIDGES_STORE.getExceptions();
@@ -46,11 +76,20 @@ const DispatcherPlanningView = {
       `;
     }
 
+    // Auto-select strategy if exception changed or strategy not yet set
+    if (this.lastSelectedExceptionId !== this.selectedExceptionId || !this.selectedStrategy) {
+      this.selectedStrategy = this.getExceptionDefaultStrategy(currentException, currentShipment);
+      this.lastSelectedExceptionId = this.selectedExceptionId;
+    }
+
     // Existing recovery request for this exception if any
     const existingRec = currentException.recoveryRequestId ? window.BRIDGES_STORE.getRecoveryRequest(currentException.recoveryRequestId) : null;
 
     // Rule-based ranking calculation for all 5 strategies
-    const strategies = this.getRankedStrategies(currentException, currentShipment);
+    const allStrategies = this.getRankedStrategies(currentException, currentShipment);
+    // Display only the related strategy option for this exception
+    const matchedStrategies = allStrategies.filter(strat => strat.name === this.selectedStrategy);
+    const strategies = matchedStrategies.length > 0 ? matchedStrategies : [allStrategies[0]];
 
     return `
       <div class="analyst-page-container animate-fade-in">
@@ -192,21 +231,25 @@ const DispatcherPlanningView = {
             `}
           </div>
 
-          <!-- RIGHT PANEL: 5 STRATEGY CARDS & DYNAMIC PLANNING FORM -->
+          <!-- RIGHT PANEL: STRATEGY CARD & DYNAMIC PLANNING FORM -->
           <div class="planning-options-panel">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
               <div>
                 <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--color-muted-sage);">Recovery Decision Making</span>
-                <div style="font-size: 15px; font-weight: 800; color: var(--color-midnight);">Evaluate & Select Recovery Strategy</div>
+                <div style="font-size: 15px; font-weight: 800; color: var(--color-midnight);">Selected Recovery Strategy: ${this.selectedStrategy}</div>
               </div>
-              <span class="badge badge-secondary" style="font-size: 10px;">5 Options Ranked</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge-primary" style="font-size: 10px;">Recommended Strategy</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="DispatcherPlanningView.openComparativeMatrixModal()" style="font-size: 10.5px; padding: 2px 8px; font-weight: 600;">
+                  Compare / Switch
+                </button>
+              </div>
             </div>
 
-            <!-- 5 STRATEGY SELECTOR CARDS -->
-            <div class="strategy-cards-grid">
+            <!-- STRATEGY SELECTOR CARD (Only Related Strategy Option) -->
+            <div class="strategy-cards-grid" style="grid-template-columns: 1fr;">
               ${strategies.map(strat => `
-                <div class="strategy-select-card ${this.selectedStrategy === strat.name ? 'active-selected' : ''}" 
-                     onclick="DispatcherPlanningView.setStrategy('${strat.name}')">
+                <div class="strategy-select-card active-selected" style="cursor: default;">
                   <div>
                     <div class="strategy-card-header">
                       <span class="strategy-card-name">
@@ -237,8 +280,8 @@ const DispatcherPlanningView = {
                     <p class="strategy-rationale-text">${strat.rationale}</p>
                   </div>
 
-                  <button type="button" class="btn-select-strategy">
-                    ${this.selectedStrategy === strat.name ? '✓ Selected Strategy' : 'Select Strategy'}
+                  <button type="button" class="btn-select-strategy" style="pointer-events: none;">
+                    ✓ Selected Strategy
                   </button>
                 </div>
               `).join('')}
@@ -557,8 +600,12 @@ const DispatcherPlanningView = {
     App.renderCurrentView();
   },
 
-  selectException(exceptionId) {
+  selectException(exceptionId, strategy) {
     this.selectedExceptionId = exceptionId;
+    this.lastSelectedExceptionId = exceptionId;
+    const exception = window.BRIDGES_STORE.getException(exceptionId);
+    const shipment = exception ? window.BRIDGES_STORE.getShipment(exception.shipmentId) : null;
+    this.selectedStrategy = strategy || this.getExceptionDefaultStrategy(exception, shipment);
     App.renderCurrentView();
   },
 
