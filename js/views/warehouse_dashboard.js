@@ -247,102 +247,47 @@ window.WarehouseDashboardView = {
                 </div>
               </div>
 
-              <!-- RIGHT COLUMN: DOCK UTILIZATION & OPERATIONAL BLOCKERS -->
-              <div style="display: flex; flex-direction: column; gap: 18px;">
-                <!-- DOCK UTILIZATION -->
-                <div class="warehouse-card">
-                  <div class="warehouse-card-header">
-                    <div class="warehouse-card-header-left">
-                      <h3 class="warehouse-card-title">Dock Bay Utilization</h3>
-                      <span class="warehouse-card-subtitle">${docks.filter(d => d.status === 'Occupied').length} / ${docks.length} Bays currently occupied</span>
-                    </div>
-                    <div class="warehouse-card-header-right">
-                      <button class="btn btn-outline btn-xs" onclick="App.navigate('warehouse_docks')">Manage Docks</button>
-                    </div>
-                  </div>
-              <div class="warehouse-dock-grid-compact">
-                ${docks.map(dock => {
-                  const statusClass = dock.status === 'Available' ? 'dock-avail' : (dock.status === 'Occupied' ? 'dock-occ' : 'dock-maint');
-                  return `
-                    <div class="warehouse-dock-card-compact ${statusClass}" onclick="App.navigate('warehouse_docks')">
-                      <div class="dock-compact-top">
-                        <span class="dock-compact-id">${dock.id}</span>
-                        <span class="badge badge-xs ${dock.status === 'Available' ? 'badge-ready' : (dock.status === 'Occupied' ? 'badge-inbound' : 'badge-blocked')}">${dock.status}</span>
-                      </div>
-                      <div class="dock-compact-type">${dock.type}</div>
-                      ${dock.currentShipmentId ? `
-                        <div class="dock-compact-shipment">
-                          <span class="font-mono font-bold">${dock.currentShipmentId}</span>
-                          <span class="text-xs text-muted">(${dock.carrier || 'Carrier'})</span>
-                        </div>
-                      ` : `
-                        <div class="dock-compact-empty">Bay Ready for Assignment</div>
-                      `}
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-
-            <!-- OPERATIONAL BLOCKERS -->
-            <div class="warehouse-card" style="margin-top: 16px;">
-              <div class="warehouse-card-header">
-                <div class="warehouse-card-header-left">
-                  <h3 class="warehouse-card-title" style="color: #EA341F;">Operational Blockers</h3>
-                  <span class="warehouse-card-subtitle">${blockers.length} Active issues requiring supervisor intervention</span>
-                </div>
-                <div class="warehouse-card-header-right">
-                  <button class="btn btn-outline btn-xs" onclick="App.navigate('warehouse_exceptions')">View All</button>
-                </div>
-              </div>
-              <div class="warehouse-blockers-list">
-                ${blockers.length === 0 ? `
-                  <div class="warehouse-empty-state" style="padding: 24px;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8A9995" stroke-width="2" style="margin-bottom: 8px;">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                    <p style="color: #393A50; font-weight: 600; margin: 0;">No active warehouse blockers.</p>
-                    <p class="text-xs text-muted" style="margin-top: 4px;">All picking, packing, docking, and cargo checks are proceeding normally.</p>
-                  </div>
-                ` : blockers.map(b => `
-                  <div class="warehouse-blocker-item blocker-sev-${b.severity.toLowerCase()}">
-                    <div class="blocker-item-top">
-                      <span class="badge ${b.severity === 'Critical' ? 'badge-critical' : 'badge-high'}">${b.severity}</span>
-                      <span class="font-mono text-xs font-bold" style="color: #18217E;">${b.shipmentId}</span>
-                      <span class="text-xs text-muted">${b.blockerType}</span>
-                    </div>
-                    <div class="blocker-item-desc">${b.description}</div>
-                    <div class="blocker-item-footer">
-                      <span class="text-xs text-muted">Action: ${b.requiredAction}</span>
-                      <button class="btn btn-xs btn-outline" onclick="WarehouseExceptionsView.openResolveModal('${b.id}')">Resolve</button>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- INCOMING DIVERSION ALERTS (IF ANY PENDING) -->
-            ${diversions.filter(d => d.status === 'Pending Review').length > 0 ? `
-              <div class="warehouse-card" style="margin-top: 16px; border-color: #18217E; background: #F8FAFD;">
+              <!-- RIGHT COLUMN: DOCK UTILIZATION -->
+              <div class="warehouse-card">
                 <div class="warehouse-card-header">
                   <div class="warehouse-card-header-left">
-                    <h3 class="warehouse-card-title" style="color: #18217E;">Incoming Diversion Requests</h3>
-                    <span class="warehouse-card-subtitle">${diversions.filter(d => d.status === 'Pending Review').length} Shipments rerouted to this facility awaiting supervisor review</span>
+                    <h3 class="warehouse-card-title">Dock Bay Utilization</h3>
+                    <span class="warehouse-card-subtitle">${docks.filter(d => d.status === 'Occupied').length} / ${docks.length} Bays currently occupied</span>
                   </div>
                   <div class="warehouse-card-header-right">
-                    <button class="btn btn-primary btn-xs" onclick="App.navigate('warehouse_diverted')">Review Diversions</button>
+                    <button class="btn btn-outline btn-xs" onclick="App.navigate('warehouse_docks')">Manage Docks</button>
                   </div>
                 </div>
+                <div class="warehouse-dock-grid-compact">
+                  ${docks.map(dock => {
+                    const statusClass = dock.status === 'Available' ? 'dock-avail' : (dock.status === 'Occupied' ? 'dock-occ' : 'dock-maint');
+                    return `
+                      <div class="warehouse-dock-card-compact ${statusClass}" onclick="App.navigate('warehouse_docks')">
+                        <div class="dock-compact-top">
+                          <span class="dock-compact-id">${dock.id}</span>
+                          <span class="badge badge-xs ${dock.status === 'Available' ? 'badge-ready' : (dock.status === 'Occupied' ? 'badge-inbound' : 'badge-blocked')}">${dock.status}</span>
+                        </div>
+                        <div class="dock-compact-type">${dock.type}</div>
+                        ${dock.currentShipmentId ? `
+                          <div class="dock-compact-shipment">
+                            <span class="font-mono font-bold">${dock.currentShipmentId}</span>
+                            <span class="text-xs text-muted">(${dock.carrier || 'Carrier'})</span>
+                          </div>
+                        ` : `
+                          <div class="dock-compact-empty">Bay Ready for Assignment</div>
+                        `}
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
               </div>
-            ` : ''}
+            </div>
           </div>
         </div>
-      </div>
-    `;
-  },
+      `;
+    },
 
-  renderMilestones(shipments, docks) {
+    renderMilestones(shipments, docks) {
     const milestones = [
       {
         time: '11:00 AM',
