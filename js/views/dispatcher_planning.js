@@ -93,7 +93,7 @@ const DispatcherPlanningView = {
 
     return `
       <div class="analyst-page-container animate-fade-in">
-        <!-- TOP BREADCRUMB & EXCEPTION SELECTOR -->
+        <!-- TOP BREADCRUMB -->
         <div class="page-action-header" style="margin-bottom: 12px;">
           <div>
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -103,20 +103,6 @@ const DispatcherPlanningView = {
             <p class="page-subheading">
               Evaluate and select re-route, alternate carrier, expedite, split, or wait-and-monitor options. Compare ETA, cost, carrier availability, and SLA feasibility.
             </p>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <button class="btn btn-secondary btn-sm" onclick="DispatcherPlanningView.openComparativeMatrixModal()" style="font-weight: 700; background: #FFFDF5; border-color: #F59E0B; color: #92400E;">
-              📊 Compare All 5 Strategies Matrix
-            </button>
-            <label style="font-size: 11.5px; font-weight: 600; color: var(--color-charcoal);">Select Exception:</label>
-            <select class="planning-select" style="min-width: 220px;" onchange="DispatcherPlanningView.selectException(this.value)">
-              ${exceptions.map(e => `
-                <option value="${e.id}" ${e.id === this.selectedExceptionId ? 'selected' : ''}>
-                  ${e.id} (${e.shipmentId}) — ${e.severity} [${e.status}]
-                </option>
-              `).join('')}
-            </select>
           </div>
         </div>
 
