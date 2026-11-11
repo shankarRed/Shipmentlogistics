@@ -97,37 +97,26 @@ const DispatcherDashboardView = {
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>Exception / Shipment</th>
+                      <th>Exception</th>
                       <th>Reason & Severity</th>
-                      <th>Route Corridor</th>
                       <th>Predicted ETA</th>
                       <th>Recovery Status</th>
                       <th style="text-align: right;">Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    ${priorityQueue.map(exc => {
-                      const shipment = window.BRIDGES_STORE.getShipment(exc.shipmentId);
-                      return `
+                    ${priorityQueue.map(exc => `
                         <tr>
                           <td>
                             <div style="font-weight: 700; color: var(--color-midnight); font-size: 12px;">${exc.id}</div>
-                            <div style="font-size: 11px; color: var(--color-royal-navy);">${exc.shipmentId}</div>
                           </td>
                           <td>
                             <div style="font-weight: 700; font-size: 11.5px; color: var(--color-midnight);">${exc.type || 'Route Deviation'}</div>
-                            <div style="font-size: 10.5px; color: var(--color-charcoal); margin-top: 2px; max-width: 220px; white-space: normal;">${exc.reason || exc.rootCause || ''}</div>
                             <div style="margin-top: 3px;">
                               <span class="severity-badge ${exc.severity === 'Critical' ? 'badge-danger' : exc.severity === 'High' ? 'badge-warning' : 'badge-secondary'}">
                                 ${exc.severity}
                               </span>
                             </div>
-                          </td>
-                          <td>
-                            <div style="font-size: 11.5px; color: var(--color-charcoal);">
-                              ${shipment ? shipment.origin : 'Origin'} → ${shipment ? shipment.destination : 'Destination'}
-                            </div>
-                            <div style="font-size: 10.5px; color: var(--color-muted-sage);">${exc.location || 'En Route'}</div>
                           </td>
                           <td>
                             <div style="font-weight: 700; font-size: 11.5px; color: var(--color-midnight);">${exc.predictedETA || 'Delayed'}</div>
@@ -144,8 +133,7 @@ const DispatcherDashboardView = {
                             </button>
                           </td>
                         </tr>
-                      `;
-                    }).join('')}
+                      `).join('')}
                   </tbody>
                 </table>
               </div>
