@@ -88,7 +88,7 @@ window.CSDashboardView = {
               </svg>
               Communication Queue (${metrics.customersRequiringUpdates})
             </button>
-            <button class="btn btn-primary btn-sm" onclick="App.navigateTo('cs_compose')">
+            <button class="btn btn-primary btn-sm" onclick="App.navigateTo('cs_queue')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -127,7 +127,7 @@ window.CSDashboardView = {
                     <strong>Customer Complaints Active:</strong> ${complaintCount} customer complaint(s) escalated to Operations for priority resolution.
                   </span>
                 </div>
-                <button class="btn btn-xs btn-outline" style="white-space: nowrap;" onclick="App.navigateTo('cs_escalations')">
+                <button class="btn btn-xs btn-outline" style="white-space: nowrap;" onclick="App.navigateTo('cs_queue')">
                   View Complaints &rarr;
                 </button>
               </div>
@@ -506,8 +506,8 @@ window.CSDashboardView = {
                   <p class="cs-card-subtitle">Tickets raised to Control Tower Analyst and Dispatcher teams</p>
                 </div>
               </div>
-              <button class="btn btn-outline btn-xs" onclick="App.navigateTo('cs_escalations')">
-                Raise / Manage
+              <button class="btn btn-outline btn-xs" onclick="App.navigateTo('cs_queue')">
+                View Queue
               </button>
             </div>
             <div class="cs-card-body p-0">
@@ -534,7 +534,7 @@ window.CSDashboardView = {
                       <tr>
                         <td>
                           <div class="cs-shipment-cell">
-                            <span class="cs-escalation-id" onclick="App.navigateTo('cs_escalations')">${e.id}</span>
+                            <span class="cs-escalation-id">${e.id}</span>
                             <span class="cs-ref-sub" onclick="CSDashboardView.viewDetails('${e.shipmentId}')" style="cursor: pointer; color: #18217E;">${e.shipmentId}</span>
                           </div>
                         </td>
@@ -558,8 +558,8 @@ window.CSDashboardView = {
                           </span>
                         </td>
                         <td class="text-right">
-                          <button class="btn btn-outline btn-xs" onclick="App.navigateTo('cs_escalations')">
-                            Track
+                          <button class="btn btn-outline btn-xs" onclick="CSDashboardView.viewDetails('${e.shipmentId}')">
+                            Details
                           </button>
                         </td>
                       </tr>
@@ -575,10 +575,7 @@ window.CSDashboardView = {
   },
 
   startDraft(shipmentId) {
-    if (window.CSComposeView) {
-      window.CSComposeView.selectedShipmentId = shipmentId;
-    }
-    App.navigateTo('cs_compose');
+    App.navigateTo('cs_queue');
   },
 
   viewDetails(shipmentId) {

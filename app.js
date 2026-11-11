@@ -164,7 +164,7 @@ const App = {
       'warehouse_diverted', 'warehouse_exceptions', 'warehouse_history',
 
       // Customer Service routes (Phase 6)
-      'cs_dashboard', 'cs_shipments', 'cs_shipment_detail', 'cs_queue', 'cs_compose', 'cs_history', 'cs_escalations', 'cs_ai_assistant',
+      'cs_dashboard', 'cs_shipments', 'cs_shipment_detail', 'cs_queue', 'cs_history', 'cs_ai_assistant',
 
       // Customer Portal routes (Phase 7)
       'customer_home', 'customer_track', 'customer_shipment_detail', 'customer_notifications',
@@ -738,32 +738,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 4. Compose Message -->
-        <li>
-          <div class="nav-link ${this.currentView === 'cs_compose' ? 'active' : ''}" data-view="cs_compose" onclick="App.navigateTo('cs_compose')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.message(17)}</span>
-              <span class="nav-label">Compose Message</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 5. Operational Escalations -->
-        <li>
-          <div class="nav-link ${this.currentView === 'cs_escalations' ? 'active' : ''}" data-view="cs_escalations" onclick="App.navigateTo('cs_escalations')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.alert ? Icons.alert(17) : Icons.bell(17)}</span>
-              <span class="nav-label">Operational Escalations</span>
-            </div>
-            ${openEscCount > 0 ? `
-              <span class="nav-badge-pill" style="background: #8C2527; color: #FFFFFF; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px;">
-                ${openEscCount}
-              </span>
-            ` : ''}
-          </div>
-        </li>
-
-        <!-- 6. Communication History -->
+        <!-- 4. Communication History -->
         <li>
           <div class="nav-link ${this.currentView === 'cs_history' ? 'active' : ''}" data-view="cs_history" onclick="App.navigateTo('cs_history')">
             <div class="nav-link-left">
@@ -2105,13 +2080,11 @@ const App = {
           html = window.CSQueueView ? window.CSQueueView.render() : '';
           break;
         case 'cs_compose':
-          html = window.CSComposeView ? window.CSComposeView.render() : '';
-          break;
+        case 'cs_escalations':
+          this.navigateTo('cs_dashboard');
+          return;
         case 'cs_history':
           html = window.CSHistoryView ? window.CSHistoryView.render() : '';
-          break;
-        case 'cs_escalations':
-          html = window.CSEscalationsView ? window.CSEscalationsView.render() : '';
           break;
         case 'cs_ai_assistant':
           html = window.CSAIAssistantView ? window.CSAIAssistantView.render() : '';
