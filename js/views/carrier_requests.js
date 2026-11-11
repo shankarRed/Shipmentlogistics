@@ -268,27 +268,29 @@ const CarrierRequestsView = {
                     </td>
 
                     <td style="text-align: right; padding-right: 14px; white-space: nowrap;">
-                      <button class="btn btn-secondary btn-sm" onclick="CarrierRequestsView.openRequestDetailsModal('${r.id}')" style="padding: 4px 8px; font-size: 11px; font-weight: 600; margin-right: 3px;">
-                        Details
-                      </button>
+                      <div style="display: inline-flex; align-items: center; gap: 4px; justify-content: flex-end;">
+                        <button class="carrier-btn-icon carrier-btn-icon-details" onclick="CarrierRequestsView.openRequestDetailsModal('${r.id}')" title="View Request Details" aria-label="View Request Details">
+                          ${Icons.eye(15)}
+                        </button>
 
-                      ${(isPending || isRevised || isInfoReq) ? `
-                        <button class="btn btn-primary btn-sm" onclick="CarrierRequestsView.openAcceptModal('${r.id}')" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #18217E; margin-right: 3px;">
-                          Accept
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="CarrierRequestsView.openRejectModal('${r.id}')" style="padding: 4px 8px; font-size: 11px; font-weight: 700; margin-right: 3px;">
-                          Reject
-                        </button>
-                        <button class="btn btn-secondary btn-sm" onclick="CarrierRequestsView.openRequestInfoModal('${r.id}')" style="padding: 4px 8px; font-size: 11px; font-weight: 700; color: #18217E; border-color: #C7D2FE;">
-                          💬 Info
-                        </button>
-                      ` : ''}
+                        ${(isPending || isRevised || isInfoReq) ? `
+                          <button class="carrier-btn-icon carrier-btn-icon-accept" onclick="CarrierRequestsView.openAcceptModal('${r.id}')" title="Accept Recovery Request" aria-label="Accept Recovery Request">
+                            ${Icons.check(15)}
+                          </button>
+                          <button class="carrier-btn-icon carrier-btn-icon-reject" onclick="CarrierRequestsView.openRejectModal('${r.id}')" title="Reject Request with Reason" aria-label="Reject Request with Reason">
+                            ${Icons.x(15)}
+                          </button>
+                          <button class="carrier-btn-icon carrier-btn-icon-info" onclick="CarrierRequestsView.openRequestInfoModal('${r.id}')" title="Request Clarification / Info" aria-label="Request Clarification / Info">
+                            ${Icons.message(14)}
+                          </button>
+                        ` : ''}
 
-                      ${r.responseStatus === 'Accepted' ? `
-                        <button class="btn btn-primary btn-sm" onclick="CarrierExecutionView.openAssignResourcesModal('${r.id}')" style="padding: 4px 9px; font-size: 11px; font-weight: 700; background: #059669; border-color: #059669;">
-                          Assign Fleet &rarr;
-                        </button>
-                      ` : ''}
+                        ${r.responseStatus === 'Accepted' ? `
+                          <button class="btn btn-primary btn-sm" onclick="CarrierExecutionView.openAssignResourcesModal('${r.id}')" style="padding: 4px 9px; font-size: 11px; font-weight: 700; background: #059669; border-color: #059669; margin-left: 2px;">
+                            Assign Fleet &rarr;
+                          </button>
+                        ` : ''}
+                      </div>
                     </td>
                   </tr>
                 `;

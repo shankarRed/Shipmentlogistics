@@ -470,3 +470,75 @@
   max-width: 380px;
   margin: 0 auto;
 }
+
+/* --- CARRIER TABLE ACTION ICON BUTTONS --- */
+.carrier-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  vertical-align: middle;
+  background: transparent;
+}
+
+.carrier-btn-icon:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.carrier-btn-icon:active {
+  transform: translateY(0);
+}
+
+.carrier-btn-icon-details {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #334155;
+}
+
+.carrier-btn-icon-details:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
+  color: #0F172A;
+}
+
+.carrier-btn-icon-accept {
+  background: #18217E;
+  border-color: #18217E;
+  color: #FFFFFF;
+}
+
+.carrier-btn-icon-accept:hover {
+  background: #0D1456;
+  border-color: #0D1456;
+}
+
+.carrier-btn-icon-reject {
+  background: #EA341F;
+  border-color: #EA341F;
+  color: #FFFFFF;
+}
+
+.carrier-btn-icon-reject:hover {
+  background: #C42614;
+  border-color: #C42614;
+}
+
+.carrier-btn-icon-info {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  color: #1D4ED8;
+}
+
+.carrier-btn-icon-info:hover {
+  background: #DBEAFE;
+  border-color: #93C5FD;
+  color: #1E40AF;
+}
+
