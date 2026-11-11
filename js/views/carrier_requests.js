@@ -18,11 +18,15 @@ const CarrierRequestsView = {
 
   setFilter(status) {
     this.currentFilter = status;
+    const select = document.getElementById('carrier-status-filter');
+    if (select && select.value !== status) select.value = status;
     this.renderList();
   },
 
   setStrategy(strat) {
     this.currentStrategy = strat;
+    const select = document.getElementById('carrier-strategy-filter');
+    if (select && select.value !== strat) select.value = strat;
     this.renderList();
   },
 
@@ -61,46 +65,31 @@ const CarrierRequestsView = {
 
         <!-- Filter & Search Bar -->
         <div style="background: white; border: 1px solid #E5EBEE; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-          <!-- Status Filter Pills -->
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" class="btn btn-sm ${this.currentFilter === 'all' ? 'btn-primary' : 'btn-secondary'}" onclick="CarrierRequestsView.setFilter('all')">
-              All (${allReqs.length})
-            </button>
-            <button type="button" class="btn btn-sm ${this.currentFilter === 'Pending Carrier Response' ? 'btn-primary' : 'btn-secondary'}" onclick="CarrierRequestsView.setFilter('Pending Carrier Response')" style="${this.currentFilter === 'Pending Carrier Response' ? '' : 'color: #B45309; border-color: #FCD34D;'}">
-              Pending (${pendingCount})
-            </button>
-            <button type="button" class="btn btn-sm ${this.currentFilter === 'Revised' ? 'btn-primary' : 'btn-secondary'}" onclick="CarrierRequestsView.setFilter('Revised')" style="${this.currentFilter === 'Revised' ? '' : 'color: #18217E; border-color: #C7D2FE;'}">
-              Revised (${revisedCount})
-            </button>
-            <button type="button" class="btn btn-sm ${this.currentFilter === 'Info Requested' ? 'btn-primary' : 'btn-secondary'}" onclick="CarrierRequestsView.setFilter('Info Requested')">
-              Info Requested (${infoCount})
-            </button>
-            <button type="button" class="btn btn-sm ${this.currentFilter === 'Accepted' ? 'btn-primary' : 'btn-secondary'}" onclick="CarrierRequestsView.setFilter('Accepted')">
-              Accepted (${acceptedCount})
-            </button>
-            <button type="button" class="btn btn-sm ${this.currentFilter === 'Rejected' ? 'btn-primary' : 'btn-secondary'}" onclick="CarrierRequestsView.setFilter('Rejected')">
-              Rejected (${rejectedCount})
-            </button>
-            <button type="button" class="btn btn-sm ${this.currentFilter === 'Cancelled' ? 'btn-primary' : 'btn-secondary'}" onclick="CarrierRequestsView.setFilter('Cancelled')">
-              Cancelled (${cancelledCount})
-            </button>
-          </div>
-
-          <!-- Strategy Filter & Search Input -->
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <select class="carrier-form-select" id="carrier-strategy-filter" onchange="CarrierRequestsView.setStrategy(this.value)" style="width: 170px; padding: 6px 10px; font-size: 12px;">
-              <option value="all">All Strategies</option>
-              <option value="Alternate Carrier">Alternate Carrier</option>
-              <option value="Re-route">Re-route</option>
-              <option value="Expedite">Expedite</option>
-              <option value="Split Shipment">Split Shipment</option>
-              <option value="Wait-and-Monitor">Wait-and-Monitor</option>
+          <!-- Status & Strategy Filters in Dropdowns -->
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <select class="carrier-form-select" id="carrier-status-filter" onchange="CarrierRequestsView.setFilter(this.value)" style="width: 190px; padding: 6px 10px; font-size: 12px; font-weight: 600;">
+              <option value="all" ${this.currentFilter === 'all' ? 'selected' : ''}>All Statuses (${allReqs.length})</option>
+              <option value="Pending Carrier Response" ${this.currentFilter === 'Pending Carrier Response' ? 'selected' : ''}>Pending (${pendingCount})</option>
+              <option value="Revised" ${this.currentFilter === 'Revised' ? 'selected' : ''}>Revised (${revisedCount})</option>
+              <option value="Info Requested" ${this.currentFilter === 'Info Requested' ? 'selected' : ''}>Info Requested (${infoCount})</option>
+              <option value="Accepted" ${this.currentFilter === 'Accepted' ? 'selected' : ''}>Accepted (${acceptedCount})</option>
+              <option value="Rejected" ${this.currentFilter === 'Rejected' ? 'selected' : ''}>Rejected (${rejectedCount})</option>
+              <option value="Cancelled" ${this.currentFilter === 'Cancelled' ? 'selected' : ''}>Cancelled (${cancelledCount})</option>
             </select>
 
-            <div style="position: relative; width: 220px;">
-              <input type="text" id="carrier-requests-search" placeholder="Search request, shipment..." value="${this.searchQuery}" oninput="CarrierRequestsView.handleSearch(this.value)" class="carrier-form-input" style="padding: 6px 10px 6px 28px; font-size: 12px;">
-              <span style="position: absolute; left: 9px; top: 7px; color: #8A9995;">${Icons.search(13)}</span>
-            </div>
+            <select class="carrier-form-select" id="carrier-strategy-filter" onchange="CarrierRequestsView.setStrategy(this.value)" style="width: 170px; padding: 6px 10px; font-size: 12px;">
+              <option value="all" ${this.currentStrategy === 'all' ? 'selected' : ''}>All Strategies</option>
+              <option value="Alternate Carrier" ${this.currentStrategy === 'Alternate Carrier' ? 'selected' : ''}>Alternate Carrier</option>
+              <option value="Re-route" ${this.currentStrategy === 'Re-route' ? 'selected' : ''}>Re-route</option>
+              <option value="Expedite" ${this.currentStrategy === 'Expedite' ? 'selected' : ''}>Expedite</option>
+              <option value="Split Shipment" ${this.currentStrategy === 'Split Shipment' ? 'selected' : ''}>Split Shipment</option>
+              <option value="Wait-and-Monitor" ${this.currentStrategy === 'Wait-and-Monitor' ? 'selected' : ''}>Wait-and-Monitor</option>
+            </select>
+          </div>
+
+          <div style="position: relative; width: 220px;">
+            <input type="text" id="carrier-requests-search" placeholder="Search request, shipment..." value="${this.searchQuery}" oninput="CarrierRequestsView.handleSearch(this.value)" class="carrier-form-input" style="padding: 6px 10px 6px 28px; font-size: 12px;">
+            <span style="position: absolute; left: 9px; top: 7px; color: #8A9995;">${Icons.search(13)}</span>
           </div>
         </div>
 
@@ -173,18 +162,15 @@ const CarrierRequestsView = {
     return `
       <div class="carrier-card-section" style="padding: 0; overflow: hidden;">
         <div class="table-responsive">
-          <table class="table table-hover" style="font-size: 12px; margin-bottom: 0;">
+          <table class="table table-hover" style="font-size: 12px; margin-bottom: 0; width: 100%;">
             <thead style="background: #F8FAFB;">
               <tr>
-                <th style="padding: 11px 14px;">Request ID</th>
-                <th>Shipment &amp; Customer</th>
-                <th>Cargo &amp; Value</th>
-                <th>Exception &amp; Deviation</th>
-                <th>Strategy</th>
-                <th>Corridor &amp; Location</th>
-                <th>Decision Deadline</th>
-                <th>Status</th>
-                <th style="text-align: right; padding-right: 14px;">Actions</th>
+                <th style="padding: 11px 14px; width: 15%;">Request ID</th>
+                <th style="width: 15%;">Shipment</th>
+                <th style="width: 25%;">Exception &amp; Deviation</th>
+                <th style="width: 15%;">Strategy</th>
+                <th style="width: 15%;">Status</th>
+                <th style="text-align: right; padding-right: 14px; width: 15%;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -202,38 +188,20 @@ const CarrierRequestsView = {
                 if (r.responseStatus === 'Completed') badgeClass = 'carrier-badge-completed';
                 if (r.responseStatus === 'Cancelled') badgeClass = 'carrier-badge-rejected';
 
-                const customerName = sh.customerName || (r.shipmentId === 'BRG-2848' ? 'BioPharma Health Alliance' : r.shipmentId === 'BRG-2847' ? 'Apex Dynamics Corp' : 'Global Maritime Energy');
-                const cargoDesc = sh.cargoDescription || (ex.type === 'Temperature Breach' ? 'Biological Vaccines (2°C-8°C)' : 'Precision Assemblies');
-                const cargoVal = sh.cargoValue || (ex.type === 'Temperature Breach' ? '$650,000' : '$340,000');
-                const deadlineDisplay = r.deadline || 'Within 45m (16:30 EST)';
-
                 return `
                   <tr style="${isPending || isRevised ? 'background: #FFFEFA;' : ''}">
                     <td style="padding: 11px 14px;">
                       <div style="font-weight: 700; color: #18217E;">${r.id}</div>
-                      <div style="font-size: 10.5px; color: #8A9995;">
-                        ${new Date(r.createdAt || r.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </div>
                     </td>
 
                     <td>
                       <div style="font-weight: 700; color: #070724;">${r.shipmentId}</div>
-                      <div style="font-size: 11px; font-weight: 600; color: #18217E;">${customerName}</div>
-                      <div style="font-size: 10px; color: #8A9995;">${sh.orderReference || 'PO-9824'}</div>
                     </td>
 
                     <td>
-                      <div style="font-size: 11.5px; font-weight: 600; color: #070724;">${cargoDesc}</div>
-                      <div style="font-size: 10.5px; color: #1E8E3E; font-weight: 700;">${cargoVal}</div>
-                    </td>
-
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 2px;">
+                      <div style="display: flex; align-items: center; gap: 4px;">
                         <span style="font-weight: 700; color: #070724;">${ex.type || r.exceptionId}</span>
                         <span class="badge ${ex.severity === 'Critical' ? 'badge-danger' : 'badge-warning'}" style="font-size: 9px; padding: 1px 5px;">${ex.severity || 'High'}</span>
-                      </div>
-                      <div style="max-width: 220px; line-height: 1.3; font-size: 10.5px; color: #64748B;">
-                        ${r.reasonForRecovery || ex.reason || 'Operational transit deviation.'}
                       </div>
                     </td>
 
@@ -241,22 +209,6 @@ const CarrierRequestsView = {
                       <span class="carrier-badge" style="background: rgba(24,33,126,0.06); color: #18217E; border: 1px solid rgba(24,33,126,0.18); font-weight: 700;">
                         ${r.recoveryStrategy}
                       </span>
-                    </td>
-
-                    <td>
-                      <div style="color: #070724; font-weight: 600;">
-                        ${sh.origin ? `${sh.origin} &rarr; ${sh.destination}` : 'Capital Knot &rarr; Lake Knot'}
-                      </div>
-                      <div style="font-size: 10.5px; color: #8A9995;">
-                        Loc: <strong>${sh.currentLocation || 'Interstate 80 MP 112'}</strong>
-                      </div>
-                    </td>
-
-                    <td>
-                      <div style="display: flex; align-items: center; gap: 4px;">
-                        <span style="font-size: 11px; font-weight: 700; color: #B45309;">${deadlineDisplay}</span>
-                      </div>
-                      <span class="badge badge-warning" style="font-size: 9px; padding: 1px 5px;">Action Due</span>
                     </td>
 
                     <td>
