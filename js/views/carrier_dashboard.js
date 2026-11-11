@@ -38,9 +38,6 @@ const CarrierDashboardView = {
     const notifs = store.getCarrierNotifications(carrierId);
     const unreadNotifs = notifs.filter(n => !n.read).length;
 
-    // Filter incoming requests (Pending Carrier Response or Info Requested)
-    const incomingReqs = reqs.filter(r => ['Pending Carrier Response', 'Info Requested', 'Revised'].includes(r.responseStatus)).slice(0, 5);
-
     // Filter active shipments (In Transit, Arrived at Destination, Delayed, Assigned)
     const activeShipments = shipments.filter(s => s.status !== 'Delivered' && s.status !== 'Cancelled').slice(0, 6);
 
@@ -161,238 +158,96 @@ const CarrierDashboardView = {
           </div>
         </div>
 
-        <!-- MAIN TWO-COLUMN WORKSPACE: Incoming Requests + Operational Alerts -->
-        <div class="carrier-dash-grid">
-          <!-- Left Column: Incoming Requests & Active Shipments -->
-          <div>
-            <!-- Incoming Recovery Requests Table -->
-            <div class="carrier-card-section" style="margin-bottom: 16px;">
-              <div class="carrier-section-title">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span>${Icons.inbox(15)}</span>
-                  <span>Incoming Recovery Requests</span>
-                  <span class="carrier-badge carrier-badge-pending" style="font-size: 10px;">${incomingReqs.length} Actionable</span>
-                </div>
-                <button class="btn btn-link btn-sm" onclick="App.navigateTo('carrier_requests')" style="font-size: 11.5px; color: #18217E; font-weight: 700;">
-                  View All Requests &rarr;
-                </button>
-              </div>
-
-              ${incomingReqs.length === 0 ? `
-                <div class="carrier-empty-state" style="padding: 24px 16px;">
-                  <div class="carrier-empty-icon">${Icons.inbox(22)}</div>
-                  <div class="carrier-empty-title">No Pending Requests</div>
-                  <p class="carrier-empty-desc">All recovery requests from Dispatchers have been reviewed and processed.</p>
-                </div>
-              ` : `
-                <div class="table-responsive">
-                  <table class="table table-hover" style="font-size: 12px; margin-bottom: 0;">
-                    <thead>
-                      <tr>
-                        <th>Request ID</th>
-                        <th>Shipment</th>
-                        <th>Strategy</th>
-                        <th>Origin &rarr; Destination</th>
-                        <th>Required Time</th>
-                        <th>Priority</th>
-                        <th style="text-align: right;">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${incomingReqs.map(r => {
-                        const sh = store.getShipment(r.shipmentId);
-                        const ex = store.getException(r.exceptionId);
-                        const priority = ex ? ex.severity : 'Medium';
-                        const priColor = priority === 'Critical' ? '#EA341F' : (priority === 'High' ? '#8C2527' : '#18217E');
-                        const priBg = priority === 'Critical' ? '#FFF1F0' : (priority === 'High' ? '#FFF2F2' : '#EEF2FF');
-
-                        return `
-                          <tr>
-                            <td>
-                              <span style="font-weight: 700; color: #18217E;">${r.id}</span>
-                            </td>
-                            <td>
-                              <span style="font-weight: 600; color: #070724;">${r.shipmentId}</span>
-                            </td>
-                            <td>
-                              <span class="carrier-badge" style="background: rgba(24,33,126,0.06); color: #18217E; border: 1px solid rgba(24,33,126,0.15);">
-                                ${r.recoveryStrategy}
-                              </span>
-                            </td>
-                            <td>
-                              <span style="font-size: 11.5px; color: #393A50;">
-                                ${sh ? `${sh.origin} &rarr; ${sh.destination}` : 'Line-haul Corridor'}
-                              </span>
-                            </td>
-                            <td>
-                              <span style="font-size: 11px; color: #070724; font-weight: 600;">
-                                ${r.expectedPickupTime ? new Date(r.expectedPickupTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (r.expediteUrgency || 'Immediate')}
-                              </span>
-                            </td>
-                            <td>
-                              <span style="display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10.5px; font-weight: 700; color: ${priColor}; background: ${priBg};">
-                                ${priority}
-                              </span>
-                            </td>
-                            <td style="text-align: right;">
-                              <button class="btn btn-primary btn-sm" onclick="CarrierRequestsView.openRequestDetailsModal('${r.id}')" style="padding: 3px 8px; font-size: 11px; font-weight: 700;">
-                                Review Request
-                              </button>
-                            </td>
-                          </tr>
-                        `;
-                      }).join('')}
-                    </tbody>
-                  </table>
-                </div>
-              `}
+        <!-- Active Shipments Table -->
+        <div class="carrier-card-section">
+          <div class="carrier-section-title">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>${Icons.truck(15)}</span>
+              <span>Active Carrier Movements</span>
+              <span class="carrier-badge carrier-badge-in-progress" style="font-size: 10px;">${activeShipments.length} Active</span>
             </div>
-
-            <!-- Active Shipments Table -->
-            <div class="carrier-card-section">
-              <div class="carrier-section-title">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span>${Icons.truck(15)}</span>
-                  <span>Active Carrier Movements</span>
-                  <span class="carrier-badge carrier-badge-in-progress" style="font-size: 10px;">${activeShipments.length} Active</span>
-                </div>
-                <button class="btn btn-link btn-sm" onclick="App.navigateTo('carrier_shipments')" style="font-size: 11.5px; color: #18217E; font-weight: 700;">
-                  View Fleet Map &rarr;
-                </button>
-              </div>
-
-              ${activeShipments.length === 0 ? `
-                <div class="carrier-empty-state" style="padding: 24px 16px;">
-                  <div class="carrier-empty-icon">${Icons.truck(22)}</div>
-                  <div class="carrier-empty-title">No Shipments In Transit</div>
-                  <p class="carrier-empty-desc">Currently there are no active freight movements dispatched for this carrier.</p>
-                </div>
-              ` : `
-                <div class="table-responsive">
-                  <table class="table table-hover" style="font-size: 12px; margin-bottom: 0;">
-                    <thead>
-                      <tr>
-                        <th>Shipment</th>
-                        <th>Status</th>
-                        <th>Vehicle / Driver</th>
-                        <th>Latest ETA</th>
-                        <th>Next Required Action</th>
-                        <th style="text-align: right;">Execute</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${activeShipments.map(s => {
-                        let statusBadgeClass = 'carrier-badge-in-progress';
-                        if (s.status === 'Delayed') statusBadgeClass = 'carrier-badge-rejected';
-                        if (s.status === 'Arrived at Destination') statusBadgeClass = 'carrier-badge-accepted';
-
-                        let nextAction = 'Update Milestone';
-                        let actionTarget = `CarrierExecutionView.openExecutionWorkspace('${s.id}')`;
-                        if (s.status === 'Arrived at Destination') {
-                          nextAction = 'Confirm Delivery';
-                          actionTarget = `CarrierDeliveryView.openDeliveryModal('${s.id}')`;
-                        } else if (s.status === 'Delayed' || s.slaRisk) {
-                          nextAction = 'Update ETA / Disruption';
-                          actionTarget = `CarrierExecutionView.openEtaModal('${s.id}')`;
-                        }
-
-                        return `
-                          <tr>
-                            <td>
-                              <div style="font-weight: 700; color: #18217E;">${s.id}</div>
-                              <div style="font-size: 10.5px; color: #8A9995;">${s.origin} &rarr; ${s.destination}</div>
-                            </td>
-                            <td>
-                              <span class="carrier-badge ${statusBadgeClass}">
-                                ${s.status}
-                              </span>
-                            </td>
-                            <td>
-                              <div style="font-size: 11.5px; font-weight: 600; color: #070724;">
-                                ${s.assignedVehicle || 'Freightliner (BG-01)'}
-                              </div>
-                              <div style="font-size: 10.5px; color: #424989;">
-                                ${s.assignedDriver || 'Ethan Vance'}
-                              </div>
-                            </td>
-                            <td>
-                              <div style="font-size: 11px; font-weight: 700; color: #070724;">
-                                ${s.carrierConfirmedEta || s.currentEta || s.eta || '14:30 EST'}
-                              </div>
-                              ${s.slaRisk ? '<span style="font-size: 9.5px; color: #EA341F; font-weight: 700;">SLA AT RISK</span>' : ''}
-                            </td>
-                            <td>
-                              <span style="font-size: 11.5px; color: #393A50; font-weight: 600;">
-                                ${s.status === 'Arrived at Destination' ? 'Capture Recipient Sign-off' : 'En route to next checkpoint'}
-                              </span>
-                            </td>
-                            <td style="text-align: right;">
-                              <button class="btn btn-secondary btn-sm" onclick="${actionTarget}" style="padding: 3px 8px; font-size: 11px; font-weight: 600;">
-                                ${nextAction}
-                              </button>
-                            </td>
-                          </tr>
-                        `;
-                      }).join('')}
-                    </tbody>
-                  </table>
-                </div>
-              `}
-            </div>
+            <button class="btn btn-link btn-sm" onclick="App.navigateTo('carrier_shipments')" style="font-size: 11.5px; color: #18217E; font-weight: 700;">
+              View Fleet Map &rarr;
+            </button>
           </div>
 
-          <!-- Right Column: Operational Alerts -->
-          <div>
-            <div class="carrier-card-section">
-              <div class="carrier-section-title">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span>${Icons.bell(15)}</span>
-                  <span>Operational Alerts (${metrics.operationalAlerts.length})</span>
-                </div>
-              </div>
-
-              ${metrics.operationalAlerts.length === 0 ? `
-                <div style="text-align: center; padding: 24px 12px; color: #8A9995; font-size: 12px;">
-                  All fleet operations running within normal parameters. No active alerts.
-                </div>
-              ` : `
-                <div style="display: flex; flex-direction: column; gap: 4px;">
-                  ${metrics.operationalAlerts.map(alert => `
-                    <div class="carrier-alert-card alert-${alert.severity === 'critical' ? 'critical' : alert.severity === 'high' ? 'warning' : 'info'}" onclick="App.navigateTo('${alert.targetPage}')">
-                      <div class="carrier-alert-title">
-                        <span>${alert.title}</span>
-                        <span class="carrier-badge" style="font-size: 9.5px; ${alert.severity === 'critical' ? 'background: #FEE2E2; color: #EA341F;' : alert.severity === 'high' ? 'background: #FEF3C7; color: #B45309;' : 'background: #EEF2FF; color: #18217E;'}">
-                          ${alert.badge}
-                        </span>
-                      </div>
-                      <p class="carrier-alert-desc">${alert.desc}</p>
-                    </div>
-                  `).join('')}
-                </div>
-              `}
+          ${activeShipments.length === 0 ? `
+            <div class="carrier-empty-state" style="padding: 24px 16px;">
+              <div class="carrier-empty-icon">${Icons.truck(22)}</div>
+              <div class="carrier-empty-title">No Shipments In Transit</div>
+              <p class="carrier-empty-desc">Currently there are no active freight movements dispatched for this carrier.</p>
             </div>
+          ` : `
+            <div class="table-responsive">
+              <table class="table table-hover" style="font-size: 12px; margin-bottom: 0;">
+                <thead>
+                  <tr>
+                    <th>Shipment</th>
+                    <th>Status</th>
+                    <th>Vehicle / Driver</th>
+                    <th>Latest ETA</th>
+                    <th>Next Required Action</th>
+                    <th style="text-align: right;">Execute</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${activeShipments.map(s => {
+                    let statusBadgeClass = 'carrier-badge-in-progress';
+                    if (s.status === 'Delayed') statusBadgeClass = 'carrier-badge-rejected';
+                    if (s.status === 'Arrived at Destination') statusBadgeClass = 'carrier-badge-accepted';
 
-            <!-- Quick Operational Action Shortcuts -->
-            <div class="carrier-card-section" style="background: #FAFCFD;">
-              <div class="carrier-section-title" style="font-size: 12px; margin-bottom: 8px;">
-                <span>Quick Operations Actions</span>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <button class="btn btn-secondary btn-sm" onclick="App.navigateTo('carrier_vehicles')" style="justify-content: flex-start; gap: 8px; font-size: 11.5px; text-align: left;">
-                  <span>${Icons.truck(14)}</span> Manage Vehicle Fleet &amp; Maintenance
-                </button>
-                <button class="btn btn-secondary btn-sm" onclick="App.navigateTo('carrier_drivers')" style="justify-content: flex-start; gap: 8px; font-size: 11.5px; text-align: left;">
-                  <span>${Icons.steeringWheel(14)}</span> Update Driver Roster &amp; Duty Status
-                </button>
-                <button class="btn btn-secondary btn-sm" onclick="App.navigateTo('carrier_delivery')" style="justify-content: flex-start; gap: 8px; font-size: 11.5px; text-align: left;">
-                  <span>${Icons.delivery(14)}</span> Proof of Delivery (POD) Entry
-                </button>
-                <button class="btn btn-secondary btn-sm" onclick="App.navigateTo('carrier_history')" style="justify-content: flex-start; gap: 8px; font-size: 11.5px; text-align: left;">
-                  <span>${Icons.history(14)}</span> View Complete Audit Trail
-                </button>
-              </div>
+                    let nextAction = 'Update Milestone';
+                    let actionTarget = `CarrierExecutionView.openExecutionWorkspace('${s.id}')`;
+                    if (s.status === 'Arrived at Destination') {
+                      nextAction = 'Confirm Delivery';
+                      actionTarget = `CarrierDeliveryView.openDeliveryModal('${s.id}')`;
+                    } else if (s.status === 'Delayed' || s.slaRisk) {
+                      nextAction = 'Update ETA / Disruption';
+                      actionTarget = `CarrierExecutionView.openEtaModal('${s.id}')`;
+                    }
+
+                    return `
+                      <tr>
+                        <td>
+                          <div style="font-weight: 700; color: #18217E;">${s.id}</div>
+                          <div style="font-size: 10.5px; color: #8A9995;">${s.origin} &rarr; ${s.destination}</div>
+                        </td>
+                        <td>
+                          <span class="carrier-badge ${statusBadgeClass}">
+                            ${s.status}
+                          </span>
+                        </td>
+                        <td>
+                          <div style="font-size: 11.5px; font-weight: 600; color: #070724;">
+                            ${s.assignedVehicle || 'Freightliner (BG-01)'}
+                          </div>
+                          <div style="font-size: 10.5px; color: #424989;">
+                            ${s.assignedDriver || 'Ethan Vance'}
+                          </div>
+                        </td>
+                        <td>
+                          <div style="font-size: 11px; font-weight: 700; color: #070724;">
+                            ${s.carrierConfirmedEta || s.currentEta || s.eta || '14:30 EST'}
+                          </div>
+                          ${s.slaRisk ? '<span style="font-size: 9.5px; color: #EA341F; font-weight: 700;">SLA AT RISK</span>' : ''}
+                        </td>
+                        <td>
+                          <span style="font-size: 11.5px; color: #393A50; font-weight: 600;">
+                            ${s.status === 'Arrived at Destination' ? 'Capture Recipient Sign-off' : 'En route to next checkpoint'}
+                          </span>
+                        </td>
+                        <td style="text-align: right;">
+                          <button class="btn btn-secondary btn-sm" onclick="${actionTarget}" style="padding: 3px 8px; font-size: 11px; font-weight: 600;">
+                            ${nextAction}
+                          </button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
             </div>
-          </div>
+          `}
         </div>
       </div>
     `;
