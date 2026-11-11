@@ -19,71 +19,7 @@ window.WarehouseDashboardView = {
 
     return `
       <div class="warehouse-view-container animate-fade-in">
-        <!-- LIVE ETA-CHANGE ALERT NOTIFICATION (Requirement 2) -->
-        ${pendingEtaAlerts.length > 0 ? `
-          <div style="background: #FFF3CD; border: 1px solid #FFEEBA; border-left: 4px solid #EA341F; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 18px;">⚠️</span>
-              <div>
-                <span style="font-weight: 700; color: #856404; font-size: 13px;">${pendingEtaAlerts.length} Carrier ETA Change Alert(s) Requiring Dock Slot Response</span>
-                <p style="font-size: 12px; color: #393A50; margin: 2px 0 0;">
-                  Carrier ${pendingEtaAlerts[0].carrierName} reported a +${pendingEtaAlerts[0].delayMinutes}m delay for shipment <strong>${pendingEtaAlerts[0].shipmentId}</strong>. Dock bay adjustment requested.
-                </p>
-              </div>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="App.navigate('warehouse_docks')">
-              Review &amp; Adjust Dock Slot &rarr;
-            </button>
-          </div>
-        ` : ''}
-        <!-- TOP BANNER / HEADER -->
-        <div class="warehouse-header-banner">
-          <div class="warehouse-banner-info">
-            <div class="warehouse-badge-row">
-              <span class="warehouse-role-pill">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                </svg>
-                Warehouse Supervisor Console
-              </span>
-              <span class="warehouse-location-tag">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-                ${warehouse.name} (${whId})
-              </span>
-              <span class="warehouse-sim-tag">Simulated Facility WMS</span>
-            </div>
-            <h1 class="warehouse-banner-title">Operations Floor & Dock Control</h1>
-            <p class="warehouse-banner-subtitle">
-              Live operational execution queue, dock schedule coordination, cargo readiness, and exception clearance for ${warehouse.name}.
-            </p>
-          </div>
-          <div class="warehouse-banner-actions">
-            <button class="btn btn-secondary btn-sm" onclick="App.navigate('warehouse_exceptions')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              Report Blocker
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="App.navigate('warehouse_readiness')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="8" y1="6" x2="21" y2="6"></line>
-                <line x1="8" y1="12" x2="21" y2="12"></line>
-                <line x1="8" y1="18" x2="21" y2="18"></line>
-                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                <line x1="3" y1="18" x2="3.01" y2="18"></line>
-              </svg>
-              Warehouse Readiness
-            </button>
-          </div>
-        </div>
+
 
         <!-- 6 DYNAMIC CALCULATED KPI CARDS -->
         <div class="warehouse-kpi-grid">
