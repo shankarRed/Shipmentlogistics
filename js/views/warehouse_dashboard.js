@@ -202,13 +202,9 @@ window.WarehouseDashboardView = {
           </div>
         </div>
 
-        <!-- MAIN 2-COLUMN DASHBOARD GRID -->
-        <div class="warehouse-dashboard-grid">
-          <!-- LEFT COLUMN: TODAY'S QUEUE & UPCOMING MILESTONES -->
-          <div class="warehouse-dash-col">
-            <!-- TODAY'S WAREHOUSE QUEUE -->
-            <div class="warehouse-card">
-              <div class="warehouse-card-header">
+        <!-- TODAY'S WAREHOUSE QUEUE (FULL WIDTH) -->
+        <div class="warehouse-card" style="margin-bottom: 18px;">
+          <div class="warehouse-card-header">
                 <div class="warehouse-card-header-left">
                   <h3 class="warehouse-card-title">Today's Warehouse Queue</h3>
                   <span class="warehouse-card-subtitle">${shipments.length} Active shipments assigned to this facility</span>
@@ -300,33 +296,34 @@ window.WarehouseDashboardView = {
               </div>
             </div>
 
-            <!-- UPCOMING MILESTONES -->
-            <div class="warehouse-card" style="margin-top: 16px;">
-              <div class="warehouse-card-header">
-                <div class="warehouse-card-header-left">
-                  <h3 class="warehouse-card-title">Upcoming Operations Milestones</h3>
-                  <span class="warehouse-card-subtitle">Scheduled arrivals, loading cutoffs, and dispatch deadlines</span>
+            <!-- 2-COLUMN LOWER DASHBOARD GRID -->
+            <div class="warehouse-dashboard-bottom-grid">
+              <!-- LEFT COLUMN: UPCOMING OPERATIONS MILESTONES -->
+              <div class="warehouse-card">
+                <div class="warehouse-card-header">
+                  <div class="warehouse-card-header-left">
+                    <h3 class="warehouse-card-title">Upcoming Operations Milestones</h3>
+                    <span class="warehouse-card-subtitle">Scheduled arrivals, loading cutoffs, and dispatch deadlines</span>
+                  </div>
+                </div>
+                <div class="warehouse-milestones-list">
+                  ${this.renderMilestones(shipments, docks)}
                 </div>
               </div>
-              <div class="warehouse-milestones-list">
-                ${this.renderMilestones(shipments, docks)}
-              </div>
-            </div>
-          </div>
 
-          <!-- RIGHT COLUMN: DOCK UTILIZATION & OPERATIONAL BLOCKERS -->
-          <div class="warehouse-dash-col">
-            <!-- DOCK UTILIZATION -->
-            <div class="warehouse-card">
-              <div class="warehouse-card-header">
-                <div class="warehouse-card-header-left">
-                  <h3 class="warehouse-card-title">Dock Bay Utilization</h3>
-                  <span class="warehouse-card-subtitle">${docks.filter(d => d.status === 'Occupied').length} / ${docks.length} Bays currently occupied</span>
-                </div>
-                <div class="warehouse-card-header-right">
-                  <button class="btn btn-outline btn-xs" onclick="App.navigate('warehouse_docks')">Manage Docks</button>
-                </div>
-              </div>
+              <!-- RIGHT COLUMN: DOCK UTILIZATION & OPERATIONAL BLOCKERS -->
+              <div style="display: flex; flex-direction: column; gap: 18px;">
+                <!-- DOCK UTILIZATION -->
+                <div class="warehouse-card">
+                  <div class="warehouse-card-header">
+                    <div class="warehouse-card-header-left">
+                      <h3 class="warehouse-card-title">Dock Bay Utilization</h3>
+                      <span class="warehouse-card-subtitle">${docks.filter(d => d.status === 'Occupied').length} / ${docks.length} Bays currently occupied</span>
+                    </div>
+                    <div class="warehouse-card-header-right">
+                      <button class="btn btn-outline btn-xs" onclick="App.navigate('warehouse_docks')">Manage Docks</button>
+                    </div>
+                  </div>
               <div class="warehouse-dock-grid-compact">
                 ${docks.map(dock => {
                   const statusClass = dock.status === 'Available' ? 'dock-avail' : (dock.status === 'Occupied' ? 'dock-occ' : 'dock-maint');

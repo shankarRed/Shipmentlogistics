@@ -1544,3 +1544,277 @@
   border-color: #18217E !important;
 }
 
+/* ==========================================================================
+   WAREHOUSE DASHBOARD CARDS & ALIGNMENT STYLES
+   ========================================================================== */
+
+.warehouse-card {
+  background: #FFFFFF;
+  border: 1px solid #E5EBEE;
+  border-radius: 8px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 3px rgba(7, 7, 36, 0.04);
+  position: relative;
+}
+
+.warehouse-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.warehouse-card-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.warehouse-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.warehouse-card-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #070724;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.2px;
+}
+
+.warehouse-card-subtitle {
+  font-size: 11.5px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+/* 2-Column Split for Bottom Dashboard Sections */
+.warehouse-dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .warehouse-dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- UPCOMING OPERATIONS MILESTONES --- */
+.warehouse-milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.warehouse-milestone-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.warehouse-milestone-row:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  transform: translateX(2px);
+}
+
+.milestone-time {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #18217E;
+  background: rgba(24, 33, 126, 0.08);
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  min-width: 68px;
+  text-align: center;
+}
+
+.milestone-indicator {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.milestone-ind-dock { background: #18217E; box-shadow: 0 0 0 3px rgba(24, 33, 126, 0.15); }
+.milestone-ind-picking { background: #059669; box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15); }
+.milestone-ind-loading { background: #D97706; box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15); }
+.milestone-ind-dispatch { background: #4338CA; box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15); }
+.milestone-ind-diversion { background: #EA341F; box-shadow: 0 0 0 3px rgba(234, 52, 31, 0.15); }
+
+.milestone-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.milestone-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #070724;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.milestone-sub {
+  font-size: 11px;
+  color: #64748B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* --- DOCK BAY UTILIZATION GRID --- */
+.warehouse-dock-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .warehouse-dock-grid-compact {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.warehouse-dock-card-compact {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 9px 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 75px;
+}
+
+.warehouse-dock-card-compact:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(7, 7, 36, 0.08);
+}
+
+.warehouse-dock-card-compact.dock-avail {
+  border-color: #BBF7D0;
+  background: #F0FDF4;
+}
+
+.warehouse-dock-card-compact.dock-avail:hover {
+  border-color: #16A34A;
+}
+
+.warehouse-dock-card-compact.dock-occ {
+  border-color: #BFDBFE;
+  background: #EFF6FF;
+}
+
+.warehouse-dock-card-compact.dock-occ:hover {
+  border-color: #2563EB;
+}
+
+.warehouse-dock-card-compact.dock-maint {
+  border-color: #FECACA;
+  background: #FEF2F2;
+}
+
+.warehouse-dock-card-compact.dock-maint:hover {
+  border-color: #DC2626;
+}
+
+.dock-compact-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.dock-compact-id {
+  font-family: monospace;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #070724;
+}
+
+.dock-compact-type {
+  font-size: 10.5px;
+  color: #64748B;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dock-compact-shipment {
+  font-size: 10.5px;
+  color: #18217E;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dock-compact-empty {
+  font-size: 10px;
+  color: #059669;
+  font-weight: 600;
+}
+
+/* --- OPERATIONAL BLOCKERS --- */
+.warehouse-blocker-item {
+  background: #FFF5F5;
+  border: 1px solid #FED7D7;
+  border-left: 4px solid #EA341F;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.warehouse-blocker-item.blocker-sev-high {
+  background: #FFFDF5;
+  border-color: #FEEBC8;
+  border-left-color: #DD6B20;
+}
+
+.blocker-item-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.blocker-item-desc {
+  font-size: 11.5px;
+  color: #393A50;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.blocker-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
