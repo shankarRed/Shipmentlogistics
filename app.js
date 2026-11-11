@@ -160,9 +160,8 @@ const App = {
       'carrier_drivers', 'carrier_execution', 'carrier_disruptions', 'carrier_delivery', 'carrier_history',
 
       // Warehouse Supervisor routes (Phase 5)
-      'warehouse_dashboard', 'warehouse_shipments', 'warehouse_readiness', 'warehouse_docks',
-      'warehouse_picking', 'warehouse_loading', 'warehouse_handover', 'warehouse_diverted',
-      'warehouse_exceptions', 'warehouse_history',
+      'warehouse_dashboard', 'warehouse_readiness', 'warehouse_docks',
+      'warehouse_diverted', 'warehouse_exceptions', 'warehouse_history',
 
       // Customer Service routes (Phase 6)
       'cs_dashboard', 'cs_shipments', 'cs_shipment_detail', 'cs_queue', 'cs_compose', 'cs_history', 'cs_escalations', 'cs_ai_assistant',
@@ -807,17 +806,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 2. Inbound & Outbound Shipments -->
-        <li>
-          <div class="nav-link ${this.currentView === 'warehouse_shipments' ? 'active' : ''}" data-view="warehouse_shipments" onclick="App.navigateTo('warehouse_shipments')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.truck(17)}</span>
-              <span class="nav-label">Inbound & Outbound Shipments</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 3. Warehouse Readiness -->
+        <!-- 2. Warehouse Readiness -->
         <li>
           <div class="nav-link ${this.currentView === 'warehouse_readiness' ? 'active' : ''}" data-view="warehouse_readiness" onclick="App.navigateTo('warehouse_readiness')">
             <div class="nav-link-left">
@@ -827,7 +816,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 4. Dock Schedule -->
+        <!-- 3. Dock Schedule -->
         <li>
           <div class="nav-link ${this.currentView === 'warehouse_docks' ? 'active' : ''}" data-view="warehouse_docks" onclick="App.navigateTo('warehouse_docks')">
             <div class="nav-link-left">
@@ -837,37 +826,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 5. Picking & Packing -->
-        <li>
-          <div class="nav-link ${this.currentView === 'warehouse_picking' ? 'active' : ''}" data-view="warehouse_picking" onclick="App.navigateTo('warehouse_picking')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.resources(17)}</span>
-              <span class="nav-label">Picking & Packing</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 6. Loading & Dispatch -->
-        <li>
-          <div class="nav-link ${this.currentView === 'warehouse_loading' ? 'active' : ''}" data-view="warehouse_loading" onclick="App.navigateTo('warehouse_loading')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.gauge(17)}</span>
-              <span class="nav-label">Loading & Dispatch</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 7. Carrier Handover -->
-        <li>
-          <div class="nav-link ${this.currentView === 'warehouse_handover' ? 'active' : ''}" data-view="warehouse_handover" onclick="App.navigateTo('warehouse_handover')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.carrier(17)}</span>
-              <span class="nav-label">Carrier Handover</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 8. Diverted Shipments -->
+        <!-- 4. Diverted Shipments -->
         <li>
           <div class="nav-link ${this.currentView === 'warehouse_diverted' ? 'active' : ''}" data-view="warehouse_diverted" onclick="App.navigateTo('warehouse_diverted')">
             <div class="nav-link-left">
@@ -877,7 +836,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 9. Warehouse Exceptions -->
+        <!-- 5. Warehouse Exceptions -->
         <li>
           <div class="nav-link ${this.currentView === 'warehouse_exceptions' ? 'active' : ''}" data-view="warehouse_exceptions" onclick="App.navigateTo('warehouse_exceptions')">
             <div class="nav-link-left">
@@ -1906,7 +1865,7 @@ const App = {
     if (target === 'shipments') {
       if (isCustomer) this.navigateTo('customer_track');
       else if (isCS) this.navigateTo('cs_shipments');
-      else if (isWarehouse) this.navigateTo('warehouse_shipments');
+      else if (isWarehouse) this.navigateTo('warehouse_dashboard');
       else if (isCarrier) this.navigateTo('carrier_shipments');
       else if (isAnalyst) this.navigateTo('analyst_shipments');
       else this.navigateTo('dashboard');
@@ -1953,8 +1912,7 @@ const App = {
         this.navigateTo('cs_shipments');
         setTimeout(() => { if (window.CSShipmentsView && CSShipmentsView.handleSearch) CSShipmentsView.handleSearch(q); }, 50);
       } else if (isWarehouse) {
-        this.navigateTo('warehouse_shipments');
-        setTimeout(() => { if (window.WarehouseShipmentsView && WarehouseShipmentsView.handleSearch) WarehouseShipmentsView.handleSearch(q); }, 50);
+        this.navigateTo('warehouse_dashboard');
       } else if (isCarrier) {
         this.navigateTo('carrier_requests');
         setTimeout(() => { if (window.CarrierRequestsView && CarrierRequestsView.handleSearch) CarrierRequestsView.handleSearch(q); }, 50);
@@ -2111,24 +2069,18 @@ const App = {
         case 'warehouse_dashboard':
           html = window.WarehouseDashboardView ? window.WarehouseDashboardView.render() : '';
           break;
-        case 'warehouse_shipments':
-          html = window.WarehouseShipmentsView ? window.WarehouseShipmentsView.render() : '';
-          break;
         case 'warehouse_readiness':
           html = window.WarehouseReadinessView ? window.WarehouseReadinessView.render() : '';
           break;
         case 'warehouse_docks':
           html = window.WarehouseDocksView ? window.WarehouseDocksView.render() : '';
           break;
+        case 'warehouse_shipments':
         case 'warehouse_picking':
-          html = window.WarehousePickingView ? window.WarehousePickingView.render() : '';
-          break;
         case 'warehouse_loading':
-          html = window.WarehouseLoadingView ? window.WarehouseLoadingView.render() : '';
-          break;
         case 'warehouse_handover':
-          html = window.WarehouseHandoverView ? window.WarehouseHandoverView.render() : '';
-          break;
+          this.navigateTo('warehouse_dashboard');
+          return;
         case 'warehouse_diverted':
           html = window.WarehouseDivertedView ? window.WarehouseDivertedView.render() : '';
           break;

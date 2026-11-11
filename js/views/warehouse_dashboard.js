@@ -71,7 +71,7 @@ window.WarehouseDashboardView = {
               </svg>
               Report Blocker
             </button>
-            <button class="btn btn-primary btn-sm" onclick="App.navigate('warehouse_shipments')">
+            <button class="btn btn-primary btn-sm" onclick="App.navigate('warehouse_readiness')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="8" y1="6" x2="21" y2="6"></line>
                 <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -80,7 +80,7 @@ window.WarehouseDashboardView = {
                 <line x1="3" y1="12" x2="3.01" y2="12"></line>
                 <line x1="3" y1="18" x2="3.01" y2="18"></line>
               </svg>
-              Full Shipment List
+              Warehouse Readiness
             </button>
           </div>
         </div>
@@ -88,7 +88,7 @@ window.WarehouseDashboardView = {
         <!-- 6 DYNAMIC CALCULATED KPI CARDS -->
         <div class="warehouse-kpi-grid">
           <!-- KPI 1 -->
-          <div class="warehouse-kpi-card" onclick="App.navigate('warehouse_shipments')">
+          <div class="warehouse-kpi-card" onclick="App.navigate('warehouse_readiness')">
             <div class="warehouse-kpi-top">
               <span class="warehouse-kpi-title">Requiring Action</span>
               <div class="warehouse-kpi-icon" style="color: #18217E; background: rgba(24, 33, 126, 0.08);">
@@ -103,7 +103,7 @@ window.WarehouseDashboardView = {
             <div class="warehouse-kpi-val">${metrics.requiringAction}</div>
             <div class="warehouse-kpi-sub">
               <span>Active queue</span>
-              <span class="warehouse-kpi-link">View shipments &rarr;</span>
+              <span class="warehouse-kpi-link">View readiness &rarr;</span>
             </div>
           </div>
 
@@ -126,7 +126,7 @@ window.WarehouseDashboardView = {
           </div>
 
           <!-- KPI 3 -->
-          <div class="warehouse-kpi-card" onclick="App.navigate('warehouse_picking')">
+          <div class="warehouse-kpi-card" onclick="App.navigate('warehouse_readiness')">
             <div class="warehouse-kpi-top">
               <span class="warehouse-kpi-title">Picking / Packing</span>
               <div class="warehouse-kpi-icon" style="color: #09104D; background: rgba(9, 16, 77, 0.08);">
@@ -138,12 +138,12 @@ window.WarehouseDashboardView = {
             <div class="warehouse-kpi-val">${metrics.pickingPackingInProgress}</div>
             <div class="warehouse-kpi-sub">
               <span>On warehouse floor</span>
-              <span class="warehouse-kpi-link">Manage &rarr;</span>
+              <span class="warehouse-kpi-link">Verify &rarr;</span>
             </div>
           </div>
 
           <!-- KPI 4 -->
-          <div class="warehouse-kpi-card" onclick="App.navigate('warehouse_loading')">
+          <div class="warehouse-kpi-card" onclick="App.navigate('warehouse_docks')">
             <div class="warehouse-kpi-top">
               <span class="warehouse-kpi-title">Awaiting Loading</span>
               <div class="warehouse-kpi-icon" style="color: #18217E; background: rgba(24, 33, 126, 0.08);">
@@ -163,7 +163,7 @@ window.WarehouseDashboardView = {
           </div>
 
           <!-- KPI 5 -->
-          <div class="warehouse-kpi-card" onclick="App.navigate('warehouse_handover')">
+          <div class="warehouse-kpi-card" onclick="App.navigate('warehouse_docks')">
             <div class="warehouse-kpi-top">
               <span class="warehouse-kpi-title">Awaiting Handover</span>
               <div class="warehouse-kpi-icon" style="color: #424989; background: rgba(66, 73, 137, 0.08);">
@@ -178,7 +178,7 @@ window.WarehouseDashboardView = {
             <div class="warehouse-kpi-val">${metrics.dispatchesAwaitingHandover}</div>
             <div class="warehouse-kpi-sub">
               <span>Ready for carrier</span>
-              <span class="warehouse-kpi-link">Handover &rarr;</span>
+              <span class="warehouse-kpi-link">Dock schedule &rarr;</span>
             </div>
           </div>
 
@@ -214,7 +214,7 @@ window.WarehouseDashboardView = {
                   <span class="warehouse-card-subtitle">${shipments.length} Active shipments assigned to this facility</span>
                 </div>
                 <div class="warehouse-card-header-right">
-                  <button class="btn btn-outline btn-xs" onclick="App.navigate('warehouse_shipments')">View All</button>
+                  <button class="btn btn-outline btn-xs" onclick="App.navigate('warehouse_readiness')">View Readiness</button>
                 </div>
               </div>
               <div class="warehouse-table-responsive">
