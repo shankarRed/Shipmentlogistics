@@ -224,12 +224,6 @@ const DispatcherPlanningView = {
                 <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--color-muted-sage);">Recovery Decision Making</span>
                 <div style="font-size: 15px; font-weight: 800; color: var(--color-midnight);">Selected Recovery Strategy: ${this.selectedStrategy}</div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="badge badge-primary" style="font-size: 10px;">Recommended Strategy</span>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="DispatcherPlanningView.openComparativeMatrixModal()" style="font-size: 10.5px; padding: 2px 8px; font-weight: 600;">
-                  Compare / Switch
-                </button>
-              </div>
             </div>
 
             <!-- STRATEGY SELECTOR CARD (Only Related Strategy Option) -->

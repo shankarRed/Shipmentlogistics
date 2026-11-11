@@ -152,7 +152,7 @@ const App = {
       'analyst_war_room', 'analyst_recoveries', 'analyst_events', 'analyst_history',
 
       // Dispatcher / Transport Planner routes (Phase 3, US-44 to US-57)
-      'dispatcher_dashboard', 'dispatcher_queue', 'dispatcher_planning', 'dispatcher_carriers',
+      'dispatcher_dashboard', 'dispatcher_queue', 'dispatcher_planning',
       'dispatcher_recoveries', 'dispatcher_tracking', 'dispatcher_escalations', 'dispatcher_approvals', 'dispatcher_completed',
 
       // Carrier Operations User routes (Phase 4, US-58 to US-78)
@@ -1043,17 +1043,7 @@ const App = {
           </div>
         </li>
 
-        <!-- 4. Carrier Assignment -->
-        <li>
-          <div class="nav-link ${this.currentView === 'dispatcher_carriers' ? 'active' : ''}" data-view="dispatcher_carriers" onclick="App.navigateTo('dispatcher_carriers')">
-            <div class="nav-link-left">
-              <span class="nav-icon">${Icons.carrier(17)}</span>
-              <span class="nav-label">Carrier Assignment</span>
-            </div>
-          </div>
-        </li>
-
-        <!-- 5. Recovery Requests -->
+        <!-- 4. Recovery Requests -->
         <li>
           <div class="nav-link ${this.currentView === 'dispatcher_recoveries' ? 'active' : ''}" data-view="dispatcher_recoveries" onclick="App.navigateTo('dispatcher_recoveries')">
             <div class="nav-link-left">
@@ -2070,8 +2060,8 @@ const App = {
           html = window.DispatcherPlanningView ? window.DispatcherPlanningView.render() : '';
           break;
         case 'dispatcher_carriers':
-          html = window.DispatcherCarriersView ? window.DispatcherCarriersView.render() : '';
-          break;
+          this.navigateTo('dispatcher_dashboard');
+          return;
         case 'dispatcher_recoveries':
           html = window.DispatcherRecoveriesView ? window.DispatcherRecoveriesView.render() : '';
           break;
