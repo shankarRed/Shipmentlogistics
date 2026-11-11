@@ -29,35 +29,6 @@ const DispatcherDashboardView = {
     const recCounts = metrics.recoveryStatusCounts;
     const totalRecs = Math.max(1, (recCounts.awaitingCarrier + recCounts.accepted + recCounts.rejected + recCounts.inProgress + recCounts.completed + recCounts.failed));
 
-    // Non-responsive carrier requests (pending > 45 minutes)
-    const nonResponsiveCarriers = recoveryRequests.filter(r => 
-      r.responseStatus === 'Pending Carrier Response'
-    );
-
-    // Team Workload Distribution
-    const workloadMap = {
-      'Sarah Lin (Control Tower Analyst)': 0,
-      'Marcus Vance (Transport Dispatcher)': 0,
-      'Carlos Mendoza (Operations Supervisor)': 0,
-      'Unclaimed / Needs Assignment': 0
-    };
-    actionable.forEach(e => {
-      if (!e.assignedAnalyst || e.assignedAnalyst === 'Unassigned') {
-        workloadMap['Unclaimed / Needs Assignment']++;
-      } else if (e.assignedAnalyst.includes('Sarah')) {
-        workloadMap['Sarah Lin (Control Tower Analyst)']++;
-      } else if (e.assignedAnalyst.includes('Marcus')) {
-        workloadMap['Marcus Vance (Transport Dispatcher)']++;
-      } else if (e.assignedAnalyst.includes('Carlos')) {
-        workloadMap['Carlos Mendoza (Operations Supervisor)']++;
-      } else {
-        workloadMap['Sarah Lin (Control Tower Analyst)']++;
-      }
-    });
-
-    // Cold-Chain Risk Metrics
-    const coldChainExceptions = exceptions.filter(e => e.type === 'Temperature Breach' || (e.reason || '').toLowerCase().includes('reefer') || (e.reason || '').toLowerCase().includes('temp'));
-
     // Operational alerts
     const alerts = [];
     const rejections = recoveryRequests.filter(r => r.responseStatus === 'Rejected');
@@ -95,7 +66,7 @@ const DispatcherDashboardView = {
 
     return `
       <div class="analyst-page-container animate-fade-in">
-        <!-- 6 DYNAMIC KPI CARDS -->
+        <!-- 4 DYNAMIC KPI CARDS -->
         <div class="dispatcher-kpi-grid">
           <!-- 1. Exceptions Requiring Action -->
           <div class="dispatcher-kpi-card ${metrics.actionableExceptions > 0 ? 'kpi-warning' : ''}" onclick="App.navigateTo('dispatcher_queue')">
@@ -136,156 +107,6 @@ const DispatcherDashboardView = {
             <div class="dispatcher-kpi-val">${metrics.recoveriesInProgress}</div>
             <div class="dispatcher-kpi-meta">Accepted / En route</div>
           </div>
-
-          <!-- 5. SLA-at-Risk Shipments -->
-          <div class="dispatcher-kpi-card ${metrics.slaAtRiskShipments > 0 ? 'kpi-warning' : ''}" onclick="App.navigateTo('dispatcher_tracking')">
-            <div class="dispatcher-kpi-top">
-              <span class="dispatcher-kpi-title">SLA at Risk</span>
-              <div class="dispatcher-kpi-icon">${Icons.gauge(15)}</div>
-            </div>
-            <div class="dispatcher-kpi-val">${metrics.slaAtRiskShipments}</div>
-            <div class="dispatcher-kpi-meta">Potential penalty impact</div>
-          </div>
-
-          <!-- 6. Active Escalations -->
-          <div class="dispatcher-kpi-card ${metrics.activeEscalations > 0 ? 'kpi-critical' : ''}" onclick="App.navigateTo('dispatcher_escalations')">
-            <div class="dispatcher-kpi-top">
-              <span class="dispatcher-kpi-title">Escalations</span>
-              <div class="dispatcher-kpi-icon">${Icons.escalation(15)}</div>
-            </div>
-            <div class="dispatcher-kpi-val">${metrics.activeEscalations}</div>
-            <div class="dispatcher-kpi-meta">Ops Manager review</div>
-          </div>
-        </div>
-
-        <!-- OPERATIONAL OVERSIGHT & RISK MONITORING CONSOLE -->
-        <div class="panel" style="margin-bottom: 18px; padding: 16px 18px; border-left: 4px solid #18217E;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #E5EBEE;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 15px; font-weight: 800; color: #18217E;">Control-Tower Operational Oversight Console</span>
-              <span class="badge badge-primary" style="font-size: 10px;">Executive Surveillance</span>
-            </div>
-            <div style="font-size: 11px; color: #64748B;">
-              Live telemetry aggregated across all corridors, carriers, and regional hub docks.
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
-            <!-- 1. Exception Backlog Meter -->
-            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 11px; font-weight: 700; color: #424989; text-transform: uppercase;">Exception Backlog</span>
-                <span class="badge badge-secondary" style="font-size: 10px;">${actionable.length} Total</span>
-              </div>
-              <div style="font-size: 20px; font-weight: 800; color: #070724; margin-bottom: 6px;">
-                ${actionable.length} <span style="font-size: 11px; font-weight: 500; color: #64748B;">Unresolved</span>
-              </div>
-              <div style="font-size: 10.5px; color: #393A50; display: flex; flex-direction: column; gap: 3px;">
-                <div style="display: flex; justify-content: space-between;">
-                  <span>&lt; 2h Fresh:</span> <strong style="color: #1E8E3E;">3 exceptions</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span>2 - 4h Pending:</span> <strong style="color: #F59E0B;">3 exceptions</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span>&gt; 4h Stagnant:</span> <strong style="color: #EA341F;">1 exception</strong>
-                </div>
-              </div>
-            </div>
-
-            <!-- 2. SLA Breaches & Penalty Exposure -->
-            <div style="background: #FFFDF5; border: 1px solid #FDE68A; border-radius: 8px; padding: 12px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 11px; font-weight: 700; color: #92400E; text-transform: uppercase;">SLA Breaches</span>
-                <span class="badge badge-danger" style="font-size: 10px;">At Risk</span>
-              </div>
-              <div style="font-size: 20px; font-weight: 800; color: #EA341F; margin-bottom: 6px;">
-                ${metrics.slaAtRiskShipments} <span style="font-size: 11px; font-weight: 500; color: #92400E;">Shipments</span>
-              </div>
-              <div style="font-size: 10.5px; color: #393A50; display: flex; flex-direction: column; gap: 3px;">
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Penalty Exposure:</span> <strong style="color: #8C2527;">$24,700 est.</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Threatened (&lt;45m):</span> <strong style="color: #EA341F;">2 shipments</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Within Buffer:</span> <strong style="color: #1E8E3E;">3 shipments</strong>
-                </div>
-              </div>
-            </div>
-
-            <!-- 3. Cold-Chain Risk Surveillance -->
-            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 11px; font-weight: 700; color: #18217E; text-transform: uppercase;">Cold-Chain Risk</span>
-                <span class="badge ${coldChainExceptions.length > 0 ? 'badge-warning' : 'badge-success'}" style="font-size: 10px;">
-                  ${coldChainExceptions.length > 0 ? 'Active Alert' : 'Normal'}
-                </span>
-              </div>
-              <div style="font-size: 20px; font-weight: 800; color: #18217E; margin-bottom: 6px;">
-                ${coldChainExceptions.length} <span style="font-size: 11px; font-weight: 500; color: #64748B;">Deviations</span>
-              </div>
-              <div style="font-size: 10.5px; color: #393A50; display: flex; flex-direction: column; gap: 3px;">
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Pharma Cargo at Risk:</span> <strong style="color: #18217E;">$185,000</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Sensor Compliance:</span> <strong style="color: #1E8E3E;">98.4% Mean Temp</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Current Reefer Alert:</span> <strong style="color: #EA341F;">BRG-2848 (+6.8°C)</strong>
-                </div>
-              </div>
-            </div>
-
-            <!-- 4. Team Workload Distribution -->
-            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 11px; font-weight: 700; color: #424989; text-transform: uppercase;">Team Workload</span>
-                <button class="btn btn-secondary btn-sm" onclick="App.navigateTo('dispatcher_queue')" style="font-size: 9px; padding: 1px 6px;">
-                  Assign
-                </button>
-              </div>
-              <div style="font-size: 10.5px; color: #393A50; display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Sarah Lin (Analyst):</span> <strong>${workloadMap['Sarah Lin (Control Tower Analyst)']} exc</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Marcus Vance (Dispatcher):</span> <strong>${workloadMap['Marcus Vance (Transport Dispatcher)']} exc</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Carlos Mendoza (Supervisor):</span> <strong>${workloadMap['Carlos Mendoza (Operations Supervisor)']} exc</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between; padding-top: 2px; border-top: 1px solid #CBD5E1;">
-                  <span style="color: #EA341F; font-weight: 600;">Unclaimed Backlog:</span> <strong style="color: #EA341F;">${workloadMap['Unclaimed / Needs Assignment']} exc</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Carrier Non-Response Strip -->
-          ${nonResponsiveCarriers.length > 0 ? `
-            <div style="margin-top: 14px; padding: 10px 14px; background: #FFF5F5; border: 1px solid rgba(234, 52, 31, 0.25); border-radius: 6px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 14px;">⏱️</span>
-                <div>
-                  <strong style="color: #EA341F; font-size: 11.5px;">Carrier Non-Response Flagged (${nonResponsiveCarriers.length} tenders pending):</strong>
-                  <span style="color: #393A50; font-size: 11px; margin-left: 4px;">
-                    Request <strong>${nonResponsiveCarriers[0].id}</strong> (${nonResponsiveCarriers[0].requestedCarrierName || 'Carrier'}) has exceeded standard 45-minute response SLA.
-                  </span>
-                </div>
-              </div>
-              <div style="display: flex; gap: 6px;">
-                <button class="btn btn-secondary btn-sm" onclick="App.navigateTo('dispatcher_recoveries')" style="font-size: 10.5px; padding: 3px 8px;">
-                  View Tenders
-                </button>
-                <button class="btn btn-primary btn-sm" onclick="App.navigateTo('dispatcher_escalations'); setTimeout(() => DispatcherEscalationsView.openCreateModal('${nonResponsiveCarriers[0].exceptionId}', '${nonResponsiveCarriers[0].shipmentId}'), 50);" style="font-size: 10.5px; padding: 3px 8px; background: #EA341F;">
-                  Escalate to Ops Manager
-                </button>
-              </div>
-            </div>
-          ` : ''}
         </div>
 
         <!-- MIDDLE SPLIT: PRIORITY RECOVERY QUEUE & RECOVERY STATUS OVERVIEW -->
