@@ -1695,23 +1695,14 @@ const LiveTrackingMap = {
         </div>
 
         <div class="hud-actions-row" style="display: flex; gap: 8px; flex-wrap: wrap;">
-          ${!isAvail ? `
-            <button class="btn btn-sm" onclick="LiveTrackingMap.arriveCarrier('${carrier.id}')"
-                    style="background: #10B981; color: white; border: none; font-weight: 700; flex: 1; padding: 6px 10px;"
-                    title="Simulate reaching destination immediately and mark asset Available & Ready">
-              ✓ Arrive at Destination (Set Available)
-            </button>
-          ` : `
+          ${isAvail ? `
             <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 6px; padding: 6px 10px; width: 100%; display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #065F46;">
               <span style="font-weight: 800;">✓</span>
               <span><strong>Stationary &amp; Available</strong> — Carrier reached destination dock and is ready for tender.</span>
             </div>
-          `}
-          <button class="btn btn-secondary btn-sm" onclick="LiveTrackingMap.followCarrier('${carrier.id}')">
+          ` : ''}
+          <button class="btn btn-secondary btn-sm" onclick="LiveTrackingMap.followCarrier('${carrier.id}')" style="width: 100%;">
             ${this.followingCarrier && this.followingCarrier.id === carrier.id ? 'Unfollow' : 'Follow Camera'}
-          </button>
-          <button class="btn btn-primary btn-sm" onclick="LiveTrackingMap.navigateToCarrierProfile('${carrier.id}')">
-            Carrier Registry →
           </button>
         </div>
       </div>
