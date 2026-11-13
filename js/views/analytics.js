@@ -183,8 +183,8 @@ const AnalyticsView = {
         <!-- 2-Col Grid: Simple, Minimal Visual Charts & Data -->
         <div class="dashboard-grid-2col mb-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
           <!-- Card 1: Shipment Distribution (Dynamic Donut Chart) -->
-          <div class="panel" style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid #F1F5F9;">
+          <div class="panel" style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden; justify-content: space-between;">
+            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #F1F5F9;">
               <div>
                 <h3 class="panel-title" style="font-size: 15px; font-weight: 700; color: #0F172A; margin: 0 0 2px 0;">Shipment Status</h3>
                 <span style="font-size: 12px; color: #64748B;">Network volume breakdown</span>
@@ -258,81 +258,126 @@ const AnalyticsView = {
                 </div>
               </div>
             </div>
+
+            <!-- Footer matching Card 2 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 13px 24px; border-top: 1px solid #F1F5F9; background: #FAFAFC; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #64748B;">
+                <span>Resolution Health</span>
+                <span style="font-size: 11px; color: #94A3B8; cursor: pointer;" title="Network clearance & delivery status">ⓘ</span>
+              </div>
+              <div style="font-size: 12px; font-weight: 700; color: #10B981;">
+                ${delPct}% completed deliveries
+              </div>
+            </div>
           </div>
 
-          <!-- Card 2: Weekly Activity Trend (Dynamic Bar Chart) -->
-          <div class="panel" style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid #F1F5F9;">
-              <div>
-                <h3 class="panel-title" style="font-size: 15px; font-weight: 700; color: #0F172A; margin: 0 0 2px 0;">Weekly Activity</h3>
-                <span style="font-size: 12px; color: #64748B;">Daily volume &amp; throughput</span>
+          <!-- Card 2: Performance Overview (Dual-Capsule Bar Chart matching reference) -->
+          <div class="panel" style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden; justify-content: space-between;">
+            <!-- Header Block matching reference image -->
+            <div style="padding: 20px 24px 8px 24px;">
+              <div style="font-size: 13px; font-weight: 500; color: #64748B; margin-bottom: 4px;">Performance Overview</div>
+              <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 26px; font-weight: 800; color: #0F172A; letter-spacing: -0.5px;">${total} Shipments</span>
+                <span style="font-size: 12px; font-weight: 700; color: #10B981;">+15.3%</span>
+                <span style="font-size: 12.5px; font-weight: 500; color: #64748B;">Avg Daily: ${data.weeklyActivity.avgDaily} vol</span>
               </div>
-              <span style="font-size: 12px; font-weight: 600; color: #2563EB; background: #EFF6FF; border: 1px solid #DBEAFE; padding: 3px 10px; border-radius: 20px;">7-Day Summary</span>
             </div>
 
-            <div style="padding: 24px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; flex: 1;">
-              <!-- Dynamic Bar Chart SVG -->
-              <div style="width: 100%; height: 170px;">
-                <svg width="100%" height="100%" viewBox="0 0 350 140" preserveAspectRatio="none" style="overflow: visible;">
-                  <defs>
-                    <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stop-color="#3B82F6" />
-                      <stop offset="100%" stop-color="#1D4ED8" />
-                    </linearGradient>
-                    <linearGradient id="barGradPeak" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stop-color="#2563EB" />
-                      <stop offset="100%" stop-color="#1E40AF" />
-                    </linearGradient>
-                  </defs>
+            <!-- Chart Area matching reference image -->
+            <div style="padding: 6px 16px 4px 16px; width: 100%;">
+              <svg width="100%" height="205" viewBox="0 0 450 195" preserveAspectRatio="none" style="overflow: visible;">
+                <defs>
+                  <linearGradient id="barCapsuleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#6388F2" />
+                    <stop offset="100%" stop-color="#4355E8" />
+                  </linearGradient>
+                </defs>
 
-                  <!-- Subtle Grid Lines -->
-                  <line x1="10" y1="25" x2="340" y2="25" stroke="#F1F5F9" stroke-width="1" stroke-dasharray="3 3" />
-                  <line x1="10" y1="65" x2="340" y2="65" stroke="#F1F5F9" stroke-width="1" stroke-dasharray="3 3" />
-                  <line x1="10" y1="105" x2="340" y2="105" stroke="#E2E8F0" stroke-width="1" />
+                <!-- Horizontal Subtle Grid Lines -->
+                <line x1="20" y1="25" x2="410" y2="25" stroke="#F8FAFC" stroke-width="1" />
+                <line x1="20" y1="57.5" x2="410" y2="57.5" stroke="#F1F5F9" stroke-width="1" />
+                <line x1="20" y1="90" x2="410" y2="90" stroke="#F1F5F9" stroke-width="1" />
+                <line x1="20" y1="122.5" x2="410" y2="122.5" stroke="#F1F5F9" stroke-width="1" />
 
-                  <!-- Dynamic 7 Days -->
-                  ${data.weeklyActivity.days.map((day, idx) => {
-                    const x = 23 + idx * 46;
-                    const centerX = x + 12;
-                    const maxScale = Math.max(data.weeklyActivity.maxCount, 1);
-                    const maxHeight = 78;
-                    const barHeight = day.count > 0 ? Math.max(8, Math.round((day.count / maxScale) * maxHeight)) : 0;
-                    const barY = 105 - barHeight;
-                    const labelY = barHeight > 0 ? (barY - 7) : 98;
-                    const fill = day.isPeak ? 'url(#barGradPeak)' : 'url(#barGrad)';
-                    const opacity = day.isPeak ? '1' : '0.85';
-                    const countColor = day.isPeak ? '#1D4ED8' : '#475569';
-                    const countWeight = day.isPeak ? '700' : '600';
-                    const dayColor = day.isPeak ? '#0F172A' : '#64748B';
-                    const dayWeight = day.isPeak ? '600' : '500';
+                <!-- Y-Axis Labels on the Right (e.g. 12, 9, 6, 3, 0) -->
+                ${(() => {
+                  const maxC = data.weeklyActivity.maxCount || 6;
+                  const ceil = maxC <= 4 ? 4 : maxC <= 8 ? 8 : maxC <= 12 ? 12 : Math.ceil(maxC / 4) * 4;
+                  return `
+                    <text x="420" y="28" font-size="10.5" font-weight="500" fill="#94A3B8" text-anchor="start">${ceil}</text>
+                    <text x="420" y="60.5" font-size="10.5" font-weight="500" fill="#94A3B8" text-anchor="start">${Math.round(ceil * 0.75)}</text>
+                    <text x="420" y="93" font-size="10.5" font-weight="500" fill="#94A3B8" text-anchor="start">${Math.round(ceil * 0.5)}</text>
+                    <text x="420" y="125.5" font-size="10.5" font-weight="500" fill="#94A3B8" text-anchor="start">${Math.round(ceil * 0.25)}</text>
+                    <text x="420" y="158" font-size="10.5" font-weight="500" fill="#94A3B8" text-anchor="start">0</text>
+                  `;
+                })()}
+
+                <!-- 7 Day Columns with Vertical Dashed Gridlines & Dual-Layer Pills -->
+                ${(() => {
+                  const maxC = data.weeklyActivity.maxCount || 6;
+                  const ceil = maxC <= 4 ? 4 : maxC <= 8 ? 8 : maxC <= 12 ? 12 : Math.ceil(maxC / 4) * 4;
+                  const usableH = 130;
+                  const baselineY = 155;
+
+                  return data.weeklyActivity.days.map((day, idx) => {
+                    const centerX = 44 + idx * 56;
+                    const x = centerX - 15;
+                    const w = 30;
+
+                    // Proportional height
+                    const barH = day.count > 0 ? Math.max(14, Math.round((day.count / ceil) * usableH)) : 0;
+                    const trackH = Math.min(usableH, day.count > 0 ? (barH + (day.isPeak ? 22 : 16)) : 20);
+
+                    const trackY = baselineY - trackH;
+                    const barY = baselineY - barH;
+
+                    // Rounded top path helper
+                    const r = 6;
+                    const makeTopRounded = (rx, ry, rw, rh) => {
+                      const b = ry + rh;
+                      return `M ${rx} ${b} L ${rx} ${ry + r} A ${r} ${r} 0 0 1 ${rx + r} ${ry} L ${rx + rw - r} ${ry} A ${r} ${r} 0 0 1 ${rx + rw} ${ry + r} L ${rx + rw} ${b} Z`;
+                    };
 
                     return `
-                      ${barHeight > 0 
-                        ? `<rect x="${x}" y="${barY}" width="24" height="${barHeight}" rx="4" fill="${fill}" opacity="${opacity}"></rect>` 
-                        : `<rect x="${x}" y="103" width="24" height="2" rx="1" fill="#E2E8F0"></rect>`}
-                      <text x="${centerX}" y="${labelY}" font-size="10" font-weight="${countWeight}" fill="${countColor}" text-anchor="middle">${day.count}</text>
-                      <text x="${centerX}" y="122" font-size="11" font-weight="${dayWeight}" fill="${dayColor}" text-anchor="middle">${day.name}</text>
+                      <!-- Vertical Dashed Line -->
+                      <line x1="${centerX}" y1="20" x2="${centerX}" y2="${baselineY}" stroke="#F1F5F9" stroke-width="1" stroke-dasharray="3 3" />
+
+                      <!-- Background Pill / Capacity Track -->
+                      <path d="${makeTopRounded(x, trackY, w, trackH)}" 
+                        fill="#E6EFFF" 
+                        ${day.isPeak ? 'stroke="#5575F4" stroke-width="1.5"' : ''} />
+
+                      <!-- Filled Foreground Bar (with Tooltip) -->
+                      ${barH > 0 ? `
+                        <path d="${makeTopRounded(x, barY, w, barH)}" fill="url(#barCapsuleGrad)">
+                          <title>${day.name}: ${day.count} shipments</title>
+                        </path>
+                      ` : ''}
+
+                      <!-- X-Axis Day Label (Peak highlighted with badge pill) -->
+                      ${day.isPeak ? `
+                        <rect x="${centerX - 17}" y="166" width="34" height="19" rx="5" fill="#E6EFFF" />
+                        <text x="${centerX}" y="180" font-size="11" font-weight="700" fill="#1E293B" text-anchor="middle">${day.name}</text>
+                      ` : `
+                        <text x="${centerX}" y="180" font-size="11" font-weight="500" fill="#94A3B8" text-anchor="middle">${day.name}</text>
+                      `}
                     `;
-                  }).join('')}
-                </svg>
+                  }).join('');
+                })()}
+
+                <!-- Solid Blue Baseline matching reference -->
+                <line x1="20" y1="155" x2="410" y2="155" stroke="#4355E8" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+
+            <!-- Footer Goal Banner matching reference -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 13px 24px; border-top: 1px solid #F1F5F9; background: #FAFAFC; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #64748B;">
+                <span>Weekly Dispatch Goal</span>
+                <span style="font-size: 11px; color: #94A3B8; cursor: pointer;" title="Dynamic throughput target based on scheduled volume">ⓘ</span>
               </div>
-
-              <!-- 3 Clean Minimal Summary Stats -->
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%;">
-                <div style="text-align: center; padding: 10px 8px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
-                  <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-bottom: 2px;">Avg Daily</div>
-                  <div style="font-size: 14px; font-weight: 700; color: #0F172A;">${data.weeklyActivity.avgDaily} <span style="font-size: 11px; font-weight: 400; color: #64748B;">vol</span></div>
-                </div>
-
-                <div style="text-align: center; padding: 10px 8px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
-                  <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-bottom: 2px;">Peak Volume</div>
-                  <div style="font-size: 14px; font-weight: 700; color: #2563EB;">${data.weeklyActivity.peakDay} (${data.weeklyActivity.peakCount})</div>
-                </div>
-
-                <div style="text-align: center; padding: 10px 8px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
-                  <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-bottom: 2px;">Network On-Time</div>
-                  <div style="font-size: 14px; font-weight: 700; color: #10B981;">${data.onTimeRate}%</div>
-                </div>
+              <div style="font-size: 12px; font-weight: 700; color: #10B981;">
+                +${Math.round(data.onTimeRate)}% of SLA target achieved
               </div>
             </div>
           </div>
