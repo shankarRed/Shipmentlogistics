@@ -36,21 +36,21 @@ const AnalyticsView = {
     return `
       <div class="view-analytics animate-fade-in">
         <!-- Page Action Header -->
-        <div class="page-action-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
-          <div class="header-text-block">
+        <div class="page-action-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 20px; flex-wrap: nowrap;">
+          <div class="header-text-block" style="flex: 1; min-width: 0;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-              <h2 class="page-heading" style="font-size: 20px; font-weight: 800; color: #0F172A; margin: 0;">Analytics &amp; Operational Reports</h2>
-              <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #10B981; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 20px;">
+              <h2 class="page-heading" style="font-size: 20px; font-weight: 800; color: #0F172A; margin: 0; white-space: nowrap;">Analytics &amp; Operational Reports</h2>
+              <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #10B981; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 20px; white-space: nowrap;">
                 <span style="width: 6px; height: 6px; border-radius: 50%; background: #10B981; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);"></span>
                 Live Telemetry
               </span>
             </div>
             <p class="page-subheading" style="font-size: 12.5px; color: #64748B; margin: 0;">Real-time multi-dimensional operational metrics computed across ${data.totalShipments} shipments and active carrier telemetry.</p>
           </div>
-          <div class="header-actions" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap;">
+          <div class="header-actions" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; white-space: nowrap;">
             <!-- Timeframe Filter -->
             <div class="select-wrapper">
-              <select id="analytics-timeframe" onchange="AnalyticsView.handleTimeframeChange(this.value)" style="height: 34px; padding: 0 28px 0 10px; font-size: 12px; font-weight: 600; color: #334155; background: #ffffff; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer;">
+              <select id="analytics-timeframe" onchange="AnalyticsView.handleTimeframeChange(this.value)" style="height: 36px; padding: 0 28px 0 10px; font-size: 12px; font-weight: 600; color: #334155; background: #ffffff; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer;">
                 <option value="ALL" ${this.currentFilters.timeframe === 'ALL' ? 'selected' : ''}>All Recorded History</option>
                 <option value="7D" ${this.currentFilters.timeframe === '7D' ? 'selected' : ''}>Past 7 Days</option>
                 <option value="30D" ${this.currentFilters.timeframe === '30D' ? 'selected' : ''}>Past 30 Days</option>
@@ -60,7 +60,7 @@ const AnalyticsView = {
 
             <!-- Carrier Filter -->
             <div class="select-wrapper">
-              <select id="analytics-carrier" onchange="AnalyticsView.handleCarrierChange(this.value)" style="height: 34px; padding: 0 28px 0 10px; font-size: 12px; font-weight: 600; color: #334155; background: #ffffff; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer;">
+              <select id="analytics-carrier" onchange="AnalyticsView.handleCarrierChange(this.value)" style="height: 36px; padding: 0 28px 0 10px; font-size: 12px; font-weight: 600; color: #334155; background: #ffffff; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer;">
                 <option value="ALL" ${this.currentFilters.carrierId === 'ALL' ? 'selected' : ''}>All Carrier Partners</option>
                 ${carriers.map(c => `
                   <option value="${c.id}" ${this.currentFilters.carrierId === c.id ? 'selected' : ''}>${c.name} (${c.id})</option>
@@ -70,13 +70,13 @@ const AnalyticsView = {
 
             <!-- Reset Filter Button -->
             ${(this.currentFilters.timeframe !== 'ALL' || this.currentFilters.carrierId !== 'ALL') ? `
-              <button type="button" class="btn btn-sm" onclick="AnalyticsView.resetFilters()" style="height: 34px; padding: 0 10px; font-size: 11.5px; font-weight: 600; color: #64748B; background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+              <button type="button" class="btn btn-sm" onclick="AnalyticsView.resetFilters()" style="height: 36px; padding: 0 10px; font-size: 11.5px; font-weight: 600; color: #64748B; background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
                 Reset
               </button>
             ` : ''}
 
             <!-- Quick Export Button -->
-            <button type="button" class="btn btn-secondary btn-sm" onclick="AnalyticsView.downloadReport('shipment_sla', 'csv')" style="display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; font-weight: 600; border-radius: 6px; white-space: nowrap; cursor: pointer;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="AnalyticsView.downloadReport('shipment_sla', 'csv')" style="display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; font-weight: 600; border-radius: 6px; white-space: nowrap; cursor: pointer;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
