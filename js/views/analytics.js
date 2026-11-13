@@ -36,15 +36,21 @@ const AnalyticsView = {
     return `
       <div class="view-analytics animate-fade-in">
         <!-- Page Action Header -->
-        <div class="page-action-header">
+        <div class="page-action-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
           <div class="header-text-block">
-            <h2 class="page-heading">Performance, SLA &amp; Operational Analytics</h2>
-            <p class="page-subheading">Comprehensive multi-dimensional intelligence computed across ${data.totalShipments} shipments, ${data.totalExceptions} exceptions, and active carrier network telemetry.</p>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+              <h2 class="page-heading" style="font-size: 20px; font-weight: 800; color: #0F172A; margin: 0;">Analytics &amp; Operational Reports</h2>
+              <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #10B981; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 20px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #10B981; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);"></span>
+                Live Telemetry
+              </span>
+            </div>
+            <p class="page-subheading" style="font-size: 12.5px; color: #64748B; margin: 0;">Real-time multi-dimensional operational metrics computed across ${data.totalShipments} shipments and active carrier telemetry.</p>
           </div>
-          <div class="header-actions" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+          <div class="header-actions" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap;">
             <!-- Timeframe Filter -->
             <div class="select-wrapper">
-              <select id="analytics-timeframe" onchange="AnalyticsView.handleTimeframeChange(this.value)">
+              <select id="analytics-timeframe" onchange="AnalyticsView.handleTimeframeChange(this.value)" style="height: 34px; padding: 0 28px 0 10px; font-size: 12px; font-weight: 600; color: #334155; background: #ffffff; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer;">
                 <option value="ALL" ${this.currentFilters.timeframe === 'ALL' ? 'selected' : ''}>All Recorded History</option>
                 <option value="7D" ${this.currentFilters.timeframe === '7D' ? 'selected' : ''}>Past 7 Days</option>
                 <option value="30D" ${this.currentFilters.timeframe === '30D' ? 'selected' : ''}>Past 30 Days</option>
@@ -54,7 +60,7 @@ const AnalyticsView = {
 
             <!-- Carrier Filter -->
             <div class="select-wrapper">
-              <select id="analytics-carrier" onchange="AnalyticsView.handleCarrierChange(this.value)">
+              <select id="analytics-carrier" onchange="AnalyticsView.handleCarrierChange(this.value)" style="height: 34px; padding: 0 28px 0 10px; font-size: 12px; font-weight: 600; color: #334155; background: #ffffff; border: 1px solid #CBD5E1; border-radius: 6px; cursor: pointer;">
                 <option value="ALL" ${this.currentFilters.carrierId === 'ALL' ? 'selected' : ''}>All Carrier Partners</option>
                 ${carriers.map(c => `
                   <option value="${c.id}" ${this.currentFilters.carrierId === c.id ? 'selected' : ''}>${c.name} (${c.id})</option>
@@ -62,8 +68,15 @@ const AnalyticsView = {
               </select>
             </div>
 
+            <!-- Reset Filter Button -->
+            ${(this.currentFilters.timeframe !== 'ALL' || this.currentFilters.carrierId !== 'ALL') ? `
+              <button type="button" class="btn btn-sm" onclick="AnalyticsView.resetFilters()" style="height: 34px; padding: 0 10px; font-size: 11.5px; font-weight: 600; color: #64748B; background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                Reset
+              </button>
+            ` : ''}
+
             <!-- Quick Export Button -->
-            <button type="button" class="btn btn-secondary btn-sm" onclick="AnalyticsView.downloadReport('shipment_sla', 'csv')" style="display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; font-weight: 600; white-space: nowrap;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="AnalyticsView.downloadReport('shipment_sla', 'csv')" style="display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; font-weight: 600; border-radius: 6px; white-space: nowrap; cursor: pointer;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -83,11 +96,11 @@ const AnalyticsView = {
   // SUB-TAB 1: EXECUTIVE OVERVIEW
   // =========================================================================
   renderOverviewTab(data) {
-    const total = data.totalShipments || 12;
-    const delivered = data.statusBreakdown && data.statusBreakdown['Delivered'] !== undefined ? data.statusBreakdown['Delivered'] : 5;
-    const onRoute = data.statusBreakdown && data.statusBreakdown['On Route'] !== undefined ? data.statusBreakdown['On Route'] : 2;
-    const loading = data.statusBreakdown && data.statusBreakdown['Loading'] !== undefined ? data.statusBreakdown['Loading'] : 1;
-    const delayed = data.statusBreakdown && data.statusBreakdown['Delayed'] !== undefined ? data.statusBreakdown['Delayed'] : 3;
+    const total = data.totalShipments;
+    const delivered = (data.statusBreakdown && data.statusBreakdown['Delivered']) || 0;
+    const onRoute = (data.statusBreakdown && data.statusBreakdown['On Route']) || 0;
+    const loading = (data.statusBreakdown && data.statusBreakdown['Loading']) || 0;
+    const delayed = (data.statusBreakdown && data.statusBreakdown['Delayed']) || 0;
 
     const delPct = total > 0 ? Math.round((delivered / total) * 100) : 0;
     const routePct = total > 0 ? Math.round((onRoute / total) * 100) : 0;
@@ -101,67 +114,79 @@ const AnalyticsView = {
     const loadLen = total > 0 ? (loading / total) * circ : 0;
     const delayLen = total > 0 ? (delayed / total) * circ : 0;
 
-    const delOffset = 0;
-    const routeOffset = delLen;
-    const loadOffset = delLen + routeLen;
-    const delayOffset = delLen + routeLen + loadLen;
+    let currentOffset = 0;
+    const delOffset = currentOffset;
+    if (delLen > 0) currentOffset += delLen;
+    const routeOffset = currentOffset;
+    if (routeLen > 0) currentOffset += routeLen;
+    const loadOffset = currentOffset;
+    if (loadLen > 0) currentOffset += loadLen;
+    const delayOffset = currentOffset;
 
     return `
       <div class="animate-fade-in">
         <!-- KPI Row -->
-        <div class="kpi-grid mb-4">
-          <div class="kpi-card">
-            <div class="kpi-header">
-              <span class="kpi-label">On-Time Delivery Rate</span>
-              <span class="kpi-icon">${Icons.check ? Icons.check(18) : ''}</span>
+        <div class="kpi-grid mb-4" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+          <div class="kpi-card" style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="kpi-label" style="font-size: 13px; font-weight: 600; color: #475569;">On-Time Delivery Rate</span>
+              <span class="kpi-icon" style="width: 30px; height: 30px; border-radius: 8px; background: #ECFDF5; color: #10B981; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </span>
             </div>
-            <div class="kpi-metric ${data.onTimeRate >= 85 ? 'text-navy' : 'text-danger'}">${data.onTimeRate}%</div>
+            <div class="kpi-metric" style="font-size: 28px; font-weight: 800; color: ${data.onTimeRate >= 85 ? '#0F172A' : '#EA341F'}; line-height: 1.1; margin-bottom: 8px;">${data.onTimeRate}%</div>
             <div class="kpi-footer">
-              <span class="kpi-subtext">${data.deliveredOnTime} of ${data.deliveredTotal} delivered on SLA schedule</span>
+              <span class="kpi-subtext" style="font-size: 12px; color: #64748B;">${data.deliveredOnTime} of ${data.deliveredTotal} delivered on SLA schedule</span>
             </div>
           </div>
 
-          <div class="kpi-card">
-            <div class="kpi-header">
-              <span class="kpi-label">Active vs Completed</span>
-              <span class="kpi-icon">${Icons.truck ? Icons.truck(18) : ''}</span>
+          <div class="kpi-card" style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="kpi-label" style="font-size: 13px; font-weight: 600; color: #475569;">Active vs Completed</span>
+              <span class="kpi-icon" style="width: 30px; height: 30px; border-radius: 8px; background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+              </span>
             </div>
-            <div class="kpi-metric font-bold text-navy">${data.activeShipments} <span class="text-sm font-normal text-muted">/ ${data.completedShipments}</span></div>
+            <div class="kpi-metric" style="font-size: 28px; font-weight: 800; color: #0F172A; line-height: 1.1; margin-bottom: 8px;">${data.activeShipments} <span style="font-size: 16px; font-weight: 500; color: #94A3B8;">/ ${data.completedShipments}</span></div>
             <div class="kpi-footer">
-              <span class="kpi-subtext">${data.activeShipments} in-transit &bull; ${data.completedShipments} archived</span>
+              <span class="kpi-subtext" style="font-size: 12px; color: #64748B;">${data.activeShipments} in-transit &bull; ${data.completedShipments} archived</span>
             </div>
           </div>
 
-          <div class="kpi-card">
-            <div class="kpi-header">
-              <span class="kpi-label">Exception Frequency</span>
-              <span class="kpi-icon">${Icons.alertTriangle ? Icons.alertTriangle(18) : ''}</span>
+          <div class="kpi-card" style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="kpi-label" style="font-size: 13px; font-weight: 600; color: #475569;">Exception Frequency</span>
+              <span class="kpi-icon" style="width: 30px; height: 30px; border-radius: 8px; background: ${data.exceptionFrequencyRate > 20 ? '#FEF2F2' : '#FFFBEB'}; color: ${data.exceptionFrequencyRate > 20 ? '#EF4444' : '#F59E0B'}; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </span>
             </div>
-            <div class="kpi-metric ${data.exceptionFrequencyRate > 20 ? 'text-danger' : 'text-midnight'}">${data.exceptionFrequencyRate}%</div>
+            <div class="kpi-metric" style="font-size: 28px; font-weight: 800; color: ${data.exceptionFrequencyRate > 20 ? '#EA341F' : '#0F172A'}; line-height: 1.1; margin-bottom: 8px;">${data.exceptionFrequencyRate}%</div>
             <div class="kpi-footer">
-              <span class="kpi-subtext">${data.shipmentsWithExceptions} shipments impacted by active alerts</span>
+              <span class="kpi-subtext" style="font-size: 12px; color: #64748B;">${data.shipmentsWithExceptions} shipments impacted by active alerts</span>
             </div>
           </div>
 
-          <div class="kpi-card">
-            <div class="kpi-header">
-              <span class="kpi-label">SLA Breach Penalty Exposure</span>
-              <span class="kpi-icon">${Icons.exceptionHistory ? Icons.exceptionHistory(18) : ''}</span>
+          <div class="kpi-card" style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="kpi-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="kpi-label" style="font-size: 13px; font-weight: 600; color: #475569;">SLA Breach Penalty Exposure</span>
+              <span class="kpi-icon" style="width: 30px; height: 30px; border-radius: 8px; background: #FEF2F2; color: #EA341F; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </span>
             </div>
-            <div class="kpi-metric text-danger">$${data.totalPenaltiesAccrued.toLocaleString()}</div>
+            <div class="kpi-metric" style="font-size: 28px; font-weight: 800; color: ${data.totalPenaltiesAccrued > 0 ? '#EA341F' : '#10B981'}; line-height: 1.1; margin-bottom: 8px;">$${data.totalPenaltiesAccrued.toLocaleString()}</div>
             <div class="kpi-footer">
-              <span class="kpi-subtext">${data.delayedShipments} delayed &bull; ${data.graceUtilizedCount} shipments in grace</span>
+              <span class="kpi-subtext" style="font-size: 12px; color: #64748B;">${data.delayedShipments} delayed &bull; ${data.graceUtilizedCount} shipments in grace</span>
             </div>
           </div>
         </div>
 
         <!-- 2-Col Grid: Simple, Minimal Visual Charts & Data -->
-        <div class="dashboard-grid-2col mb-4">
-          <!-- Card 1: Shipment Distribution (Minimal Donut Chart) -->
+        <div class="dashboard-grid-2col mb-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <!-- Card 1: Shipment Distribution (Dynamic Donut Chart) -->
           <div class="panel" style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
             <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid #F1F5F9;">
               <div>
-                <h3 class="panel-title" style="font-size: 15px; font-weight: 600; color: #0F172A; margin: 0 0 2px 0;">Shipment Status</h3>
+                <h3 class="panel-title" style="font-size: 15px; font-weight: 700; color: #0F172A; margin: 0 0 2px 0;">Shipment Status</h3>
                 <span style="font-size: 12px; color: #64748B;">Network volume breakdown</span>
               </div>
               <span style="font-size: 12px; font-weight: 600; color: #475569; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 3px 10px; border-radius: 20px;">${total} Shipments</span>
@@ -175,26 +200,26 @@ const AnalyticsView = {
                   <circle cx="60" cy="60" r="42" fill="none" stroke="#F1F5F9" stroke-width="12"></circle>
                   
                   <!-- Delivered: Green -->
-                  <circle cx="60" cy="60" r="42" fill="none" stroke="#10B981" stroke-width="12"
-                    stroke-dasharray="${delLen} ${circ - delLen}" stroke-dashoffset="-${delOffset}" stroke-linecap="round"></circle>
+                  ${delLen > 0 ? `<circle cx="60" cy="60" r="42" fill="none" stroke="#10B981" stroke-width="12"
+                    stroke-dasharray="${delLen} ${circ - delLen}" stroke-dashoffset="-${delOffset}" stroke-linecap="round"></circle>` : ''}
                   
                   <!-- On Route: Blue -->
-                  <circle cx="60" cy="60" r="42" fill="none" stroke="#3B82F6" stroke-width="12"
-                    stroke-dasharray="${routeLen} ${circ - routeLen}" stroke-dashoffset="-${routeOffset}" stroke-linecap="round"></circle>
+                  ${routeLen > 0 ? `<circle cx="60" cy="60" r="42" fill="none" stroke="#3B82F6" stroke-width="12"
+                    stroke-dasharray="${routeLen} ${circ - routeLen}" stroke-dashoffset="-${routeOffset}" stroke-linecap="round"></circle>` : ''}
                   
                   <!-- Loading: Amber -->
-                  <circle cx="60" cy="60" r="42" fill="none" stroke="#F59E0B" stroke-width="12"
-                    stroke-dasharray="${loadLen} ${circ - loadLen}" stroke-dashoffset="-${loadOffset}" stroke-linecap="round"></circle>
+                  ${loadLen > 0 ? `<circle cx="60" cy="60" r="42" fill="none" stroke="#F59E0B" stroke-width="12"
+                    stroke-dasharray="${loadLen} ${circ - loadLen}" stroke-dashoffset="-${loadOffset}" stroke-linecap="round"></circle>` : ''}
                   
                   <!-- Delayed: Red -->
-                  <circle cx="60" cy="60" r="42" fill="none" stroke="#EF4444" stroke-width="12"
-                    stroke-dasharray="${delayLen} ${circ - delayLen}" stroke-dashoffset="-${delayOffset}" stroke-linecap="round"></circle>
+                  ${delayLen > 0 ? `<circle cx="60" cy="60" r="42" fill="none" stroke="#EF4444" stroke-width="12"
+                    stroke-dasharray="${delayLen} ${circ - delayLen}" stroke-dashoffset="-${delayOffset}" stroke-linecap="round"></circle>` : ''}
                 </svg>
                 
                 <!-- Center Info -->
                 <div style="position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none;">
-                  <span style="font-size: 24px; font-weight: 700; color: #0F172A; line-height: 1;">${total}</span>
-                  <span style="font-size: 11px; font-weight: 500; color: #64748B; margin-top: 2px;">Total</span>
+                  <span style="font-size: 24px; font-weight: 800; color: #0F172A; line-height: 1;">${total}</span>
+                  <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #64748B; margin-top: 3px;">Total</span>
                 </div>
               </div>
 
@@ -235,18 +260,18 @@ const AnalyticsView = {
             </div>
           </div>
 
-          <!-- Card 2: Weekly Activity Trend (Minimal Bar Chart) -->
+          <!-- Card 2: Weekly Activity Trend (Dynamic Bar Chart) -->
           <div class="panel" style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
             <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid #F1F5F9;">
               <div>
-                <h3 class="panel-title" style="font-size: 15px; font-weight: 600; color: #0F172A; margin: 0 0 2px 0;">Weekly Activity</h3>
+                <h3 class="panel-title" style="font-size: 15px; font-weight: 700; color: #0F172A; margin: 0 0 2px 0;">Weekly Activity</h3>
                 <span style="font-size: 12px; color: #64748B;">Daily volume &amp; throughput</span>
               </div>
               <span style="font-size: 12px; font-weight: 600; color: #2563EB; background: #EFF6FF; border: 1px solid #DBEAFE; padding: 3px 10px; border-radius: 20px;">7-Day Summary</span>
             </div>
 
             <div style="padding: 24px 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; flex: 1;">
-              <!-- Minimal Bar Chart SVG -->
+              <!-- Dynamic Bar Chart SVG -->
               <div style="width: 100%; height: 170px;">
                 <svg width="100%" height="100%" viewBox="0 0 350 140" preserveAspectRatio="none" style="overflow: visible;">
                   <defs>
@@ -265,41 +290,30 @@ const AnalyticsView = {
                   <line x1="10" y1="65" x2="340" y2="65" stroke="#F1F5F9" stroke-width="1" stroke-dasharray="3 3" />
                   <line x1="10" y1="105" x2="340" y2="105" stroke="#E2E8F0" stroke-width="1" />
 
-                  <!-- 7 Days: Mon(8), Tue(12), Wed(10), Thu(15), Fri(18-peak), Sat(11), Sun(7) -->
-                  <!-- Mon -->
-                  <rect x="23" y="69" width="24" height="36" rx="4" fill="url(#barGrad)" opacity="0.85"></rect>
-                  <text x="35" y="62" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">8</text>
-                  <text x="35" y="122" font-size="11" font-weight="500" fill="#64748B" text-anchor="middle">Mon</text>
+                  <!-- Dynamic 7 Days -->
+                  ${data.weeklyActivity.days.map((day, idx) => {
+                    const x = 23 + idx * 46;
+                    const centerX = x + 12;
+                    const maxScale = Math.max(data.weeklyActivity.maxCount, 1);
+                    const maxHeight = 78;
+                    const barHeight = day.count > 0 ? Math.max(8, Math.round((day.count / maxScale) * maxHeight)) : 0;
+                    const barY = 105 - barHeight;
+                    const labelY = barHeight > 0 ? (barY - 7) : 98;
+                    const fill = day.isPeak ? 'url(#barGradPeak)' : 'url(#barGrad)';
+                    const opacity = day.isPeak ? '1' : '0.85';
+                    const countColor = day.isPeak ? '#1D4ED8' : '#475569';
+                    const countWeight = day.isPeak ? '700' : '600';
+                    const dayColor = day.isPeak ? '#0F172A' : '#64748B';
+                    const dayWeight = day.isPeak ? '600' : '500';
 
-                  <!-- Tue -->
-                  <rect x="69" y="51" width="24" height="54" rx="4" fill="url(#barGrad)" opacity="0.85"></rect>
-                  <text x="81" y="44" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">12</text>
-                  <text x="81" y="122" font-size="11" font-weight="500" fill="#64748B" text-anchor="middle">Tue</text>
-
-                  <!-- Wed -->
-                  <rect x="115" y="60" width="24" height="45" rx="4" fill="url(#barGrad)" opacity="0.85"></rect>
-                  <text x="127" y="53" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">10</text>
-                  <text x="127" y="122" font-size="11" font-weight="500" fill="#64748B" text-anchor="middle">Wed</text>
-
-                  <!-- Thu -->
-                  <rect x="161" y="38" width="24" height="67" rx="4" fill="url(#barGrad)" opacity="0.85"></rect>
-                  <text x="173" y="31" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">15</text>
-                  <text x="173" y="122" font-size="11" font-weight="500" fill="#64748B" text-anchor="middle">Thu</text>
-
-                  <!-- Fri (Peak) -->
-                  <rect x="207" y="24" width="24" height="81" rx="4" fill="url(#barGradPeak)"></rect>
-                  <text x="219" y="17" font-size="10" font-weight="700" fill="#1D4ED8" text-anchor="middle">18</text>
-                  <text x="219" y="122" font-size="11" font-weight="600" fill="#0F172A" text-anchor="middle">Fri</text>
-
-                  <!-- Sat -->
-                  <rect x="253" y="56" width="24" height="49" rx="4" fill="url(#barGrad)" opacity="0.85"></rect>
-                  <text x="265" y="49" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">11</text>
-                  <text x="265" y="122" font-size="11" font-weight="500" fill="#64748B" text-anchor="middle">Sat</text>
-
-                  <!-- Sun -->
-                  <rect x="299" y="74" width="24" height="31" rx="4" fill="url(#barGrad)" opacity="0.85"></rect>
-                  <text x="311" y="67" font-size="10" font-weight="600" fill="#475569" text-anchor="middle">7</text>
-                  <text x="311" y="122" font-size="11" font-weight="500" fill="#64748B" text-anchor="middle">Sun</text>
+                    return `
+                      ${barHeight > 0 
+                        ? `<rect x="${x}" y="${barY}" width="24" height="${barHeight}" rx="4" fill="${fill}" opacity="${opacity}"></rect>` 
+                        : `<rect x="${x}" y="103" width="24" height="2" rx="1" fill="#E2E8F0"></rect>`}
+                      <text x="${centerX}" y="${labelY}" font-size="10" font-weight="${countWeight}" fill="${countColor}" text-anchor="middle">${day.count}</text>
+                      <text x="${centerX}" y="122" font-size="11" font-weight="${dayWeight}" fill="${dayColor}" text-anchor="middle">${day.name}</text>
+                    `;
+                  }).join('')}
                 </svg>
               </div>
 
@@ -307,12 +321,12 @@ const AnalyticsView = {
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%;">
                 <div style="text-align: center; padding: 10px 8px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
                   <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-bottom: 2px;">Avg Daily</div>
-                  <div style="font-size: 14px; font-weight: 700; color: #0F172A;">11.6 <span style="font-size: 11px; font-weight: 400; color: #64748B;">vol</span></div>
+                  <div style="font-size: 14px; font-weight: 700; color: #0F172A;">${data.weeklyActivity.avgDaily} <span style="font-size: 11px; font-weight: 400; color: #64748B;">vol</span></div>
                 </div>
 
                 <div style="text-align: center; padding: 10px 8px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
                   <div style="font-size: 11px; font-weight: 500; color: #64748B; margin-bottom: 2px;">Peak Volume</div>
-                  <div style="font-size: 14px; font-weight: 700; color: #2563EB;">Fri (18)</div>
+                  <div style="font-size: 14px; font-weight: 700; color: #2563EB;">${data.weeklyActivity.peakDay} (${data.weeklyActivity.peakCount})</div>
                 </div>
 
                 <div style="text-align: center; padding: 10px 8px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
@@ -321,6 +335,80 @@ const AnalyticsView = {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Carrier Partner Scorecard & Governance Table -->
+        <div class="panel" style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow: hidden;">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #F1F5F9; background: #FAFAFC;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="width: 28px; height: 28px; border-radius: 6px; background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+              </span>
+              <div>
+                <h3 class="panel-title" style="font-size: 14px; font-weight: 700; color: #0F172A; margin: 0;">Carrier Performance &amp; SLA Scorecard</h3>
+                <span style="font-size: 11.5px; color: #64748B;">Live carrier metrics calculated from network shipments &amp; resolution telemetry</span>
+              </div>
+            </div>
+            <span style="font-size: 12px; font-weight: 600; color: #475569; background: #FFFFFF; border: 1px solid #E2E8F0; padding: 4px 10px; border-radius: 6px;">
+              ${data.carrierScorecards.length} Monitored Carriers
+            </span>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left;">
+              <thead>
+                <tr style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0; color: #64748B; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">
+                  <th style="padding: 12px 20px;">Carrier Partner</th>
+                  <th style="padding: 12px 16px; text-align: center;">Assigned Shipments</th>
+                  <th style="padding: 12px 16px;">On-Time SLA Rate</th>
+                  <th style="padding: 12px 16px; text-align: center;">Active Exceptions</th>
+                  <th style="padding: 12px 16px; text-align: center;">Resolved</th>
+                  <th style="padding: 12px 20px; text-align: right;">Performance Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.carrierScorecards.map(cs => {
+                  const grade = cs.onTimePct >= 90 && cs.openExceptions === 0 ? 'Tier A (Optimal)' : cs.onTimePct >= 75 ? 'Tier B (Standard)' : 'Tier C (Review Required)';
+                  const gradeColor = cs.onTimePct >= 90 && cs.openExceptions === 0 ? '#10B981' : cs.onTimePct >= 75 ? '#3B82F6' : '#EF4444';
+                  const gradeBg = cs.onTimePct >= 90 && cs.openExceptions === 0 ? '#ECFDF5' : cs.onTimePct >= 75 ? '#EFF6FF' : '#FEF2F2';
+                  const isFiltered = this.currentFilters.carrierId === cs.carrier.id;
+
+                  return `
+                    <tr style="border-bottom: 1px solid #F1F5F9; ${isFiltered ? 'background: #EFF6FF;' : ''} transition: background 0.15s ease;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='${isFiltered ? '#EFF6FF' : 'transparent'}'">
+                      <td style="padding: 12px 20px; font-weight: 600; color: #0F172A;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span>${cs.carrier.name}</span>
+                          <span style="font-size: 11px; font-weight: 500; color: #64748B; background: #F1F5F9; padding: 1px 6px; border-radius: 4px;">${cs.carrier.id}</span>
+                        </div>
+                      </td>
+                      <td style="padding: 12px 16px; text-align: center; font-weight: 600; color: #0F172A;">
+                        ${cs.totalHandled}
+                      </td>
+                      <td style="padding: 12px 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <div style="flex: 1; height: 6px; background: #E2E8F0; border-radius: 3px; overflow: hidden; max-width: 100px;">
+                            <div style="height: 100%; width: ${cs.onTimePct}%; background: ${cs.onTimePct >= 80 ? '#10B981' : cs.onTimePct >= 50 ? '#F59E0B' : '#EF4444'}; border-radius: 3px;"></div>
+                          </div>
+                          <span style="font-size: 12px; font-weight: 700; color: #0F172A;">${cs.onTimePct}%</span>
+                        </div>
+                      </td>
+                      <td style="padding: 12px 16px; text-align: center;">
+                        ${cs.openExceptions > 0 ? `<span style="font-size: 11.5px; font-weight: 700; color: #EF4444; background: #FEF2F2; padding: 2px 8px; border-radius: 12px;">${cs.openExceptions}</span>` : `<span style="font-size: 11.5px; font-weight: 600; color: #10B981;">0</span>`}
+                      </td>
+                      <td style="padding: 12px 16px; text-align: center; font-size: 12px; color: #64748B;">
+                        ${cs.resolvedExceptions}
+                      </td>
+                      <td style="padding: 12px 20px; text-align: right;">
+                        <span style="font-size: 11.5px; font-weight: 600; color: ${gradeColor}; background: ${gradeBg}; padding: 3px 9px; border-radius: 12px;">
+                          ${grade}
+                        </span>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1274,35 +1362,49 @@ const AnalyticsView = {
       exceptions = exceptions.filter(e => e.carrierId === this.currentFilters.carrierId);
     }
 
-    // Timeframe Filter
+    // Timeframe Filter (relative to data timeline)
     if (this.currentFilters.timeframe !== 'ALL') {
-      const now = new Date();
+      const timestamps = shipments.map(s => {
+        const d = s.createdAt || s.departureTime || s.updatedAt;
+        return d ? new Date(d).getTime() : 0;
+      }).filter(t => !isNaN(t) && t > 0);
+
+      const refTime = timestamps.length > 0 ? Math.max(...timestamps) : Date.now();
       let days = 30;
       if (this.currentFilters.timeframe === '7D') days = 7;
       if (this.currentFilters.timeframe === '90D') days = 90;
-      const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      const cutoff = refTime - (days * 24 * 60 * 60 * 1000);
 
-      shipments = shipments.filter(s => new Date(s.createdAt) >= cutoff);
-      exceptions = exceptions.filter(e => new Date(e.createdAt) >= cutoff);
+      shipments = shipments.filter(s => {
+        const d = s.createdAt || s.departureTime || s.updatedAt;
+        return d ? new Date(d).getTime() >= cutoff : true;
+      });
+      exceptions = exceptions.filter(e => {
+        const d = e.createdAt || e.reportedTime || e.updatedAt;
+        return d ? new Date(d).getTime() >= cutoff : true;
+      });
     }
 
     const totalShipments = shipments.length;
     const totalExceptions = exceptions.length;
 
-    const activeShipments = shipments.filter(s => s.status === 'On Route' || s.status === 'Loading' || s.status === 'Delayed').length;
+    // Active shipments: in transit, loading, delayed, or ready for pickup
+    const activeShipments = shipments.filter(s => s.status === 'On Route' || s.status === 'Loading' || s.status === 'Delayed' || s.status === 'Ready for Pickup' || s.status === 'In Transit').length;
     const completedShipments = shipments.filter(s => s.status === 'Delivered' || s.status === 'Cancelled').length;
     const delayedShipments = shipments.filter(s => s.status === 'Delayed').length;
     const delayedShipmentList = shipments.filter(s => s.status === 'Delayed');
 
+    // On-Time Delivery Rate
     const deliveredShipments = shipments.filter(s => s.status === 'Delivered');
     const deliveredTotal = deliveredShipments.length;
     const deliveredOnTime = deliveredShipments.filter(s => s.onTime === true).length;
-    const onTimeRate = deliveredTotal > 0 ? Math.round((deliveredOnTime / deliveredTotal) * 1000) / 10 : 96.5;
+    const onTimeRate = deliveredTotal > 0 ? Math.round((deliveredOnTime / deliveredTotal) * 1000) / 10 : (totalShipments > 0 ? 0 : 0);
 
+    // Exception Frequency
     const shipmentsWithExceptions = shipments.filter(s => s.hasException).length;
-    const exceptionFrequencyRate = totalShipments > 0 ? Math.round((shipmentsWithExceptions / totalShipments) * 1000) / 10 : 12.5;
+    const exceptionFrequencyRate = totalShipments > 0 ? Math.round((shipmentsWithExceptions / totalShipments) * 1000) / 10 : 0;
 
-    const openExceptionsCount = exceptions.filter(e => e.status === 'Open' || e.status === 'Under Investigation').length;
+    const openExceptionsCount = exceptions.filter(e => e.status === 'Open' || e.status === 'Under Investigation' || e.status === 'Investigating' || e.status === 'Recovery in Progress').length;
 
     // Severity counts
     const severityCounts = {
@@ -1312,16 +1414,53 @@ const AnalyticsView = {
       Low: exceptions.filter(e => e.severity === 'Low').length
     };
 
-    // Total delay penalties accrued
-    const totalPenaltiesAccrued = delayedShipments * 1125 + 450;
-    const graceUtilizedCount = Math.max(3, Math.round(totalShipments * 0.15));
+    // Delay penalties accrued
+    const totalPenaltiesAccrued = delayedShipments > 0 ? (delayedShipments * 1125 + (delayedShipments >= 3 ? 450 : 0)) : 0;
+    const graceUtilizedCount = Math.min(delayedShipments, Math.max(0, Math.round(totalShipments * 0.25)));
 
-    // Status breakdown
+    // Status breakdown for Donut chart & Legend
     const statusBreakdown = {
       'Delivered': shipments.filter(s => s.status === 'Delivered').length,
-      'On Route': shipments.filter(s => s.status === 'On Route').length,
-      'Loading': shipments.filter(s => s.status === 'Loading').length,
+      'On Route': shipments.filter(s => s.status === 'On Route' || s.status === 'In Transit').length,
+      'Loading': shipments.filter(s => s.status === 'Loading' || s.status === 'Ready for Pickup' || s.status === 'Staging').length,
       'Delayed': shipments.filter(s => s.status === 'Delayed').length
+    };
+
+    // Weekly Day-by-Day Activity calculation (Monday through Sunday)
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const dayCounts = [0, 0, 0, 0, 0, 0, 0];
+
+    shipments.forEach(s => {
+      const dateStr = s.createdAt || s.departureTime || s.updatedAt;
+      const d = dateStr ? new Date(dateStr) : null;
+      if (d && !isNaN(d.getTime())) {
+        // d.getUTCDay(): 0=Sun, 1=Mon, ..., 6=Sat
+        const dayIdx = (d.getUTCDay() + 6) % 7; // 0=Mon, ..., 6=Sun
+        dayCounts[dayIdx]++;
+      }
+    });
+
+    const maxDayCount = Math.max(...dayCounts, 0);
+    let peakDayName = 'None';
+    let peakDayCount = 0;
+    if (maxDayCount > 0) {
+      const peakIdx = dayCounts.indexOf(maxDayCount);
+      peakDayName = dayNames[peakIdx];
+      peakDayCount = maxDayCount;
+    }
+
+    const avgDailyVolume = totalShipments > 0 ? (totalShipments / 7).toFixed(1) : '0.0';
+
+    const weeklyActivity = {
+      days: dayNames.map((name, i) => ({
+        name,
+        count: dayCounts[i],
+        isPeak: maxDayCount > 0 && dayCounts[i] === maxDayCount
+      })),
+      maxCount: maxDayCount,
+      peakDay: peakDayName,
+      peakCount: peakDayCount,
+      avgDaily: avgDailyVolume
     };
 
     // Root cause breakdown
@@ -1347,14 +1486,14 @@ const AnalyticsView = {
       const cDelivered = cShipments.filter(s => s.status === 'Delivered');
       const cOnTime = cDelivered.filter(s => s.onTime === true).length;
 
-      const onTimePct = cDelivered.length > 0 ? Math.round((cOnTime / cDelivered.length) * 100) : 95;
-      const exceptionRate = cShipments.length > 0 ? Math.round((cShipments.filter(s=>s.hasException).length / cShipments.length) * 100) : 10;
+      const onTimePct = cDelivered.length > 0 ? Math.round((cOnTime / cDelivered.length) * 100) : (cShipments.length > 0 ? 0 : 100);
+      const exceptionRate = cShipments.length > 0 ? Math.round((cShipments.filter(s => s.hasException).length / cShipments.length) * 100) : 0;
       const resolvedExceptions = cExceptions.filter(e => e.status === 'Resolved' || e.status === 'Closed').length;
-      const openExceptions = cExceptions.filter(e => e.status === 'Open' || e.status === 'Under Investigation').length;
+      const openExceptions = cExceptions.filter(e => e.status === 'Open' || e.status === 'Under Investigation' || e.status === 'Investigating' || e.status === 'Recovery in Progress').length;
 
       return {
         carrier: c,
-        totalHandled: cShipments.length || 6,
+        totalHandled: cShipments.length,
         onTimePct,
         exceptionRate,
         resolvedExceptions,
@@ -1382,6 +1521,7 @@ const AnalyticsView = {
       totalPenaltiesAccrued,
       graceUtilizedCount,
       statusBreakdown,
+      weeklyActivity,
       rootCauseBreakdown,
       carrierScorecards
     };
@@ -1389,12 +1529,24 @@ const AnalyticsView = {
 
   handleTimeframeChange(val) {
     this.currentFilters.timeframe = val;
-    App.renderCurrentView();
+    if (window.App) {
+      window.App.renderCurrentView();
+    }
   },
 
   handleCarrierChange(val) {
     this.currentFilters.carrierId = val;
-    App.renderCurrentView();
+    if (window.App) {
+      window.App.renderCurrentView();
+    }
+  },
+
+  resetFilters() {
+    this.currentFilters.timeframe = 'ALL';
+    this.currentFilters.carrierId = 'ALL';
+    if (window.App) {
+      window.App.renderCurrentView();
+    }
   }
 };
 
